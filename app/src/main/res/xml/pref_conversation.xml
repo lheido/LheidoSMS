@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference
+        android:defaultValue="21"
+        android:dialogTitle="@string/pref_sms_onload"
+        android:entries="@array/sms_onload"
+        android:entryValues="@array/sms_onload"
+        android:key="sms_onload"
+        android:title="@string/pref_sms_onload"/>
+    <ListPreference
+        android:defaultValue="13"
+        android:dialogTitle="@string/pref_text_size_dialog"
+        android:entries="@array/pref_text_size"
+        android:entryValues="@array/pref_text_size"
+        android:key="text_size"
+        android:title="@string/pref_text_size_dialog"/>
+    <PreferenceCategory
+        android:title="@string/hold_message"
+        android:key="hold_message">
+        <CheckBoxPreference
+            android:key="delete_hold_sms"
+            android:title="@string/delete_hold_sms"
+            android:defaultValue="false" />
+        <EditTextPreference
+            android:key="limit_hold_sms"
+            android:numeric="integer"
+            android:dependency="delete_hold_sms"
+            android:defaultValue="@string/limit_hold_sms"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/conversation_jazzylistview_effect"
+        android:key="conversation_jazzylistview_effect">
+        <ListPreference
+            android:key="conversation_jazzyeffect"
+            android:title="@string/list_conversation_jazzyeffect_title"
+            android:dialogTitle="@string/list_conversation_jazzyeffect_title"
+            android:entries="@array/jazzyeffect"
+            android:entryValues="@array/jazzyeffect_values"
+            android:defaultValue="@string/list_conversation_jazzyeffect_default" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

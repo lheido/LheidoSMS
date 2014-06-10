@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+        android:key="receiver_notification"
+        android:title="@string/receiver_notification"
+        android:summaryOff="@string/receiver_notification_off"
+        android:summaryOn="@string/receiver_notification_on"
+        android:defaultValue="true" />
+    <CheckBoxPreference
+        android:key="receiver_vibrate"
+        android:title="@string/receiver_vibrate"
+        android:summaryOff="@string/receiver_vibrate_off"
+        android:summaryOn="@string/receiver_vibrate_on"
+        android:defaultValue="true" />
+    <CheckBoxPreference
+        android:key="receiver_vibrate_delivered"
+        android:title="@string/receiver_vibrate_delivered"
+        android:summaryOff="@string/receiver_vibrate_off"
+        android:summaryOn="@string/receiver_vibrate_on"
+        android:defaultValue="true" />
+    <CheckBoxPreference
+        android:key="receiver_ringtone"
+        android:title="@string/receiver_ringtone"
+        android:summaryOff="@string/receiver_ringtone_off"
+        android:summaryOn="@string/receiver_ringtone_on"
+        android:defaultValue="true" />
+
+</PreferenceScreen>

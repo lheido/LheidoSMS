@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <CheckBoxPreference
+        android:key="hide_keyboard"
+        android:title="@string/keyboard_close_send"
+        android:defaultValue="true"
+        android:summaryOff="@string/keyboard_close_send_off"
+        android:summaryOn="@string/keyboard_close_send_on" />
+    <CheckBoxPreference
+        android:key="first_upper_letter"
+        android:title="@string/first_upper_letter"
+        android:summaryOn="@string/first_upper_letter_summ_on"
+        android:summaryOff="@string/first_upper_letter_summ_off"
+        android:defaultValue="true" />
+
+</PreferenceScreen>

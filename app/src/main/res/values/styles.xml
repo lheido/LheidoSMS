@@ -1,0 +1,62 @@
+<resources xmlns:tools="http://schemas.android.com/tools" xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Base application theme. -->
+    <style name="GreyTheme" parent="Theme.AppCompat">
+        <!-- ActionBar -->
+        <item name="android:actionBarStyle" tools:ignore="NewApi">@style/MyAB</item>
+        <item name="actionBarStyle">@style/MyAB</item>
+        <item name="android:windowActionBarOverlay" tools:ignore="NewApi">true</item>
+        <item name="windowActionBarOverlay">true</item>
+        <!--<item name="android:actionBarTabStyle" tools:ignore="NewApi">@style/ActionBarTabStyle</item>
+        <item name="actionBarTabStyle">@style/ActionBarTabStyle</item>
+        <item name="android:popupMenuStyle" tools:ignore="NewApi">@style/PopupMenu</item>
+        <item name="popupMenuStyle">@style/PopupMenu</item>
+        <item name="android:dropDownListViewStyle">@style/DropDownListView</item>
+        <item name="android:actionBarWidgetTheme" tools:ignore="NewApi">@style/Theme.stylingactionbar.widget</item>
+        <item name="actionBarWidgetTheme">@style/Theme.stylingactionbar.widget</item>
+        <item name="android:actionDropDownStyle" tools:ignore="NewApi">@style/DropDownNav</item>
+        <item name="actionDropDownStyle">@style/DropDownNav</item>
+        <item name="android:spinnerDropDownItemStyle">@style/DropDownItem</item>
+        <item name="android:spinnerItemStyle">@style/SpinnerItem</item>
+        <item name="android:actionBarItemBackground" tools:ignore="NewApi">@color/grey_mid</item>
+        <item name="actionBarItemBackground">@color/grey_mid</item>
+        <item name="android:actionModeBackground" tools:ignore="NewApi">@color/grey_mid</item>
+        <item name="actionModeBackground">@color/grey_mid</item>
+        <item name="android:actionModeCloseButtonStyle" tools:ignore="NewApi">@style/CloseButton</item>
+        <item name="actionModeCloseButtonStyle">@style/CloseButton</item>-->
+        <!-- ######################### -->
+        <!-- NavigationDrawer ListView -->
+        <!-- <item name="android:listViewStyle">@style/MyListView</item> -->
+        <!-- ######################### -->
+    </style>
+    <style name="MyAB" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="android:background" tools:ignore="NewApi">@drawable/action_bar_bg</item>
+        <item name="background">@drawable/action_bar_bg</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:paddingBottom">2dp</item>
+        <item name="android:titleTextStyle" tools:ignore="NewApi">@style/ab_titleText</item>
+        <item name="titleTextStyle">@style/ab_titleText</item>
+    </style>
+    <style name="MyListView" parent="@android:style/Widget.ListView">
+        <item name="android:background" tools:ignore="NewApi">@color/grey_mid</item>
+        <item name="background">@color/grey_mid</item>
+        <item name="android:paddingTop" tools:ignore="NewApi">?attr/actionBarSize</item>
+        <item name="android:listSelector">@drawable/bg_conversation_list</item>
+    </style>
+    <style name="ab_titleText" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">#ffffff</item>
+    </style>
+    <color name="grey_mid">#FF2A2A2A</color>
+    <color name="grey_mid_high">#FF343434</color>
+    <color name="grey_low">#FF171717</color>
+    <color name="grey_high">#FF545454</color>
+    <color name="black">#ff000000</color>
+    <color name="read_green">#FF2A5A2A</color>
+    <color name="new_message">#FF5AAA5A</color>
+    <color name="default_message">#999999</color>
+    <style name="LightTheme" parent="Theme.AppCompat.Light">
+        <!-- Customize your theme here. -->
+
+    </style>
+
+</resources>

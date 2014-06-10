@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">LheidoSMS</string>
+    <string name="title_section1">Section 1</string>
+    <string name="title_section2">Section 2</string>
+    <string name="title_section3">Section 3</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_example">Example action</string>
+    <string name="action_settings">Settings</string>
+    <string name="ContactPicture">image contact</string>
+    <string name="send_message">Envoyer</string>
+    <string name="enter_sms">Entrer un message</string>
+    <string name="empty_sms" />
+    <string name="empty_message">Message vide!</string>
+    <string name="action_call_title">Appeler</string>
+    <string name="action_new_sms">Nouvelle conversation</string>
+    <string name="drawer_start_opened">Liste ouverte au démarrage</string>
+    <string name="keyboard_start_visible">Clavier</string>
+    <string name="first_upper_letter">Première lettre</string>
+    <string name="first_upper_letter_summ">En majuscule</string>
+    <string name="first_upper_letter_summ_on">En majuscule</string>
+    <string name="first_upper_letter_summ_off">En minuscule</string>
+    <string name="show_contact_picture">Afficher les photos des contacts</string>
+    <string name="show_nb_sms">Afficher le nombre de message</string>
+    <string name="list_conversation_jazzyeffect_title">Animation défilement</string>
+    <string name="list_conversation_jazzyeffect_default">14</string>
+    <string name="delete_hold_sms">Supprimer anciens messages</string>
+    <string name="limit_hold_sms">500</string>
+    <string name="pref_sms_onload">Nombre de sms au chargement</string>
+    <string name="pref_text_size_dialog">Taille du texte</string>
+    <string name="conversation_jazzylistview_effect">Animation</string>
+    <string name="hold_message">Anciens messages</string>
+    <string name="receiver_notification">Notification</string>
+    <string name="receiver_notification_off">Notifications désactivées</string>
+    <string name="receiver_notification_on">Notifications activées</string>
+    <string name="pref_vibrate">Vibration</string>
+    <string name="receiver_vibrate">Vibration</string>
+    <string name="receiver_vibrate_on">Vibration activée</string>
+    <string name="receiver_vibrate_off">Vibration désactivée</string>
+    <string name="receiver_vibrate_delivered">Vibration message remis</string>
+    <string name="receiver_ringtone">Sonnerie</string>
+    <string name="receiver_ringtone_off">Désactivée</string>
+    <string name="receiver_ringtone_on">Activée</string>
+    <string name="pref_app_name">LheidoSMS Settings</string>
+    <string name="keyboard_close_send">Clavier</string>
+    <string name="keyboard_close_send_off">Le clavier ne disparait pas après avoir envoyé un message</string>
+    <string name="keyboard_close_send_on">Le clavier disparait après avoir envoyé un message</string>
+    <string name="drawer_start_opened_key">drawer_start_opened</string>
+    <color name="bg_conversationList" >#EE191919</color>
+    <string name="pref_conversation">Conversations</string>
+    <string name="pref_conversation_onload">Nombre de conversations</string>
+    <string name="pref_conversation_sum">Au chargement de la liste des conversations</string>
+
+</resources>
