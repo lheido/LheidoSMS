@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.v4.app.FragmentActivity;
@@ -196,6 +197,15 @@ public class LheidoUtils {
         public void link (FragmentActivity pActivity) {
             act = new WeakReference<FragmentActivity>(pActivity);
         }
+
+        public void execConversationListTask(){
+            if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
+                executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            } else {
+                execute();
+            }
+        }
+
     }
 
 
@@ -294,6 +304,14 @@ public class LheidoUtils {
 
         public void link (FragmentActivity pActivity) {
             act = new WeakReference<FragmentActivity>(pActivity);
+        }
+
+        public void execConversationTask(){
+            if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
+                executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            } else {
+                execute();
+            }
         }
     }
 }

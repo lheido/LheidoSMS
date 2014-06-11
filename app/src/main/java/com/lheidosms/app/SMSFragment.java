@@ -92,7 +92,7 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.conversation, container, false);
         init(rootView);
-        gen_conversation();
+//        gen_conversation();
         init_sms_body(rootView);
         init_send_button(rootView);
         getActivity().setTitle(name);
@@ -145,32 +145,31 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
     }
 
     public void gen_conversation(){
-        LheidoUtils.ConversationTask gen_list = new LheidoUtils.ConversationTask(getActivity(), conversationId){
+        LheidoUtils.ConversationTask gen_list = new LheidoUtils.ConversationTask(getActivity(), conversationId) {
             @Override
             protected void onProgressUpdate(Message... prog) {
                 if (this.act.get() != null) {
                     add_sms(prog[0], 1);
                 }
             }
+
             @Override
-            protected void onPostExecute (Boolean result) {
+            protected void onPostExecute(Boolean result) {
                 if (act.get() != null) {
-                    if(!result)
+                    if (!result)
                         Toast.makeText(context, "Problème génération conversation", Toast.LENGTH_LONG).show();
-                    else{
-                        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB){
+                    else {
+                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                             liste.smoothScrollToPosition(liste.getBottom());
                         }
                     }
                 }
             }
         };
-        if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
-            gen_list.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        } else {
-            gen_list.execute();
-        }
+        gen_list.execConversationTask();
     }
+
+
 
     public void init_sms_body(View rootView){
         sms_body = (EditText) rootView.findViewById(R.id.send_body);
@@ -378,19 +377,31 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
     @Override
     public void onResume(){
         super.onResume();
-        userPref.setUserPref(PreferenceManager.getDefaultSharedPreferences(context));
+
         /*updateContactList();
         try{
             selectItem(position_mem);
         }catch(Exception ex){
             selectItem(0);
         }*/
-        if(liste != null)
+        updateFragment();
+    }
+
+    public void updateFragment(){
+        userPref.setUserPref(PreferenceManager.getDefaultSharedPreferences(context));
+        if(liste != null) {
+            if (Message_list != null) {
+                Message_list.clear();
+                gen_conversation();
+            }
             liste.setTransitionEffect(userPref.conversation_effect);
-        sms_body.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_FLAG_CAP_SENTENCES|InputType.TYPE_TEXT_FLAG_AUTO_CORRECT);
-        if(!userPref.first_upper)
-            sms_body.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_FLAG_AUTO_CORRECT);
-        sms_body.setSingleLine(false);
+        }
+        if(sms_body != null) {
+            sms_body.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES | InputType.TYPE_TEXT_FLAG_AUTO_CORRECT);
+            if (!userPref.first_upper)
+                sms_body.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_AUTO_CORRECT);
+            sms_body.setSingleLine(false);
+        }
     }
 
     @Override

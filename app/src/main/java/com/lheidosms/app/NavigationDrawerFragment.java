@@ -79,6 +79,7 @@ public class NavigationDrawerFragment extends Fragment {
 
     private Map<String, Integer> notificationsId = new HashMap<String, Integer>();
     private BroadcastReceiver notificationsBroadcast;
+    private LheidoUtils.ConversationListTask gen_list;
 
     public NavigationDrawerFragment() {
     }
@@ -197,9 +198,9 @@ public class NavigationDrawerFragment extends Fragment {
         userPref = new LheidoUtils.UserPref();
         userPref.setUserPref(PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext()));
 
-        if(mDrawerListView != null) {
-            mDrawerListView.setTransitionEffect(userPref.listConversation_effect);
-        }
+//        if(mDrawerListView != null) {
+//            mDrawerListView.setTransitionEffect(userPref.listConversation_effect);
+//        }
 
         /*notificationsBroadcast = new BroadcastReceiver(){
 
@@ -232,20 +233,6 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         // set up the drawer's list view with items and click listener
         lheidoConversationListe.clear();
-
-        LheidoUtils.ConversationListTask gen_list = new LheidoUtils.ConversationListTask(getActivity()){
-            @Override
-            protected void onProgressUpdate(LheidoContact... prog) {
-                if (this.act.get() != null)
-                    updateProgress(prog[0]);
-            }
-        };
-        if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
-            gen_list.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        } else {
-            gen_list.execute();
-        }
-        //gen_list.execute();
 
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -305,6 +292,17 @@ public class NavigationDrawerFragment extends Fragment {
         });
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
+    }
+
+    public void gen_conversationsList(){
+        gen_list = new LheidoUtils.ConversationListTask(getActivity()){
+            @Override
+            protected void onProgressUpdate(LheidoContact... prog) {
+                if (this.act.get() != null)
+                    updateProgress(prog[0]);
+            }
+        };
+        gen_list.execConversationListTask();
     }
 
     private void selectItem(int position) {
@@ -394,15 +392,17 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public void onResume(){
         super.onResume();
-        userPref.setUserPref(PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext()));
-        /*updateContactList();
-        try{
-            selectItem(position_mem);
-        }catch(Exception ex){
-            selectItem(0);
-        }*/
-        if(mDrawerListView != null) {
+        updateFragment();
+    }
+
+    public void updateFragment(){
+        userPref.setUserPref(PreferenceManager.getDefaultSharedPreferences(getActivity()));
+        if(mDrawerListView != null){
             mDrawerListView.setTransitionEffect(userPref.listConversation_effect);
+            if(lheidoConversationListe != null){
+                lheidoConversationListe.clear();
+                gen_conversationsList();
+            }
         }
     }
 
