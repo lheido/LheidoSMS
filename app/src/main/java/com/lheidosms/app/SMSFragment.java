@@ -92,10 +92,10 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.conversation, container, false);
         init(rootView);
-//        gen_conversation();
+        gen_conversation();
         init_sms_body(rootView);
         init_send_button(rootView);
-        getActivity().setTitle(name);
+//        getActivity().setTitle(name);
 
         init_broadcast();
         return rootView;
@@ -384,7 +384,7 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
         }catch(Exception ex){
             selectItem(0);
         }*/
-        updateFragment();
+//        updateFragment();
     }
 
     public void updateFragment(){
