@@ -88,6 +88,60 @@ public class LheidoUtils {
         }
     }
 
+    public static void retrieveContact(Context context, LheidoContact contact, String phone){
+        Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phone));
+        String[] projection = {ContactsContract.PhoneLookup.DISPLAY_NAME, ContactsContract.PhoneLookup._ID};
+        Cursor cur = context.getContentResolver().query(uri, projection, null, null, null);
+        if(cur != null){
+            if(cur.moveToFirst()){
+                try{
+                    contact.setId(cur.getLong(cur.getColumnIndexOrThrow(ContactsContract.PhoneLookup._ID)));
+                }catch(Exception ex){
+                    Toast.makeText(context, "Error setId\n" + ex.toString(), Toast.LENGTH_LONG).show();
+                }
+                try{
+                    contact.setName(cur.getString(cur.getColumnIndexOrThrow(ContactsContract.PhoneLookup.DISPLAY_NAME)));
+                }catch(Exception ex){
+                    Toast.makeText(context, "Error setName\n"+ex.toString(), Toast.LENGTH_LONG).show();
+                }
+                try{
+                    contact.setPic();
+                }catch(Exception ex){
+                    Toast.makeText(context, "Error setPic\n"+ex.toString(), Toast.LENGTH_LONG).show();
+                }
+            }else
+                contact.setName(phone);
+            cur.close();
+        }
+    }
+
+    public static LheidoContact getLConversationInfo(Context context, Cursor query){
+        LheidoContact contact = new LheidoContact();
+        contact.setConversationId(query.getString(query.getColumnIndex("_id")));
+        contact.setNb_sms(query.getString(query.getColumnIndex("message_count")));
+        String recipientId = query.getString(query.getColumnIndex("recipient_ids"));
+        String[] recipientIds = recipientId.split(" ");
+        for (String recipientId1 : recipientIds) {
+            Uri ur = Uri.parse("content://mms-sms/canonical-addresses");
+            if (recipientId1 != "") {
+                Cursor cr = context.getContentResolver().query(ur, new String[]{"*"}, "_id = " + recipientId1, null, null);
+                if (cr != null) {
+                    while (cr.moveToNext()) {
+                        //String id = cr.getString(0);
+                        String address = cr.getString(1);
+                        contact.setPhone(address);
+                        retrieveContact(context, contact, address);
+                        //contact.setName(context, address);
+                        //contact.setPic(context);
+                    }
+                    cr.close();
+                }
+            }
+        }
+        return contact;
+    }
+
+
     public static abstract class ConversationListTask extends AsyncTask<Void, LheidoContact, Boolean> {
 
         protected WeakReference<FragmentActivity> act = null;
@@ -98,7 +152,7 @@ public class LheidoUtils {
             link(activity);
         }
 
-        public void retrieveContact(LheidoContact contact, String phone){
+        /*public void retrieveContact(LheidoContact contact, String phone){
             Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phone));
             String[] projection = {ContactsContract.PhoneLookup.DISPLAY_NAME, ContactsContract.PhoneLookup._ID};
             Cursor cur = this.act.get().getContentResolver().query(uri, projection, null, null, null);
@@ -149,7 +203,7 @@ public class LheidoUtils {
                 }
             }
             return contact;
-        }
+        }*/
 
         @Override
         protected void onPreExecute () {
@@ -174,16 +228,16 @@ public class LheidoUtils {
                 final String[] projection = new String[] {"_id", "date", "message_count", "recipient_ids", "read", "type"};
                 Uri uri = Uri.parse("content://mms-sms/conversations?simple=true");
                 Cursor query = context.getContentResolver().query(uri, projection, null, null, "date DESC");
-                if (query.moveToFirst()) {
-                    int i = 0;
-                    do {
-                        publishProgress(getLConversationInfo(query));
-                        i = i + 1;
-                    } while (i < userPref.max_conversation && query.moveToNext());
-                } else {
-                    //mConversationListe.add("Pas de conversations !");
-                }
-                if (query != null) {
+                if(query != null) {
+                    if (query.moveToFirst()) {
+                        int i = 0;
+                        do {
+                            publishProgress(getLConversationInfo(context, query));
+                            i = i + 1;
+                        } while (i < userPref.max_conversation && query.moveToNext());
+                    } else {
+                        //mConversationListe.add("Pas de conversations !");
+                    }
                     query.close();
                 }
                 return true;
