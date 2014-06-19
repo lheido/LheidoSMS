@@ -2,6 +2,7 @@ package com.lheidosms.app;
 
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -21,6 +22,7 @@ public class LheidoSMSService extends Service {
     SmsReceiver smsReceiver;
     private ArrayList<LheidoContact> conversations = new ArrayList<LheidoContact>();
     protected Context context;
+    private BroadcastReceiver mBroadcast;
 
     @Override
     public void onCreate(){
@@ -42,21 +44,8 @@ public class LheidoSMSService extends Service {
                 }
                 playNotificationSound();
                 if(vibrate) v.vibrate(1000);
-                // get contact position in conversationList
-                int i = 0;
-                int size = Global.conversationsList.size();
-                while(i < size && !PhoneNumberUtils.compare(Global.conversationsList.get(i).getPhone(), phone)) {i++;}
-                if(i < size && PhoneNumberUtils.compare(Global.conversationsList.get(i).getPhone(), phone)) {
-                    // retrieved position in conversationsList
-                    Global.conversationsList.get(i).Nb_sms_Plus();
-                    Global.conversationsList.get(i).markNewMessage(true);
-                    int index = Global.conversationsList.indexOf(Global.conversationsList.get(i));
-                    LheidoContact c = Global.conversationsList.remove(index);
-                    Global.conversationsList.add(0, c);
-                } else{
-                    // not in conversationsList
-                }
-                sendReceiveNewMessage();
+                moveConversationOnTop(phone, true);
+                LheidoUtils.Send.receiveNewMessage(context);
             }
 
             @Override
@@ -73,8 +62,7 @@ public class LheidoSMSService extends Service {
                 Log.v("LHEIDO SMS LOG", "position = "+position+", phone = "+phone);
                 cancelNotif(phone);
                 Global.conversationsList.get(position).markNewMessage(false);
-                Intent i = new Intent(LheidoUtils.ACTION_NOTIFY_DATA_CHANGED);
-                context.sendBroadcast(i);
+                LheidoUtils.Send.notifyDataChanged(context);
             }
 
             @Override
@@ -97,7 +85,40 @@ public class LheidoSMSService extends Service {
         filter.addAction(LheidoUtils.ACTION_NEW_MESSAGE_READ);
         filter.setPriority(2000);
         getApplication().registerReceiver(smsReceiver, filter);
+        mBroadcast = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String iAction = intent.getAction();
+                if(iAction.equals(LheidoUtils.ACTION_USER_NEW_MESSAGE)){
+                    String phone = intent.getStringExtra("phone");
+                    moveConversationOnTop(phone, false);
+                    LheidoUtils.Send.receiveNewMessage(context);
+                }
+            }
+        };
+        IntentFilter filter2 = new IntentFilter();
+        filter2.addAction(LheidoUtils.ACTION_USER_NEW_MESSAGE);
+        filter2.setPriority(2000);
+        getApplication().registerReceiver(mBroadcast, filter2);
         super.onCreate();
+    }
+
+    private static void moveConversationOnTop(String phone, boolean mark) {
+        // get contact position in conversationList
+        int i = 0;
+        int size = Global.conversationsList.size();
+        while(i < size && !PhoneNumberUtils.compare(Global.conversationsList.get(i).getPhone(), phone)) {i++;}
+        if(i < size && PhoneNumberUtils.compare(Global.conversationsList.get(i).getPhone(), phone)) {
+            // retrieved position in conversationsList
+            Global.conversationsList.get(i).Nb_sms_Plus();
+            if(mark)
+                Global.conversationsList.get(i).markNewMessage(true);
+            int index = Global.conversationsList.indexOf(Global.conversationsList.get(i));
+            LheidoContact c = Global.conversationsList.remove(index);
+            Global.conversationsList.add(0, c);
+        } else{
+            // not in conversationsList
+        }
     }
 
     @Override
@@ -116,6 +137,7 @@ public class LheidoSMSService extends Service {
     public void onDestroy(){
         Log.v(SERVICE_TAG, "=====> Service done! <=====");
         getApplication().unregisterReceiver(smsReceiver);
+        getApplication().unregisterReceiver(mBroadcast);
         super.onDestroy();
     }
 
@@ -133,21 +155,11 @@ public class LheidoSMSService extends Service {
                 do {
                     Global.conversationsList.add(LheidoUtils.getLConversationInfo(context, query));
                     if(Global.conversationsList.size() == 1)
-                        sendFrist();
+                        LheidoUtils.Send.first(context);
                 } while (query.moveToNext());
             }
             query.close();
         }
-    }
-
-    public void sendFrist(){
-        Intent i = new Intent(LheidoUtils.ACTION_FIRST);
-        sendBroadcast(i);
-    }
-
-    public void sendReceiveNewMessage(){
-        Intent i = new Intent(LheidoUtils.ACTION_NEW_MESSAGE);
-        sendBroadcast(i);
     }
 
     private final class ConversationsListTask extends AsyncTask<Void, LheidoContact, Boolean>{
@@ -172,7 +184,7 @@ public class LheidoSMSService extends Service {
         protected void onProgressUpdate (LheidoContact... prog){
             Global.conversationsList.add(prog[0]);
             if(Global.conversationsList.size() == 1)
-                sendFrist();
+                LheidoUtils.Send.first(context);
         }
 
         public void execTask(){

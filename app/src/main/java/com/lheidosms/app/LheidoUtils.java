@@ -2,6 +2,7 @@ package com.lheidosms.app;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
@@ -29,6 +30,7 @@ public class LheidoUtils {
     public static final String ACTION_NEW_MESSAGE = "com.lheido.app.new_message";
     public static final String ACTION_NEW_MESSAGE_READ = "com.lheido.app.new_message_read";
     public static final String ACTION_NOTIFY_DATA_CHANGED = "com.lheido.app.notify_data_changed";
+    public static final String ACTION_USER_NEW_MESSAGE = "com.lheido.app.user_new_message";
 
     public static final String drawer_start_opened_key = "drawer_start_opened";
     public static final String hide_keyboard_key = "hide_keyboard";
@@ -44,6 +46,36 @@ public class LheidoUtils {
     public static final String list_conversations_jazzyeffect_key = "list_conversations_jazzyeffect";
     public static final String receiver_notification_key = "receiver_notification";
     public static final String conversation_onload_key = "conversation_onload";
+
+
+    public static class Send {
+        public static void receiveNewMessage(Context context){
+            Intent i = new Intent(ACTION_NEW_MESSAGE);
+            context.sendBroadcast(i);
+        }
+        public static void first(Context context){
+            Intent i = new Intent(ACTION_FIRST);
+            context.sendBroadcast(i);
+        }
+
+        public static void notifyDataChanged(Context context) {
+            Intent i = new Intent(ACTION_NOTIFY_DATA_CHANGED);
+            context.sendBroadcast(i);
+        }
+
+        public static void newMessageRead(Context context, int position, String phone) {
+            Intent i = new Intent(ACTION_NEW_MESSAGE_READ);
+            i.putExtra("position", position);
+            i.putExtra("phone", phone);
+            context.sendBroadcast(i);
+        }
+
+        public static void userNewMessage(Context context, String phoneContact) {
+            Intent i = new Intent(ACTION_USER_NEW_MESSAGE);
+            i.putExtra("phone", phoneContact);
+            context.sendBroadcast(i);
+        }
+    }
 
     public static class UserPref{
         public int max_conversation = 10;

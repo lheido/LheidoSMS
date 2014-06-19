@@ -283,18 +283,11 @@ public class NavigationDrawerFragment extends Fragment {
         }
         if (mCallbacks != null) {
             LheidoContact contact = Global.conversationsList.get(position);
-            sendNewMessageRead(position, contact.getPhone());
+            LheidoUtils.Send.newMessageRead(getActivity().getApplicationContext(), position, contact.getPhone());
             Log.v(DRAWER_LOG, "mCallbacks not null, "+position+", "+contact);
             mCallbacks.onNavigationDrawerItemSelected(position, contact);
             if(!onPauseDrawerOpened) getActionBar().setTitle(contact.getName());
         }
-    }
-
-    public void sendNewMessageRead(int pos, String phone){
-        Intent i = new Intent(LheidoUtils.ACTION_NEW_MESSAGE_READ);
-        i.putExtra("position", pos);
-        i.putExtra("phone", phone);
-        getActivity().sendBroadcast(i);
     }
 
     @Override

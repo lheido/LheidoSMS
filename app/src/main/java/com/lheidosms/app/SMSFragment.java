@@ -310,10 +310,7 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
                     conversationAdapter.notifyDataSetChanged();
                     conversation_nb_sms += 1;
                     liste.smoothScrollToPosition(liste.getBottom());
-                    Intent i = new Intent(LheidoUtils.ACTION_NEW_MESSAGE_READ);
-                    i.putExtra("position", list_conversationId);
-                    i.putExtra("phone", phoneContact);
-                    context.sendBroadcast(i);
+                    LheidoUtils.Send.newMessageRead(context, list_conversationId, phoneContact);
                 }
             }
 
@@ -422,11 +419,6 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
                 }
             }
         };
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            more.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        } else {
-            more.execute();
-        }
-
+        more.execConversationTask();
     }
 }

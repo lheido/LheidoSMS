@@ -213,6 +213,7 @@ public class MainLheidoSMS extends ActionBarActivity
                             manager.sendTextMessage(phoneContact, null, body, piSent, piDelivered);
                         }
                         sms_body.clearFocus();
+                        LheidoUtils.Send.userNewMessage(getApplicationContext(),phoneContact);
                     } else {
                         Toast.makeText(getApplicationContext(), R.string.empty_message, Toast.LENGTH_LONG).show();
                     }
