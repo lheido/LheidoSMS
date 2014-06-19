@@ -19,18 +19,17 @@ public class Message {
 
     public Message(long _id, String body, String type, int deli,Time t){
         if(_id != -1)
-            setId(_id);
-        setBody(body);
-        setDate(t);
+            this._id = _id;
+        this.body_ = body;
+        this.date_ = t;
         if(type.equals("2")){
-            setRight(true);
-            if(deli == 0)
-                setRead(true);
-            else setRead(false);
+            this.right = true;
+            if(deli == 0) this.read_ = true;
+            else this.read_ = false;
         }
     }
 
-    public String formatDate(Time date){
+    public static String formatDate(Time date){
         int time_dd = date.monthDay;
         int time_MM = date.month;
         Time now = new Time();

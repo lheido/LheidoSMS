@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
+import android.telephony.PhoneNumberUtils;
 import android.telephony.SmsMessage;
 import android.util.Log;
 import android.widget.Toast;
@@ -23,10 +24,7 @@ import android.widget.Toast;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by lheido on 05/06/14.
- */
-public class SmsReceiver extends BroadcastReceiver {
+public abstract class SmsReceiver extends BroadcastReceiver {
     protected Context context;
     protected boolean activ_notif;
     protected boolean vibrate;
@@ -36,6 +34,7 @@ public class SmsReceiver extends BroadcastReceiver {
     protected String new_name;
     protected long date;
     protected Map<String, Integer> notificationsId = new HashMap<String, Integer>();
+    protected SharedPreferences userPref;
 
     public void showNotification(String body, String name, String phone, PendingIntent pIntent){
         // Create Notification using NotificationCompat.Builder
@@ -60,24 +59,13 @@ public class SmsReceiver extends BroadcastReceiver {
         notificationmanager.notify(id, builder.build());
     }
 
-    public void customReceive(){
-        Toast.makeText(context, "Sms reçu de " + new_name, Toast.LENGTH_LONG).show();
-        if(activ_notif){
-            Intent notificationIntent = new Intent(context, MainLheidoSMS.class);
-            PendingIntent pIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
-            showNotification(body, new_name, phone, pIntent);
-        }
-    }
-
     public void playNotificationSound(){
         AudioManager am = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
 
         switch (am.getRingerMode()) {
             case AudioManager.RINGER_MODE_SILENT:
-                Log.i("MyApp","Silent mode");
                 break;
             case AudioManager.RINGER_MODE_VIBRATE:
-                Log.i("MyApp","Vibrate mode");
                 break;
             case AudioManager.RINGER_MODE_NORMAL:
                 SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(context);
@@ -94,26 +82,26 @@ public class SmsReceiver extends BroadcastReceiver {
         }
     }
 
-    public void sendNotificationsId(){
-        Intent intent = new Intent(LheidoUtils.ACTION_NOTIFICATIONS_ID);
-        String data = "";
-        for (Map.Entry<String, Integer> entry : this.notificationsId.entrySet()) {
-            data += entry.getKey()+":"+entry.getValue()+"\n";
-        }
-        intent.putExtra("data", data); //EDIT: this passes a parameter to the receiver
-        context.sendBroadcast(intent);
+    public void cancelNotif(String phone){
+        Log.v("LHEIDO SMS LOG", notificationsId.keySet().toString());
+        try {
+            NotificationManager notificationmanager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            for(String p : notificationsId.keySet()){
+                if(PhoneNumberUtils.compare(p, phone))
+                    notificationmanager.cancel(notificationsId.get(p));
+            }
+        }catch (Exception ex){ex.printStackTrace();}
     }
 
     @Override
     public void onReceive(Context c, Intent intent) {
         context = c;
-        SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(context);
+        userPref = PreferenceManager.getDefaultSharedPreferences(context);
         activ_notif = userPref.getBoolean(LheidoUtils.receiver_notification_key, true);
         vibrate = userPref.getBoolean(LheidoUtils.vibration_key, true);
         v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
         String iAction = intent.getAction();
         if(iAction.equals(LheidoUtils.ACTION_RECEIVE_SMS)){
-            LheidoContact contact = new LheidoContact();
             Bundle bundle = intent.getExtras();
             if(bundle != null){
                 Object[] pdus = (Object[]) bundle.get("pdus");
@@ -128,22 +116,17 @@ public class SmsReceiver extends BroadcastReceiver {
                     }
                     date = messages[0].getTimestampMillis();
                     phone = messages[0].getDisplayOriginatingAddress();
-                    new_name = contact.getContactName(context, phone);
+                    new_name = LheidoContact.getContactName(context, phone);
                     Log.v("LHEIDO SMS LOG", "phone = "+phone);
                     if(!notificationsId.containsKey(phone))
                         notificationsId.put(phone, notificationsId.size());
                     Log.v("LHEIDO SMS LOG", notificationsId.toString());
-                    customReceive();
-                    if(vibrate) v.vibrate(1000);
-                    playNotificationSound();
-                    sendNotificationsId();
+                    customReceivedSMS();
                 }
             }
-        }
-        else if(iAction.equals(LheidoUtils.ACTION_DELIVERED_SMS)){
+        } else if(iAction.equals(LheidoUtils.ACTION_DELIVERED_SMS)){
             switch(getResultCode()){
                 case Activity.RESULT_OK:
-                    Toast.makeText(context, "Message remis" , Toast.LENGTH_SHORT).show();
                     long _id = intent.getExtras().getLong(LheidoUtils.ARG_SMS_DELIVERED, -1);
                     if(_id != -1){
                         ContentValues values = new ContentValues();
@@ -155,22 +138,13 @@ public class SmsReceiver extends BroadcastReceiver {
                             Toast.makeText(context, ex.toString(), Toast.LENGTH_LONG).show();
                         }
                     }
-                    boolean vibrate_delivered = userPref.getBoolean("delivered_vibration", true);
-                    if(vibrate_delivered){
-                        long[] pattern = {
-                                0, // Start immediately
-                                100,100,100,100,100,100,100
-                        };
-                        v.vibrate(pattern, -1);
-                    }
                     break;
                 default:
                     Toast.makeText(context, "Erreur, message non remis", Toast.LENGTH_SHORT).show();
                     if(vibrate) v.vibrate(2000);
                     break;
             }
-        }
-        else if(iAction.equals(LheidoUtils.ACTION_SENT_SMS)){
+        } else if(iAction.equals(LheidoUtils.ACTION_SENT_SMS)){
             switch(getResultCode()){
                 case Activity.RESULT_OK:
                     //Toast.makeText(context, "Le message a certainement dû être envoyé à quelqu'un..." , Toast.LENGTH_SHORT).show();
@@ -181,15 +155,19 @@ public class SmsReceiver extends BroadcastReceiver {
                     if(vibrate) v.vibrate(2000);
                     break;
             }
-        }
-        else if(iAction.equals(LheidoUtils.ACTION_REQUEST_NOTIFICATION_ID)){
-            Log.v("LHEIDO SMS LOG", "Request from mainActivity");
-            sendNotificationsId();
+        } else if(iAction.equals(LheidoUtils.ACTION_NEW_MESSAGE_READ)){
+            int position = intent.getIntExtra("position", 0);
+            String phone = intent.getStringExtra("phone");
+            customNewMessageRead(position, phone);
+        } else if(iAction.equals(LheidoUtils.ACTION_RECEIVE_MMS)){
+            customReceivedMMS();
         }
     }
 
-    public void customDelivered(long id) {
+    public abstract void customReceivedSMS();
+    public abstract void customReceivedMMS();
+    public abstract void customNewMessageRead(int position, String phone);
+    public abstract void customDelivered(long id);
 
-    }
 
 }

@@ -5,8 +5,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.support.v7.app.ActionBarActivity;
 import android.app.Activity;
 import android.support.v7.app.ActionBar;
@@ -27,10 +25,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.twotoasters.jazzylistview.JazzyHelper;
 import com.twotoasters.jazzylistview.JazzyListView;
 
 import java.util.ArrayList;
@@ -38,13 +34,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
  * See the <a href="https://developer.android.com/design/patterns/navigation-drawer.html#Interaction">
  * design guidelines</a> for a complete explanation of the behaviors implemented here.
  */
 public class NavigationDrawerFragment extends Fragment {
-
+    private static final String DRAWER_LOG = "LheidoSMS Drawer";
     /**
      * Remember the position of the selected item.
      */
@@ -79,47 +76,26 @@ public class NavigationDrawerFragment extends Fragment {
 
     private Map<String, Integer> notificationsId = new HashMap<String, Integer>();
     private BroadcastReceiver notificationsBroadcast;
+    private BroadcastReceiver mBroadcast ;
     private LheidoUtils.ConversationListTask gen_list;
     private boolean onPauseDrawerOpened = false;
 
-    public NavigationDrawerFragment() {
-    }
-
-    public void markNewMessage(String phone) {
-        int i = 0;
-        while(i < lheidoConversationListe.size() && !PhoneNumberUtils.compare(lheidoConversationListe.get(i).getPhone(), phone)) {i++;}
-        if(i < lheidoConversationListe.size() && PhoneNumberUtils.compare(lheidoConversationListe.get(i).getPhone(), phone)) {
-            lheidoConversationListe.get(i).markNewMessage(true);
-            lConversationsAdapter.notifyDataSetChanged();
-        }
-    }
-
-    public void updateProgress(LheidoContact c){
-        lheidoConversationListe.add(c);
-        //Log.v("LHEIDO SMS LOG", "nb_conversations = "+lheidoConversationListe.size());
-        lConversationsAdapter.notifyDataSetChanged();
-        if(lheidoConversationListe.size() == 1 && !userPref.drawer){
-            selectItem(0);
-        }
-    }
+    public NavigationDrawerFragment() {}
 
     public void updateContact(int position, String count){
-        lheidoConversationListe.get(position).setNb_sms(count);
+//        lheidoConversationListe.get(position).setNb_sms(count);
+        Global.conversationsList.get(position).setNb_sms(count);
         lConversationsAdapter.notifyDataSetChanged();
     }
 
     public void updateContact(String phone){
         int i = 0;
-        while(i < lheidoConversationListe.size() && !PhoneNumberUtils.compare(lheidoConversationListe.get(i).getPhone(), phone)) {i++;}
-        if(i < lheidoConversationListe.size() && PhoneNumberUtils.compare(lheidoConversationListe.get(i).getPhone(), phone)) {
-            lheidoConversationListe.get(i).Nb_sms_Plus();
+        int size = Global.conversationsList.size();
+        while(i < size && !PhoneNumberUtils.compare(Global.conversationsList.get(i).getPhone(), phone)) {i++;}
+        if(i < size && PhoneNumberUtils.compare(Global.conversationsList.get(i).getPhone(), phone)) {
+            Global.conversationsList.get(i).Nb_sms_Plus();
             lConversationsAdapter.notifyDataSetChanged();
         }
-    }
-
-    public void updateContactList(){
-        lheidoConversationListe.clear();
-        lConversationsAdapter.notifyDataSetChanged();
     }
 
     public void setNotificationsId(Map<String, Integer> notificationsId){
@@ -128,13 +104,13 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     public void cancelNotification(int position){
-        String phone = lheidoConversationListe.get(position).getPhone();
+        String phone = Global.conversationsList.get(position).getPhone();
         Set<String> keys = this.notificationsId.keySet();
         for(String ph : keys){
             if(PhoneNumberUtils.compare(ph, phone)){
                 NotificationManager notificationmanager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
                 notificationmanager.cancel(this.notificationsId.get(ph));
-                lheidoConversationListe.get(position).markNewMessage(false);
+                Global.conversationsList.get(position).markNewMessage(false);
                 lConversationsAdapter.notifyDataSetChanged();
             }
         }
@@ -176,8 +152,15 @@ public class NavigationDrawerFragment extends Fragment {
                 selectItem(position);
             }
         });
-        lConversationsAdapter = new ListeConversationsAdapter(getActivity(), R.layout.conversations_list, lheidoConversationListe);
+        lConversationsAdapter = new ListeConversationsAdapter(getActivity(), R.layout.conversations_list, Global.conversationsList);
         mDrawerListView.setAdapter(lConversationsAdapter);
+        mDrawerListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
+
+                return false;
+            }
+        });
         //mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
     }
@@ -199,41 +182,31 @@ public class NavigationDrawerFragment extends Fragment {
         userPref = new LheidoUtils.UserPref();
         userPref.setUserPref(PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext()));
 
-//        if(mDrawerListView != null) {
-//            mDrawerListView.setTransitionEffect(userPref.listConversation_effect);
-//        }
-
-        /*notificationsBroadcast = new BroadcastReceiver(){
-
+        mBroadcast = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 String iAction = intent.getAction();
-                if(iAction.equals(LheidoUtils.ACTION_NOTIFICATIONS_ID)){
-                    String data = intent.getStringExtra("data");
-                    Log.v("LHEIDO SMS LOG", data);
-                    if(data != null) {
-                        String[] tmp = data.split("\n");
-                        for(String notif : tmp){
-                            String[] str = notif.split(":");
-                            if(!notificationsId.containsKey(str[0]))
-                                notificationsId.put(str[0], Integer.parseInt(str[1]));
-                        }
-                    }
+                if(iAction.equals(LheidoUtils.ACTION_FIRST)){
+                    selectItem(0);
+                }
+                else if(iAction.equals(LheidoUtils.ACTION_NEW_MESSAGE)){
+                    lConversationsAdapter.notifyDataSetChanged();
+                    ((MainLheidoSMS)getActivity()).setCurrentConversation();
+                }
+                else if(iAction.equals(LheidoUtils.ACTION_NOTIFY_DATA_CHANGED)){
+                    lConversationsAdapter.notifyDataSetChanged();
                 }
             }
         };
         IntentFilter filter = new IntentFilter();
-        filter.addAction(LheidoUtils.ACTION_NOTIFICATIONS_ID);
+        filter.addAction(LheidoUtils.ACTION_FIRST);
+        filter.addAction(LheidoUtils.ACTION_NEW_MESSAGE);
+        filter.addAction(LheidoUtils.ACTION_NOTIFY_DATA_CHANGED);
         filter.setPriority(3000);
-        getActivity().registerReceiver(notificationsBroadcast, filter);
-        // send request to SmsReceiver
-        Intent intent = new Intent();
-        getActivity().sendBroadcast(intent);*/
-
+        getActivity().registerReceiver(mBroadcast, filter);
         // set a custom shadow that overlays the main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         // set up the drawer's list view with items and click listener
-        lheidoConversationListe.clear();
 
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -284,6 +257,10 @@ public class NavigationDrawerFragment extends Fragment {
             mDrawerLayout.openDrawer(mFragmentContainerView);
         }
 
+        if(Global.conversationsList.size() > 0){
+            selectItem(mCurrentSelectedPosition);
+        }
+
         // Defer code dependent on restoration of previous instance state.
         mDrawerLayout.post(new Runnable() {
             @Override
@@ -295,18 +272,8 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
-    public void gen_conversationsList(){
-        gen_list = new LheidoUtils.ConversationListTask(getActivity()){
-            @Override
-            protected void onProgressUpdate(LheidoContact... prog) {
-                if (this.act.get() != null)
-                    updateProgress(prog[0]);
-            }
-        };
-        gen_list.execConversationListTask();
-    }
-
     private void selectItem(int position) {
+        Log.v(DRAWER_LOG, "SelectItem "+position);
         mCurrentSelectedPosition = position;
         if (mDrawerListView != null) {
             //mDrawerListView.setItemChecked(position, true);
@@ -315,11 +282,19 @@ public class NavigationDrawerFragment extends Fragment {
             mDrawerLayout.closeDrawer(mFragmentContainerView);
         }
         if (mCallbacks != null) {
-            cancelNotification(position);
-            LheidoContact contact = lheidoConversationListe.get(position);
+            LheidoContact contact = Global.conversationsList.get(position);
+            sendNewMessageRead(position, contact.getPhone());
+            Log.v(DRAWER_LOG, "mCallbacks not null, "+position+", "+contact);
             mCallbacks.onNavigationDrawerItemSelected(position, contact);
             if(!onPauseDrawerOpened) getActionBar().setTitle(contact.getName());
         }
+    }
+
+    public void sendNewMessageRead(int pos, String phone){
+        Intent i = new Intent(LheidoUtils.ACTION_NEW_MESSAGE_READ);
+        i.putExtra("position", pos);
+        i.putExtra("phone", phone);
+        getActivity().sendBroadcast(i);
     }
 
     @Override
@@ -402,10 +377,6 @@ public class NavigationDrawerFragment extends Fragment {
         userPref.setUserPref(PreferenceManager.getDefaultSharedPreferences(getActivity()));
         if(mDrawerListView != null){
             mDrawerListView.setTransitionEffect(userPref.listConversation_effect);
-            if(lheidoConversationListe != null){
-                lheidoConversationListe.clear();
-                gen_conversationsList();
-            }
         }
     }
 
@@ -417,7 +388,7 @@ public class NavigationDrawerFragment extends Fragment {
 
     @Override
     public void onDestroyView(){
-//        getActivity().unregisterReceiver(notificationsBroadcast);
+        getActivity().unregisterReceiver(mBroadcast);
         super.onDestroyView();
     }
 

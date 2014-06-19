@@ -2,46 +2,46 @@
 <pre-dex-items>
 
     <item
-        dex="D:\leo_android\LheidoSMS\app\build\intermediates\pre-dexed\debug\classes-736ec02d903a09b67d158977d367469d901698d0.jar"
-        jar="D:\leo_android\LheidoSMS\build\intermediates\exploded-aar\com.github.machinarius\preferencefragment\0.1.1\classes.jar"
+        dex="/home/lheido/AndroidStudioProjects/LheidoSMS/app/build/intermediates/pre-dexed/debug/support-v13-18.0.0-13eed65b4fb795c6546607ee767629094ebc08f4.jar"
+        jar="/home/lheido/android-studio/sdk/extras/android/m2repository/com/android/support/support-v13/18.0.0/support-v13-18.0.0.jar"
         jumboMode="false"
         revision="19.1.0"
-        sha1="648463e00c6883d01b6c11a6781776203334b6fc"/>
+        sha1="6a2fa0c0b54359ee359fd40244e1ce2dc6cab408"/>
     <item
-        dex="D:\leo_android\LheidoSMS\app\build\intermediates\pre-dexed\debug\classes-c650e5559f4baffd28638be7d2bdf66ceaa3bc17.jar"
-        jar="D:\leo_android\LheidoSMS\build\intermediates\exploded-aar\com.twotoasters.jazzylistview\library\1.0.1\classes.jar"
-        jumboMode="false"
-        revision="19.1.0"
-        sha1="57b2e2d8ba828b125939f621aa74f7edabe7aa71"/>
-    <item
-        dex="D:\leo_android\LheidoSMS\app\build\intermediates\pre-dexed\debug\support-v4-19.1.0-50002ff20ee6b4ac3885096a742c9d3de052db9b.jar"
-        jar="C:\Program Files (x86)\Android_studio\sdk\extras\android\m2repository\com\android\support\support-v4\19.1.0\support-v4-19.1.0.jar"
-        jumboMode="false"
-        revision="19.1.0"
-        sha1="85f201b380937e61a9dce6ca90ccf6872abbfb67"/>
-    <item
-        dex="D:\leo_android\LheidoSMS\app\build\intermediates\pre-dexed\debug\library-2.4.0-3c2e3b4e1349d6770b5783038174e90e0a10927e.jar"
-        jar="C:\Users\Mathilde\.gradle\caches\modules-2\files-2.1\com.nineoldandroids\library\2.4.0\e9b63380f3a242dbdbf103a2355ad7e43bad17cb\library-2.4.0.jar"
-        jumboMode="false"
-        revision="19.1.0"
-        sha1="e9b63380f3a242dbdbf103a2355ad7e43bad17cb"/>
-    <item
-        dex="D:\leo_android\LheidoSMS\app\build\intermediates\pre-dexed\debug\picasso-2.3.1-2b2ca8acab1eb4f7a8032da9a16705b60c432e49.jar"
-        jar="C:\Users\Mathilde\.gradle\caches\modules-2\files-2.1\com.squareup.picasso\picasso\2.3.1\7ed01353649330c692473b85d5c64db4218338db\picasso-2.3.1.jar"
-        jumboMode="false"
-        revision="19.1.0"
-        sha1="7ed01353649330c692473b85d5c64db4218338db"/>
-    <item
-        dex="D:\leo_android\LheidoSMS\app\build\intermediates\pre-dexed\debug\classes-2b9f826e884ea0dc9c0ac97ad270c40322b98316.jar"
-        jar="D:\leo_android\LheidoSMS\build\intermediates\exploded-aar\com.android.support\appcompat-v7\19.1.0\classes.jar"
+        dex="/home/lheido/AndroidStudioProjects/LheidoSMS/app/build/intermediates/pre-dexed/debug/classes-104c6e0499b0ece37b430a776695c41aabaaa1c6.jar"
+        jar="/home/lheido/AndroidStudioProjects/LheidoSMS/build/intermediates/exploded-aar/com.android.support/appcompat-v7/19.1.0/classes.jar"
         jumboMode="false"
         revision="19.1.0"
         sha1="3499ceba05ca1f6037c6a2fad73df8f636224a28"/>
     <item
-        dex="D:\leo_android\LheidoSMS\app\build\intermediates\pre-dexed\debug\support-v13-18.0.0-b7fcaf99e67f427d2655d793c4f3b96155229b18.jar"
-        jar="C:\Program Files (x86)\Android_studio\sdk\extras\android\m2repository\com\android\support\support-v13\18.0.0\support-v13-18.0.0.jar"
+        dex="/home/lheido/AndroidStudioProjects/LheidoSMS/app/build/intermediates/pre-dexed/debug/library-2.4.0-93303798f41e97ae55b5219adc5c665b2ab4ddf9.jar"
+        jar="/home/lheido/.gradle/caches/modules-2/files-2.1/com.nineoldandroids/library/2.4.0/e9b63380f3a242dbdbf103a2355ad7e43bad17cb/library-2.4.0.jar"
         jumboMode="false"
         revision="19.1.0"
-        sha1="6a2fa0c0b54359ee359fd40244e1ce2dc6cab408"/>
+        sha1="e9b63380f3a242dbdbf103a2355ad7e43bad17cb"/>
+    <item
+        dex="/home/lheido/AndroidStudioProjects/LheidoSMS/app/build/intermediates/pre-dexed/debug/classes-69360b57aaf2f157ba0f18c40716a5de17770293.jar"
+        jar="/home/lheido/AndroidStudioProjects/LheidoSMS/build/intermediates/exploded-aar/com.github.machinarius/preferencefragment/0.1.1/classes.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="648463e00c6883d01b6c11a6781776203334b6fc"/>
+    <item
+        dex="/home/lheido/AndroidStudioProjects/LheidoSMS/app/build/intermediates/pre-dexed/debug/support-v4-19.1.0-39c13fcf82814051c6b10d2fdd2c6b4bac3aa2c1.jar"
+        jar="/home/lheido/android-studio/sdk/extras/android/m2repository/com/android/support/support-v4/19.1.0/support-v4-19.1.0.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="85f201b380937e61a9dce6ca90ccf6872abbfb67"/>
+    <item
+        dex="/home/lheido/AndroidStudioProjects/LheidoSMS/app/build/intermediates/pre-dexed/debug/picasso-2.3.1-7349c8264447fe1732347f6278370c8280a3a45e.jar"
+        jar="/home/lheido/.gradle/caches/modules-2/files-2.1/com.squareup.picasso/picasso/2.3.1/7ed01353649330c692473b85d5c64db4218338db/picasso-2.3.1.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="7ed01353649330c692473b85d5c64db4218338db"/>
+    <item
+        dex="/home/lheido/AndroidStudioProjects/LheidoSMS/app/build/intermediates/pre-dexed/debug/classes-250bd452bfd86953023306d1cf0093ab896958e7.jar"
+        jar="/home/lheido/AndroidStudioProjects/LheidoSMS/build/intermediates/exploded-aar/com.twotoasters.jazzylistview/library/1.0.1/classes.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="57b2e2d8ba828b125939f621aa74f7edabe7aa71"/>
 
 </pre-dex-items>

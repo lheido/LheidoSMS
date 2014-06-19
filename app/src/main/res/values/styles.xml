@@ -28,6 +28,7 @@
         <!-- NavigationDrawer ListView -->
         <!-- <item name="android:listViewStyle">@style/MyListView</item> -->
         <!-- ######################### -->
+
     </style>
     <style name="MyAB" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
         <item name="android:background" tools:ignore="NewApi">@drawable/action_bar_bg</item>

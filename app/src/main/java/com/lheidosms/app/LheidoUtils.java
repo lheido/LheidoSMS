@@ -1,5 +1,6 @@
 package com.lheidosms.app;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -16,17 +17,18 @@ import android.widget.Toast;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
-/**
- * Created by lheido on 04/06/14.
- */
+
 public class LheidoUtils {
 
     public static final String ARG_SMS_DELIVERED = "new_sms_delivered";
     public static final String ACTION_RECEIVE_SMS = "android.provider.Telephony.SMS_RECEIVED";
+    public static final String ACTION_RECEIVE_MMS = "android.provider.Telephony.MMS_RECEIVED";
     public static final String ACTION_SENT_SMS = "com.lheidosms.app.sent";
     public static final String ACTION_DELIVERED_SMS = "com.lheidosms.app.delivered";
-    public static final String ACTION_NOTIFICATIONS_ID = "com.lheidosms.app.notificationId";
-    public static final String ACTION_REQUEST_NOTIFICATION_ID = "com.lheidosms.app.requestNotificationId";
+    public static final String ACTION_FIRST = "com.lheidosms.app.first";
+    public static final String ACTION_NEW_MESSAGE = "com.lheido.app.new_message";
+    public static final String ACTION_NEW_MESSAGE_READ = "com.lheido.app.new_message_read";
+    public static final String ACTION_NOTIFY_DATA_CHANGED = "com.lheido.app.notify_data_changed";
 
     public static final String drawer_start_opened_key = "drawer_start_opened";
     public static final String hide_keyboard_key = "hide_keyboard";
@@ -123,7 +125,7 @@ public class LheidoUtils {
         String[] recipientIds = recipientId.split(" ");
         for (String recipientId1 : recipientIds) {
             Uri ur = Uri.parse("content://mms-sms/canonical-addresses");
-            if (recipientId1 != "") {
+            if (!recipientId1.equals("")) {
                 Cursor cr = context.getContentResolver().query(ur, new String[]{"*"}, "_id = " + recipientId1, null, null);
                 if (cr != null) {
                     while (cr.moveToNext()) {
@@ -151,59 +153,6 @@ public class LheidoUtils {
         public ConversationListTask(FragmentActivity activity){
             link(activity);
         }
-
-        /*public void retrieveContact(LheidoContact contact, String phone){
-            Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phone));
-            String[] projection = {ContactsContract.PhoneLookup.DISPLAY_NAME, ContactsContract.PhoneLookup._ID};
-            Cursor cur = this.act.get().getContentResolver().query(uri, projection, null, null, null);
-            if(cur != null){
-                if(cur.moveToFirst()){
-                    try{
-                        contact.setId(cur.getLong(cur.getColumnIndexOrThrow(ContactsContract.PhoneLookup._ID)));
-                    }catch(Exception ex){
-                        Toast.makeText(context, "Error setId\n" + ex.toString(), Toast.LENGTH_LONG).show();
-                    }
-                    try{
-                        contact.setName(cur.getString(cur.getColumnIndexOrThrow(ContactsContract.PhoneLookup.DISPLAY_NAME)));
-                    }catch(Exception ex){
-                        Toast.makeText(context, "Error setName\n"+ex.toString(), Toast.LENGTH_LONG).show();
-                    }
-                    try{
-                        contact.setPic();
-                    }catch(Exception ex){
-                        Toast.makeText(context, "Error setPic\n"+ex.toString(), Toast.LENGTH_LONG).show();
-                    }
-                }else
-                    contact.setName(phone);
-                cur.close();
-            }
-        }
-
-        public LheidoContact getLConversationInfo(Cursor query){
-            LheidoContact contact = new LheidoContact();
-            contact.setConversationId(query.getString(query.getColumnIndex("_id")));
-            contact.setNb_sms(query.getString(query.getColumnIndex("message_count")));
-            String recipientId = query.getString(query.getColumnIndex("recipient_ids"));
-            String[] recipientIds = recipientId.split(" ");
-            for(int k=0; k < recipientIds.length; k++){
-                Uri ur = Uri.parse("content://mms-sms/canonical-addresses" );
-                if(recipientIds[k] != ""){
-                    Cursor cr = this.act.get().getContentResolver().query(ur, new String[]{"*"}, "_id = " + recipientIds[k], null, null);
-                    if(cr != null){
-                        while(cr.moveToNext()){
-                            //String id = cr.getString(0);
-                            String address = cr.getString(1);
-                            contact.setPhone(address);
-                            retrieveContact(contact, address);
-                            //contact.setName(context, address);
-                            //contact.setPic(context);
-                        }
-                        cr.close();
-                    }
-                }
-            }
-            return contact;
-        }*/
 
         @Override
         protected void onPreExecute () {
@@ -367,5 +316,25 @@ public class LheidoUtils {
                 execute();
             }
         }
+    }
+
+    public static long store_sms(Context context, Message sms, long thread_id){
+        try {
+            ContentValues values = new ContentValues();
+            values.put("address", sms.getPhone());
+            values.put("body", sms.getBody());
+            values.put("read", false);
+            values.put("type", sms.isRight() ? 2 : 1);
+            values.put("status", 32);
+            if(thread_id != -1)
+                values.put("thread_id", thread_id);
+            values.put("date", sms.getDateNormalize());
+            Uri uri_id = context.getContentResolver().insert(Uri.parse("content://sms"), values);
+            if(uri_id != null)
+                return Long.parseLong(uri_id.toString().substring(14));
+        } catch (Exception ex) {
+            Toast.makeText(context, "store_sms\n"+ex.toString(), Toast.LENGTH_LONG).show();
+        }
+        return -1;
     }
 }

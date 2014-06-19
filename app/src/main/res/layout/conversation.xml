@@ -4,15 +4,16 @@
     android:id="@+id/conversation"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:background="#424242" >
 
-    <RelativeLayout
-        android:id="@+id/conversation_relative_list"
-        android:layout_width="fill_parent"
-        android:layout_height="match_parent"
-        android:background="#424242"
-        android:paddingTop="?attr/actionBarSize"
-        android:layout_above="@+id/send_message_layout" >
+    <!--<RelativeLayout-->
+        <!--android:id="@+id/conversation_relative_list"-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:background="#424242"-->
+        <!--android:paddingTop="?attr/actionBarSize"-->
+        <!--android:layout_above="@+id/send_message_layout" >-->
 
         <android.support.v4.widget.SwipeRefreshLayout
             xmlns:android="http://schemas.android.com/apk/res/android"
@@ -37,61 +38,7 @@
                 app:max_velocity="0"
                 />
         </android.support.v4.widget.SwipeRefreshLayout>
-    </RelativeLayout>
-    <RelativeLayout
-        android:id="@+id/send_message_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:orientation="horizontal"
-        android:background="@color/grey_low" >
+    <!--</RelativeLayout>-->
 
-        <EditText
-            android:id="@+id/send_body"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_toLeftOf="@+id/send_button"
-            android:inputType="textMultiLine|textAutoCorrect|textCapSentences"
-            android:singleLine="false"
-            android:textColor="#888888"
-            android:textSize="16sp"
-            android:padding="15dip"
-            android:hint="@string/enter_sms"
-            android:background="@android:color/transparent" />
-
-        <View
-            android:id="@+id/border_editText"
-            android:layout_width="wrap_content"
-            android:layout_height="1dp"
-            android:layout_alignLeft="@id/send_body"
-            android:layout_alignRight="@id/send_body"
-            android:layout_alignBottom="@id/send_body"
-            android:layout_marginBottom="5dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:background="#999999" />
-
-        <ImageButton
-            android:id="@+id/send_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/send_body"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:contentDescription="@string/send_message"
-            android:src="@drawable/send_sms"
-            android:background="@drawable/send_button"
-            android:padding="5sp" />
-
-        <ProgressBar
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/no_send_bar"
-            android:layout_alignLeft="@id/send_button"
-            android:layout_alignRight="@id/send_button"
-            android:layout_alignBottom="@id/send_button"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:indeterminate="false"/>
-    </RelativeLayout>
 
 </RelativeLayout>

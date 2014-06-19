@@ -29,20 +29,17 @@ public class LheidoContact {
         this.nb_sms_ = nb_sms;
         this.conversation_id_ = conversation_id;
     }
-    public String getContactName(Context context, String address){
+    public static String getContactName(Context context, String address){
         String res = "";
         Cursor cur = context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
         if(cur != null){
             String name = "";
             while(name.equals("") && cur.moveToNext()){
-                String phone = cur.getString(cur.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER)).toString();
+                String phone = cur.getString(cur.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER));
                 //Log.v("LHEIDO SMS LOG", phone + ", " + address);
                 if(name.equals("") && PhoneNumberUtils.compare(phone, address)){
-                    name = cur.getString(cur.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)).toString();
+                    name = cur.getString(cur.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
                     res += name;
-                    //long id = cur.getLong(cur.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.CONTACT_ID));
-                    //this.setId(id);
-                    //this.setPic(context);
                 }
             }
             if(name.equals(""))

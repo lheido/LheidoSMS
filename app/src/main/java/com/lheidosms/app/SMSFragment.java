@@ -17,6 +17,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBarActivity;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.SmsManager;
 import android.text.InputType;
@@ -56,7 +57,7 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
     private LheidoUtils.UserPref userPref;
     private String name;
     protected String phoneContact;
-    private int conversationId;
+    private int conversationId; // id for database
     private long conversation_nb_sms;
     private JazzyListView liste;
     private int list_conversationId;
@@ -87,16 +88,15 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
     public SMSFragment() {
     }
 
+    public String getPhoneContact(){
+        return phoneContact;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.conversation, container, false);
         init(rootView);
-        gen_conversation();
-        init_sms_body(rootView);
-        init_send_button(rootView);
-//        getActivity().setTitle(name);
-
         init_broadcast();
         return rootView;
     }
@@ -113,7 +113,12 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
         liste.setTransitionEffect(userPref.conversation_effect);
         liste.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
         list_conversationId = getArguments().getInt(ARG_CONVERSATION_NUMBER);
-        Message_list.clear();
+        liste.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
+                return false;
+            }
+        });
         conversationAdapter = new ConversationAdapter(context, R.layout.message, Message_list);
         liste.setAdapter(conversationAdapter);
         swipeLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_container);
@@ -132,10 +137,10 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
                 sms.setRead(true);
             else sms.setRead(false);
         }
-        add_sms(sms, position);
+        add_sms_(sms, position);
     }
 
-    public void add_sms(Message sms, int position){
+    public void add_sms_(Message sms, int position){
         if(position != 0){
             Message_list.add(sms);
         } else{
@@ -144,12 +149,21 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
         conversationAdapter.notifyDataSetChanged();
     }
 
+    public void userAddSms(long new_id, String body, String s, int i, Time now, int i1){
+        add_sms(new_id, body, s, i, now, i1);
+        conversationAdapter.notifyDataSetChanged();
+        conversation_nb_sms += 1;
+        NavigationDrawerFragment navDrawer = (NavigationDrawerFragment) context.getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
+        navDrawer.updateContact(list_conversationId, ""+conversation_nb_sms);
+        liste.smoothScrollToPosition(liste.getBottom());
+    }
+
     public void gen_conversation(){
         LheidoUtils.ConversationTask gen_list = new LheidoUtils.ConversationTask(getActivity(), conversationId) {
             @Override
             protected void onProgressUpdate(Message... prog) {
                 if (this.act.get() != null) {
-                    add_sms(prog[0], 1);
+                    add_sms_(prog[0], 1);
                 }
             }
 
@@ -171,145 +185,123 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
 
 
 
-    public void init_sms_body(View rootView){
-        sms_body = (EditText) rootView.findViewById(R.id.send_body);
-        sms_body.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if(hasFocus){
-                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)
-                        liste.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
-                }else {
-                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)
-                        liste.setTranscriptMode(ListView.TRANSCRIPT_MODE_DISABLED);
-                    InputMethodManager inputManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-                    inputManager.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                }
-            }
-        });
-        liste.setOnItemClickListener(new ListView.OnItemClickListener(){
-            @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-//                sms_body.clearFocus();
-                liste.requestFocus();
-            }
-        });
-        if(mem_body != null) sms_body.setText(mem_body);
-        sms_body.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_FLAG_CAP_SENTENCES|InputType.TYPE_TEXT_FLAG_AUTO_CORRECT);
-        if(!userPref.first_upper)
-            sms_body.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_FLAG_AUTO_CORRECT);
-        sms_body.setSingleLine(false);
-    }
+//    public void init_sms_body(View rootView){
+//        sms_body = (EditText) rootView.findViewById(R.id.send_body);
+//        sms_body.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//            @Override
+//            public void onFocusChange(View v, boolean hasFocus) {
+//                if(hasFocus){
+//                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)
+//                        liste.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
+//                }else {
+//                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)
+//                        liste.setTranscriptMode(ListView.TRANSCRIPT_MODE_DISABLED);
+//                    InputMethodManager inputManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+//                    inputManager.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+//                }
+//            }
+//        });
+//        liste.setOnItemClickListener(new ListView.OnItemClickListener(){
+//            @Override
+//            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+////                sms_body.clearFocus();
+//                liste.requestFocus();
+//            }
+//        });
+//        if(mem_body != null) sms_body.setText(mem_body);
+//        sms_body.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_FLAG_CAP_SENTENCES|InputType.TYPE_TEXT_FLAG_AUTO_CORRECT);
+//        if(!userPref.first_upper)
+//            sms_body.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_FLAG_AUTO_CORRECT);
+//        sms_body.setSingleLine(false);
+//    }
 
-    public void init_send_button(View rootView){
-        ImageButton send_button = (ImageButton) rootView.findViewById(R.id.send_button);
-        final ProgressBar noSendBar = (ProgressBar) rootView.findViewById(R.id.no_send_bar);
-        noSendBar.setVisibility(ProgressBar.GONE);
-        noSendBar.setMax(100);
-        send_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(userPref.hide_keyboard){
-                    InputMethodManager inputManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-                    inputManager.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                }
-                String body;
-                if(sms_body.getText() != null) {
-                    body = sms_body.getText().toString();
-                }else
-                    body = "";
-                if(body.length() > 0){
-                    //progressbar
-//                    noSendBar.setVisibility(ProgressBar.VISIBLE);
-//                    new CountDownTimer(5000, 1) {
-//                        public void onTick(long millisUntilFinished) {
-//                            progress += 1;
-//                            noSendBar.setProgress(progress);
+//    public void init_send_button(View rootView){
+//        ImageButton send_button = (ImageButton) rootView.findViewById(R.id.send_button);
+//        final ProgressBar noSendBar = (ProgressBar) rootView.findViewById(R.id.no_send_bar);
+//        noSendBar.setVisibility(ProgressBar.GONE);
+//        noSendBar.setMax(100);
+//        send_button.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if(userPref.hide_keyboard){
+//                    InputMethodManager inputManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+//                    inputManager.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+//                }
+//                String body;
+//                if(sms_body.getText() != null) {
+//                    body = sms_body.getText().toString();
+//                }else
+//                    body = "";
+//                if(body.length() > 0){
+//                    //progressbar
+////                    noSendBar.setVisibility(ProgressBar.VISIBLE);
+////                    new CountDownTimer(5000, 1) {
+////                        public void onTick(long millisUntilFinished) {
+////                            progress += 1;
+////                            noSendBar.setProgress(progress);
+////                        }
+////                        public void onFinish() {
+////                            noSendBar.setVisibility(ProgressBar.GONE);
+////                            progress = 0;
+////                        }
+////                    }.start();
+//                    //
+//                    Message new_sms = new Message();
+//                    new_sms.setBody(body);
+//                    new_sms.setRight(true);
+//                    new_sms.setRead(false);
+//                    Time now = new Time();
+//                    now.setToNow();
+//                    new_sms.setDate(now);
+//                    long new_id = LheidoUtils.store_sms(context, new_sms, conversationId);
+//                    add_sms(new_id, body, "2", 32, now, 0);
+//                    conversationAdapter.notifyDataSetChanged();
+//                    conversation_nb_sms += 1;
+//                    NavigationDrawerFragment navDrawer = (NavigationDrawerFragment)getActivity().getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
+//                    navDrawer.updateContact(list_conversationId, ""+conversation_nb_sms);
+//                    sms_body.setText(R.string.empty_sms);
+//                    SmsManager manager = SmsManager.getDefault();
+//                    ArrayList<String> bodyPart = manager.divideMessage(body);
+//                    if(bodyPart.size() > 1){
+//                        ArrayList<PendingIntent> piSent = new ArrayList<PendingIntent>();
+//                        ArrayList<PendingIntent> piDelivered = new ArrayList<PendingIntent>();
+//                        for(int i = 0; i < bodyPart.size(); i++){
+//                            Intent ideli = new Intent(LheidoUtils.ACTION_DELIVERED_SMS);
+//                            ideli.putExtra(LheidoUtils.ARG_SMS_DELIVERED, new_id);
+//                            piSent.add(PendingIntent.getBroadcast(context, 0, new Intent(LheidoUtils.ACTION_SENT_SMS) , 0));
+//                            piDelivered.add(PendingIntent.getBroadcast(context, 0, ideli , PendingIntent.FLAG_UPDATE_CURRENT));
 //                        }
-//                        public void onFinish() {
-//                            noSendBar.setVisibility(ProgressBar.GONE);
-//                            progress = 0;
-//                        }
-//                    }.start();
-                    //
-                    Message new_sms = new Message();
-                    new_sms.setBody(body);
-                    new_sms.setRight(true);
-                    new_sms.setRead(false);
-                    Time now = new Time();
-                    now.setToNow();
-                    new_sms.setDate(now);
-                    long new_id = store_sms(new_sms, conversationId);
-                    add_sms(new_id, body, "2", 32, now, 0);
-                    conversationAdapter.notifyDataSetChanged();
-                    conversation_nb_sms += 1;
-                    NavigationDrawerFragment navDrawer = (NavigationDrawerFragment)getActivity().getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
-                    navDrawer.updateContact(list_conversationId, ""+conversation_nb_sms);
-                    sms_body.setText(R.string.empty_sms);
-                    SmsManager manager = SmsManager.getDefault();
-                    ArrayList<String> bodyPart = manager.divideMessage(body);
-                    if(bodyPart.size() > 1){
-                        ArrayList<PendingIntent> piSent = new ArrayList<PendingIntent>();
-                        ArrayList<PendingIntent> piDelivered = new ArrayList<PendingIntent>();
-                        for(int i = 0; i < bodyPart.size(); i++){
-                            Intent ideli = new Intent(LheidoUtils.ACTION_DELIVERED_SMS);
-                            ideli.putExtra(LheidoUtils.ARG_SMS_DELIVERED, new_id);
-                            piSent.add(PendingIntent.getBroadcast(context, 0, new Intent(LheidoUtils.ACTION_SENT_SMS) , 0));
-                            piDelivered.add(PendingIntent.getBroadcast(context, 0, ideli , PendingIntent.FLAG_UPDATE_CURRENT));
-                        }
-                        manager.sendMultipartTextMessage(phoneContact, null, bodyPart , piSent, piDelivered);
-                    }
-                    else {
-                        Intent ideli = new Intent(LheidoUtils.ACTION_DELIVERED_SMS);
-                        ideli.putExtra(LheidoUtils.ARG_SMS_DELIVERED, new_id);
-                        PendingIntent piSent = PendingIntent.getBroadcast(context, 0, new Intent(LheidoUtils.ACTION_SENT_SMS) , 0);
-                        PendingIntent piDelivered = PendingIntent.getBroadcast(context, 0, ideli, PendingIntent.FLAG_UPDATE_CURRENT);
-                        manager.sendTextMessage(phoneContact, null, body, piSent, piDelivered);
-                    }
-                    liste.smoothScrollToPosition(liste.getBottom());
-                    sms_body.clearFocus();
-                } else{
-                    Toast.makeText(context, R.string.empty_message, Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-
-        send_button.setOnLongClickListener(new View.OnLongClickListener() {
-
-            @Override
-            public boolean onLongClick(View v) {
-                Toast.makeText(context, ""+conversationId+"\n"+phoneContact+"\n"+name, Toast.LENGTH_LONG).show();
-                return true;
-            }
-        });
-    }
-
-    public long store_sms(Message sms, long thread_id){
-        try {
-            ContentValues values = new ContentValues();
-            values.put("address", sms.getPhone());
-            values.put("body", sms.getBody());
-            values.put("read", false);
-            values.put("type", sms.isRight() ? 2 : 1);
-            values.put("status", 32);
-            if(thread_id != -1)
-                values.put("thread_id", thread_id);
-            values.put("date", sms.getDateNormalize());
-            Uri uri_id = context.getContentResolver().insert(Uri.parse("content://sms"), values);
-            long new_id = Long.parseLong(uri_id.toString().substring(14));
-            //Log.v("LHEIDO SMS LOG", "new_id = "+new_id);
-            return new_id;
-        } catch (Exception ex) {
-            Toast.makeText(context, ex.toString(), Toast.LENGTH_LONG).show();
-        }
-        return -1;
-    }
+//                        manager.sendMultipartTextMessage(phoneContact, null, bodyPart , piSent, piDelivered);
+//                    }
+//                    else {
+//                        Intent ideli = new Intent(LheidoUtils.ACTION_DELIVERED_SMS);
+//                        ideli.putExtra(LheidoUtils.ARG_SMS_DELIVERED, new_id);
+//                        PendingIntent piSent = PendingIntent.getBroadcast(context, 0, new Intent(LheidoUtils.ACTION_SENT_SMS) , 0);
+//                        PendingIntent piDelivered = PendingIntent.getBroadcast(context, 0, ideli, PendingIntent.FLAG_UPDATE_CURRENT);
+//                        manager.sendTextMessage(phoneContact, null, body, piSent, piDelivered);
+//                    }
+//                    liste.smoothScrollToPosition(liste.getBottom());
+//                    sms_body.clearFocus();
+//                } else{
+//                    Toast.makeText(context, R.string.empty_message, Toast.LENGTH_LONG).show();
+//                }
+//            }
+//        });
+//
+//        send_button.setOnLongClickListener(new View.OnLongClickListener() {
+//
+//            @Override
+//            public boolean onLongClick(View v) {
+//                Toast.makeText(context, ""+conversationId+"\n"+phoneContact+"\n"+name, Toast.LENGTH_LONG).show();
+//                return true;
+//            }
+//        });
+//    }
 
     public void init_broadcast(){
         mBroadCast = new SmsReceiver(){
             @Override
-            public void customReceive(){
-                Toast.makeText(this.context, "Sms reçu de " + this.new_name, Toast.LENGTH_LONG).show();
+            public void customReceivedSMS() {
                 if(PhoneNumberUtils.compare(phoneContact, phone)){
                     //on est dans la bonne conversation !
                     Time t = new Time();
@@ -317,21 +309,23 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
                     add_sms(-1L, body, "", 0, t, 0);
                     conversationAdapter.notifyDataSetChanged();
                     conversation_nb_sms += 1;
-                    NavigationDrawerFragment navDrawer = (NavigationDrawerFragment)getActivity().getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
-                    navDrawer.updateContact(this.phone);
                     liste.smoothScrollToPosition(liste.getBottom());
-                } else{
-                    NavigationDrawerFragment navDrawer = (NavigationDrawerFragment)getActivity().getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
-                    navDrawer.updateContact(this.phone);
-                    navDrawer.setNotificationsId(this.notificationsId);
-                    navDrawer.markNewMessage(this.phone);
-                    if(this.activ_notif){
-                        Intent notificationIntent = new Intent(context, MainLheidoSMS.class);
-                        PendingIntent pIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
-                        showNotification(this.body, this.new_name, this.phone, pIntent);
-                    }
+                    Intent i = new Intent(LheidoUtils.ACTION_NEW_MESSAGE_READ);
+                    i.putExtra("position", list_conversationId);
+                    i.putExtra("phone", phoneContact);
+                    context.sendBroadcast(i);
                 }
             }
+
+            @Override
+            public void customReceivedMMS() {
+                if(PhoneNumberUtils.compare(phoneContact, phone)){
+
+                }
+            }
+
+            @Override
+            public void customNewMessageRead(int position, String phone) {}
 
             @Override
             public void customDelivered(long _id){
@@ -358,13 +352,6 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
     @Override
     public void onDestroyView(){
         context.unregisterReceiver(mBroadCast);
-        String text;
-        try{
-            text = sms_body.getText().toString();
-        }catch(Exception ex){
-            text = "";
-        }
-        if(!text.equals("")) mem_body = text;
         super.onDestroyView();
     }
 
@@ -377,14 +364,17 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
     @Override
     public void onResume(){
         super.onResume();
+        updateFragment();
+    }
 
-        /*updateContactList();
-        try{
-            selectItem(position_mem);
-        }catch(Exception ex){
-            selectItem(0);
-        }*/
-//        updateFragment();
+    @Override
+    public void onPause(){
+        if(sms_body != null){
+            if(sms_body.getText() != null)
+                mem_body = sms_body.getText().toString();
+            else mem_body = "";
+        }
+        super.onPause();
     }
 
     public void updateFragment(){
@@ -395,12 +385,6 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
                 gen_conversation();
             }
             liste.setTransitionEffect(userPref.conversation_effect);
-        }
-        if(sms_body != null) {
-            sms_body.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES | InputType.TYPE_TEXT_FLAG_AUTO_CORRECT);
-            if (!userPref.first_upper)
-                sms_body.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_AUTO_CORRECT);
-            sms_body.setSingleLine(false);
         }
     }
 

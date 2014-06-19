@@ -5,23 +5,23 @@
         android:title="@string/drawer_start_opened"
         android:defaultValue="false" />
 
-    <ListPreference
-        android:defaultValue="10"
-        android:dialogTitle="@string/pref_conversation_onload"
-        android:entries="@array/conversation_onload"
-        android:entryValues="@array/conversation_onload"
-        android:key="conversation_onload"
-        android:title="@string/pref_conversation_onload"
-        android:summary="@string/pref_conversation_sum" />
+    <!--<ListPreference-->
+        <!--android:defaultValue="10"-->
+        <!--android:dialogTitle="@string/pref_conversation_onload"-->
+        <!--android:entries="@array/conversation_onload"-->
+        <!--android:entryValues="@array/conversation_onload"-->
+        <!--android:key="conversation_onload"-->
+        <!--android:title="@string/pref_conversation_onload"-->
+        <!--android:summary="@string/pref_conversation_sum" />-->
 
-    <CheckBoxPreference
-        android:key="show_contact_picture"
-        android:title="@string/show_contact_picture"
-        android:defaultValue="true" />
-    <CheckBoxPreference
-        android:key="show_nb_sms"
-        android:title="@string/show_nb_sms"
-        android:defaultValue="true" />
+    <!--<CheckBoxPreference-->
+        <!--android:key="show_contact_picture"-->
+        <!--android:title="@string/show_contact_picture"-->
+        <!--android:defaultValue="true" />-->
+    <!--<CheckBoxPreference-->
+        <!--android:key="show_nb_sms"-->
+        <!--android:title="@string/show_nb_sms"-->
+        <!--android:defaultValue="true" />-->
 
     <ListPreference
         android:key="list_conversations_jazzyeffect"
