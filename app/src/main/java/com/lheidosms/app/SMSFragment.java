@@ -3,6 +3,7 @@ package com.lheidosms.app;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
+import android.content.ClipData;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -52,7 +53,6 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
     public static final String ARG_CONVERSATION_NUMBER = "conversation_number";
     public static final String ARG_CONTACT_NAME = "contact_name";
     private static final String ARG_SECTION_NUMBER = "section_number";
-    private EditText sms_body;
     private FragmentActivity context;
     private LheidoUtils.UserPref userPref;
     private String name;
@@ -60,14 +60,11 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
     private int conversationId; // id for database
     private long conversation_nb_sms;
     private JazzyListView liste;
-    private int list_conversationId;
+    private int list_conversationId; // id for global conversations list
     public ArrayList<Message> Message_list = new ArrayList<Message>();
     private ConversationAdapter conversationAdapter;
-    private String mem_body = null;
     private BroadcastReceiver mBroadCast;
     private SwipeRefreshLayout swipeLayout;
-    private int lastVisibleChild;
-    public int progress=0;
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -116,7 +113,17 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
         liste.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
-                return false;
+                int sdk = android.os.Build.VERSION.SDK_INT;
+                if(sdk < Build.VERSION_CODES.HONEYCOMB){
+                    android.text.ClipboardManager clipboard = (android.text.ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+                    clipboard.setText(Message_list.get(Message_list.size()-1-position).getBody());
+                } else{
+                    android.content.ClipboardManager clipboard = (android.content.ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+                    ClipData clip = ClipData.newPlainText("simple text", Message_list.get(Message_list.size()-1-position).getBody());
+                    clipboard.setPrimaryClip(clip);
+                }
+                Toast.makeText(context, "Message copié", Toast.LENGTH_LONG).show();
+                return true;
             }
         });
         conversationAdapter = new ConversationAdapter(context, R.layout.message, Message_list);
@@ -153,8 +160,6 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
         add_sms(new_id, body, s, i, now, i1);
         conversationAdapter.notifyDataSetChanged();
         conversation_nb_sms += 1;
-        NavigationDrawerFragment navDrawer = (NavigationDrawerFragment) context.getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
-        navDrawer.updateContact(list_conversationId, ""+conversation_nb_sms);
         liste.smoothScrollToPosition(liste.getBottom());
     }
 
@@ -182,121 +187,6 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
         };
         gen_list.execConversationTask();
     }
-
-
-
-//    public void init_sms_body(View rootView){
-//        sms_body = (EditText) rootView.findViewById(R.id.send_body);
-//        sms_body.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-//            @Override
-//            public void onFocusChange(View v, boolean hasFocus) {
-//                if(hasFocus){
-//                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)
-//                        liste.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
-//                }else {
-//                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)
-//                        liste.setTranscriptMode(ListView.TRANSCRIPT_MODE_DISABLED);
-//                    InputMethodManager inputManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-//                    inputManager.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-//                }
-//            }
-//        });
-//        liste.setOnItemClickListener(new ListView.OnItemClickListener(){
-//            @Override
-//            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-////                sms_body.clearFocus();
-//                liste.requestFocus();
-//            }
-//        });
-//        if(mem_body != null) sms_body.setText(mem_body);
-//        sms_body.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_FLAG_CAP_SENTENCES|InputType.TYPE_TEXT_FLAG_AUTO_CORRECT);
-//        if(!userPref.first_upper)
-//            sms_body.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_FLAG_AUTO_CORRECT);
-//        sms_body.setSingleLine(false);
-//    }
-
-//    public void init_send_button(View rootView){
-//        ImageButton send_button = (ImageButton) rootView.findViewById(R.id.send_button);
-//        final ProgressBar noSendBar = (ProgressBar) rootView.findViewById(R.id.no_send_bar);
-//        noSendBar.setVisibility(ProgressBar.GONE);
-//        noSendBar.setMax(100);
-//        send_button.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if(userPref.hide_keyboard){
-//                    InputMethodManager inputManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-//                    inputManager.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-//                }
-//                String body;
-//                if(sms_body.getText() != null) {
-//                    body = sms_body.getText().toString();
-//                }else
-//                    body = "";
-//                if(body.length() > 0){
-//                    //progressbar
-////                    noSendBar.setVisibility(ProgressBar.VISIBLE);
-////                    new CountDownTimer(5000, 1) {
-////                        public void onTick(long millisUntilFinished) {
-////                            progress += 1;
-////                            noSendBar.setProgress(progress);
-////                        }
-////                        public void onFinish() {
-////                            noSendBar.setVisibility(ProgressBar.GONE);
-////                            progress = 0;
-////                        }
-////                    }.start();
-//                    //
-//                    Message new_sms = new Message();
-//                    new_sms.setBody(body);
-//                    new_sms.setRight(true);
-//                    new_sms.setRead(false);
-//                    Time now = new Time();
-//                    now.setToNow();
-//                    new_sms.setDate(now);
-//                    long new_id = LheidoUtils.store_sms(context, new_sms, conversationId);
-//                    add_sms(new_id, body, "2", 32, now, 0);
-//                    conversationAdapter.notifyDataSetChanged();
-//                    conversation_nb_sms += 1;
-//                    NavigationDrawerFragment navDrawer = (NavigationDrawerFragment)getActivity().getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
-//                    navDrawer.updateContact(list_conversationId, ""+conversation_nb_sms);
-//                    sms_body.setText(R.string.empty_sms);
-//                    SmsManager manager = SmsManager.getDefault();
-//                    ArrayList<String> bodyPart = manager.divideMessage(body);
-//                    if(bodyPart.size() > 1){
-//                        ArrayList<PendingIntent> piSent = new ArrayList<PendingIntent>();
-//                        ArrayList<PendingIntent> piDelivered = new ArrayList<PendingIntent>();
-//                        for(int i = 0; i < bodyPart.size(); i++){
-//                            Intent ideli = new Intent(LheidoUtils.ACTION_DELIVERED_SMS);
-//                            ideli.putExtra(LheidoUtils.ARG_SMS_DELIVERED, new_id);
-//                            piSent.add(PendingIntent.getBroadcast(context, 0, new Intent(LheidoUtils.ACTION_SENT_SMS) , 0));
-//                            piDelivered.add(PendingIntent.getBroadcast(context, 0, ideli , PendingIntent.FLAG_UPDATE_CURRENT));
-//                        }
-//                        manager.sendMultipartTextMessage(phoneContact, null, bodyPart , piSent, piDelivered);
-//                    }
-//                    else {
-//                        Intent ideli = new Intent(LheidoUtils.ACTION_DELIVERED_SMS);
-//                        ideli.putExtra(LheidoUtils.ARG_SMS_DELIVERED, new_id);
-//                        PendingIntent piSent = PendingIntent.getBroadcast(context, 0, new Intent(LheidoUtils.ACTION_SENT_SMS) , 0);
-//                        PendingIntent piDelivered = PendingIntent.getBroadcast(context, 0, ideli, PendingIntent.FLAG_UPDATE_CURRENT);
-//                        manager.sendTextMessage(phoneContact, null, body, piSent, piDelivered);
-//                    }
-//                    liste.smoothScrollToPosition(liste.getBottom());
-//                    sms_body.clearFocus();
-//                } else{
-//                    Toast.makeText(context, R.string.empty_message, Toast.LENGTH_LONG).show();
-//                }
-//            }
-//        });
-//
-//        send_button.setOnLongClickListener(new View.OnLongClickListener() {
-//
-//            @Override
-//            public boolean onLongClick(View v) {
-//                Toast.makeText(context, ""+conversationId+"\n"+phoneContact+"\n"+name, Toast.LENGTH_LONG).show();
-//                return true;
-//            }
-//        });
-//    }
 
     public void init_broadcast(){
         mBroadCast = new SmsReceiver(){
@@ -364,16 +254,6 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
         updateFragment();
     }
 
-    @Override
-    public void onPause(){
-        if(sms_body != null){
-            if(sms_body.getText() != null)
-                mem_body = sms_body.getText().toString();
-            else mem_body = "";
-        }
-        super.onPause();
-    }
-
     public void updateFragment(){
         userPref.setUserPref(PreferenceManager.getDefaultSharedPreferences(context));
         if(liste != null) {
@@ -392,14 +272,11 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
         final int index = liste.getFirstVisiblePosition();
         View v = liste.getChildAt(Message_list.size()-1);
         final int top = (v == null) ? 0 : v.getTop();
-        lastVisibleChild = index;
         final int start_count = liste.getCount();
-        Log.v("LHEIDO SMS LOG", "top "+top);
         LheidoUtils.ConversationTask more = new LheidoUtils.ConversationTask(getActivity(), conversationId, last_id) {
             @Override
             protected void onProgressUpdate(Message... prog) {
                 if (this.act.get() != null) {
-//                    add_sms(prog[0], 1);
                     Message_list.add(prog[0]);
                 }
             }

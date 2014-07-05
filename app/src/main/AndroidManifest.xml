@@ -31,6 +31,10 @@
             android:icon="@drawable/lheido_sms_icon"
             android:label="@string/app_service_name">
         </service>
+        <service android:name=".DeleteOldSMSService"
+            android:icon="@drawable/lheido_sms_icon"
+            android:label="@string/app_service_name">
+        </service>
         <activity android:name=".LheidoSMSPreference"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:windowSoftInputMode="adjustResize"

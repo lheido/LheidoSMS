@@ -11,16 +11,17 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.telephony.PhoneNumberUtils;
 import android.util.Log;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
+
 public class LheidoSMSService extends Service {
     private static final String SERVICE_TAG = "LHEIDOSMS SERVICE LOG";
     SmsReceiver smsReceiver;
-    private ArrayList<LheidoContact> conversations = new ArrayList<LheidoContact>();
     protected Context context;
     private BroadcastReceiver mBroadcast;
 
@@ -59,7 +60,6 @@ public class LheidoSMSService extends Service {
 
             @Override
             public void customNewMessageRead(int position, String phone) {
-                Log.v("LHEIDO SMS LOG", "position = "+position+", phone = "+phone);
                 cancelNotif(phone);
                 Global.conversationsList.get(position).markNewMessage(false);
                 LheidoUtils.Send.notifyDataChanged(context);
@@ -110,11 +110,9 @@ public class LheidoSMSService extends Service {
         while(i < size && !PhoneNumberUtils.compare(Global.conversationsList.get(i).getPhone(), phone)) {i++;}
         if(i < size && PhoneNumberUtils.compare(Global.conversationsList.get(i).getPhone(), phone)) {
             // retrieved position in conversationsList
-            Global.conversationsList.get(i).Nb_sms_Plus();
-            if(mark)
-                Global.conversationsList.get(i).markNewMessage(true);
-            int index = Global.conversationsList.indexOf(Global.conversationsList.get(i));
-            LheidoContact c = Global.conversationsList.remove(index);
+            LheidoContact c = Global.conversationsList.remove(i);
+            c.Nb_sms_Plus();
+            if(mark) c.markNewMessage(true);
             Global.conversationsList.add(0, c);
         } else{
             // not in conversationsList
@@ -196,4 +194,43 @@ public class LheidoSMSService extends Service {
         }
     }
 
+    private final class DeleteAllOldTask extends AsyncTask<Void, Message, Boolean>{
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            LheidoUtils.UserPref userPref = new LheidoUtils.UserPref();
+            userPref.setUserPref(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()));
+            for(LheidoContact c : Global.conversationsList){
+                if(c.getNb_sms() > userPref.old_message_num){
+                    delete_sms(c.getConversationId());
+                }
+            }
+            return null;
+        }
+    }
+
+    public void delete_sms(String conversationId){
+        LheidoUtils.UserPref userPref = new LheidoUtils.UserPref();
+        userPref.setUserPref(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()));
+        Uri uri = Uri.parse("content://sms");
+        String[] projection = {"*"};
+        String selection = "thread_id = ?";
+        String[] selectionArgs = {conversationId};
+        try {
+            Cursor cr = getContentResolver().query(uri, projection, selection, selectionArgs, "date DESC");
+            if (cr != null) {
+                ArrayList<Long> list_id_delete = new ArrayList<Long>();
+                long c = 0;
+                while (cr.moveToNext()) {
+                    if (c >= userPref.old_message_num)
+                        list_id_delete.add(cr.getLong(cr.getColumnIndexOrThrow("_id")));
+                    c++;
+                }
+                cr.close();
+                for (Long id : list_id_delete) {
+                    getContentResolver().delete(Uri.parse("content://sms/" + id), selection, selectionArgs);
+                }
+            }
+        }catch (Exception e){e.printStackTrace();}
+    }
 }

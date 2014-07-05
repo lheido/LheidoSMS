@@ -1,5 +1,6 @@
 package com.lheidosms.app;
 
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
@@ -8,12 +9,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 
-public class ConversationAdapter extends BaseAdapter {
+public class MMSAdapter extends BaseAdapter {
     /**
      * Récupérer un item de la liste en fonction de sa position
      * @param position - Position de l'item à récupérer
@@ -24,7 +28,7 @@ public class ConversationAdapter extends BaseAdapter {
     private ArrayList<Message> mListSms;
     private Context mContext;
 
-    public ConversationAdapter(Context context, int ressource, ArrayList<Message> conversation){
+    public MMSAdapter(Context context, ArrayList<Message> conversation){
         mContext = context;
         mListSms = conversation;
         userPref = new LheidoUtils.UserPref();
@@ -54,6 +58,7 @@ public class ConversationAdapter extends BaseAdapter {
             holder = new ConversationViewHolder();
             convertView = LayoutInflater.from(mContext).inflate(R.layout.message, parent, false);
             holder.mBody = (TextView) convertView.findViewById(R.id.message);
+            holder.mPict = (ImageView) convertView.findViewById(R.id.m_pict);
             holder.mdate = (TextView) convertView.findViewById(R.id.date_message);
             holder.mLayout = (RelativeLayout) convertView.findViewById(R.id.message_relativeLayout);
             holder.mIsRead = (View) convertView.findViewById(R.id.is_read);
@@ -65,10 +70,10 @@ public class ConversationAdapter extends BaseAdapter {
         holder.mBody.setText(message.getBody());
         holder.mBody.setTextSize(userPref.text_size);
         holder.mdate.setText(message.getDate());
-
+        if(message.getUriPicture() != null)
+            Picasso.with(mContext).load(message.getUriPicture()).fit().centerCrop().into(holder.mPict);
         //RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) holder.mLayout.getLayoutParams();
         if(message.isRight()) {
-
             holder.mLayout.setGravity(Gravity.RIGHT);
             holder.mLayout.setPadding(42, 0, 0, 0);
             holder.mBody.setBackgroundColor(mContext.getResources().getColor(R.color.grey_mid_high));
@@ -95,5 +100,6 @@ public class ConversationAdapter extends BaseAdapter {
         public TextView mBody;
         public TextView mdate;
         public View mIsRead;
+        public ImageView mPict;
     }
 }

@@ -7,14 +7,6 @@
     android:layout_height="match_parent"
     android:background="#424242" >
 
-    <!--<RelativeLayout-->
-        <!--android:id="@+id/conversation_relative_list"-->
-        <!--android:layout_width="fill_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:background="#424242"-->
-        <!--android:paddingTop="?attr/actionBarSize"-->
-        <!--android:layout_above="@+id/send_message_layout" >-->
-
         <android.support.v4.widget.SwipeRefreshLayout
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/swipe_container"
@@ -38,7 +30,6 @@
                 app:max_velocity="0"
                 />
         </android.support.v4.widget.SwipeRefreshLayout>
-    <!--</RelativeLayout>-->
 
 
 </RelativeLayout>

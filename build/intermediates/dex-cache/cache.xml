@@ -2,12 +2,6 @@
 <pre-dex-items>
 
     <item
-        dex="/home/lheido/AndroidStudioProjects/LheidoSMS/app/build/intermediates/pre-dexed/debug/support-v13-18.0.0-13eed65b4fb795c6546607ee767629094ebc08f4.jar"
-        jar="/home/lheido/android-studio/sdk/extras/android/m2repository/com/android/support/support-v13/18.0.0/support-v13-18.0.0.jar"
-        jumboMode="false"
-        revision="19.1.0"
-        sha1="6a2fa0c0b54359ee359fd40244e1ce2dc6cab408"/>
-    <item
         dex="/home/lheido/AndroidStudioProjects/LheidoSMS/app/build/intermediates/pre-dexed/debug/classes-104c6e0499b0ece37b430a776695c41aabaaa1c6.jar"
         jar="/home/lheido/AndroidStudioProjects/LheidoSMS/build/intermediates/exploded-aar/com.android.support/appcompat-v7/19.1.0/classes.jar"
         jumboMode="false"
@@ -38,10 +32,22 @@
         revision="19.1.0"
         sha1="7ed01353649330c692473b85d5c64db4218338db"/>
     <item
+        dex="/home/lheido/AndroidStudioProjects/LheidoSMS/app/build/intermediates/pre-dexed/debug/classes-e00e9e373bed0d060c2303655009c162b9dfd372.jar"
+        jar="/home/lheido/AndroidStudioProjects/LheidoSMS/build/intermediates/exploded-aar/eu.inmite.android.lib/android-styled-dialogs/1.1.2/classes.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="f08d50cb07664faae4a99d74de117b7adef5b82b"/>
+    <item
         dex="/home/lheido/AndroidStudioProjects/LheidoSMS/app/build/intermediates/pre-dexed/debug/classes-250bd452bfd86953023306d1cf0093ab896958e7.jar"
         jar="/home/lheido/AndroidStudioProjects/LheidoSMS/build/intermediates/exploded-aar/com.twotoasters.jazzylistview/library/1.0.1/classes.jar"
         jumboMode="false"
         revision="19.1.0"
         sha1="57b2e2d8ba828b125939f621aa74f7edabe7aa71"/>
+    <item
+        dex="/home/lheido/AndroidStudioProjects/LheidoSMS/app/build/intermediates/pre-dexed/debug/support-v13-18.0.0-13eed65b4fb795c6546607ee767629094ebc08f4.jar"
+        jar="/home/lheido/android-studio/sdk/extras/android/m2repository/com/android/support/support-v13/18.0.0/support-v13-18.0.0.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="6a2fa0c0b54359ee359fd40244e1ce2dc6cab408"/>
 
 </pre-dex-items>

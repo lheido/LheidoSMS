@@ -53,5 +53,9 @@
     <string name="pref_conversation_onload">Nombre de conversations</string>
     <string name="pref_conversation_sum">Au chargement de la liste des conversations</string>
     <string name="app_service_name">LheidoSMS Service</string>
+    <string name="mms_desc">image</string>
+    <string name="action_voir_contact">Voir contact</string>
+    <string name="action_delete_old">Delete old sms</string>
+    <string name="delete_old_nb">Nombre de sms</string>
 
 </resources>

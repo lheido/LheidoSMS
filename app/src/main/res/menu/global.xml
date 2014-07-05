@@ -20,6 +20,11 @@
                 android:orderInCategory="100"
                 app:showAsAction="ifRoom"
                 android:title="@string/action_settings"/>
+            <item
+                android:id="@+id/action_delete_old"
+                android:orderInCategory="100"
+                app:showAsAction="ifRoom"
+                android:title="@string/action_delete_old"/>
 
         </menu>
     </item>

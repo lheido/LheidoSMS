@@ -15,6 +15,10 @@ import android.text.format.Time;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
@@ -40,8 +44,8 @@ public class LheidoUtils {
     public static final String delivered_vibration_key = "receiver_vibrate_delivered";
     public static final String sms_onload_key = "sms_onload";
     public static final String text_size_key = "text_size";
-    public static final String hold_message_key = "delete_hold_sms";
-    public static final String hold_message_num_key = "limit_hold_sms";
+    public static final String old_message_key = "delete_old_sms";
+    public static final String old_message_num_key = "limit_old_sms";
     public static final String conversation_jazzyeffect_key = "conversation_jazzyeffect";
     public static final String list_conversations_jazzyeffect_key = "list_conversations_jazzyeffect";
     public static final String receiver_notification_key = "receiver_notification";
@@ -85,8 +89,8 @@ public class LheidoUtils {
         public boolean vibrate = true;
         public boolean vibrate_delivered = true;
         public float text_size = 13.0F;
-        public boolean hold_message = true;
-        public int hold_message_num = 500;
+        public boolean old_message = true;
+        public int old_message_num = 500;
         public boolean drawer = false;
         public int conversation_effect = 14;
         public int listConversation_effect = 14;
@@ -97,8 +101,8 @@ public class LheidoUtils {
             String pref_text_size = pref.getString(text_size_key, "13");
             this.conversation_effect = Integer.parseInt(pref.getString(conversation_jazzyeffect_key, "14"));
             this.listConversation_effect = Integer.parseInt(pref.getString(list_conversations_jazzyeffect_key, "14"));
-            this.hold_message = pref.getBoolean(hold_message_key, true);
-            this.hold_message_num = Integer.parseInt(pref.getString(hold_message_num_key, "500"));
+            this.old_message = pref.getBoolean(old_message_key, true);
+            this.old_message_num = Integer.parseInt(pref.getString(old_message_num_key, "500"));
             try{
                 this.max_conversation = Integer.parseInt(pref_nb_conv);
             }catch(Exception ex){
@@ -121,7 +125,26 @@ public class LheidoUtils {
             this.drawer = pref.getBoolean(drawer_start_opened_key, false);
         }
     }
-
+    public static void delete_sms(Context context, LheidoContact lcontact, int count){
+        Uri uri = Uri.parse("content://sms");
+        String[] projection = {"*"};
+        String selection = "thread_id = ?";
+        String[] selectionArgs = {""+lcontact.getConversationId()};
+        Cursor cr = context.getContentResolver().query(uri, projection, selection, selectionArgs, "date DESC");
+        if(cr != null){
+            ArrayList<Long> list_id_delete = new ArrayList<Long>();
+            long c = 0;
+            while(cr.moveToNext()){
+                if(c >= count)
+                    list_id_delete.add(cr.getLong(cr.getColumnIndexOrThrow("_id")));
+                c ++;
+            }
+            cr.close();
+            for(Long id : list_id_delete){
+                context.getContentResolver().delete(Uri.parse("content://sms/"+id), selection, selectionArgs);
+            }
+        }
+    }
     public static void retrieveContact(Context context, LheidoContact contact, String phone){
         Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phone));
         String[] projection = {ContactsContract.PhoneLookup.DISPLAY_NAME, ContactsContract.PhoneLookup._ID};
@@ -175,6 +198,19 @@ public class LheidoUtils {
         return contact;
     }
 
+
+    public static String getMessageCount(Context context, String id){
+        String res = null;
+        try {
+            final String[] projection = new String[]{"_id", "date", "message_count", "recipient_ids", "read", "type"};
+            Uri uri = Uri.parse("content://mms-sms/conversations?simple=true");
+            Cursor query = context.getContentResolver().query(uri, projection, "_id = " + id, null, "date DESC");
+            res = query.getString(query.getColumnIndex("message_count"));
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return res;
+    }
 
     public static abstract class ConversationListTask extends AsyncTask<Void, LheidoContact, Boolean> {
 
@@ -332,6 +368,176 @@ public class LheidoUtils {
                 return true;
             }
             return false;
+        }
+
+        @Override
+        abstract protected void onProgressUpdate (Message... prog);
+
+        public void link (FragmentActivity pActivity) {
+            act = new WeakReference<FragmentActivity>(pActivity);
+        }
+
+        public void execConversationTask(){
+            if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
+                executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            } else {
+                execute();
+            }
+        }
+    }
+
+    public static abstract class MMSTask extends AsyncTask<Void, Message, Boolean>{
+
+        private final String mms_uri = "content://mms";
+        private final String[] projection = {"*"};
+        private long last_sms = -1;
+        private String selection = "thread_id = ?";
+        private ArrayList<String> selectionArgs = new ArrayList<String>();
+
+        private final int conversationId;
+        private UserPref userPref;
+        private Context context;
+        protected WeakReference<FragmentActivity> act;
+
+        public MMSTask(FragmentActivity activity, int conversationId){
+            link(activity);
+            this.conversationId = conversationId;
+            selectionArgs.add(""+conversationId);
+        }
+
+        public MMSTask(FragmentActivity activity, int conversationId, long last_id) {
+            link(activity);
+            this.conversationId = conversationId;
+            last_sms = last_id;
+            selection = "thread_id = ? AND _id < ?";
+            selectionArgs.add("" + conversationId);
+            selectionArgs.add("" + last_sms);
+        }
+
+        @Override
+        protected void onPreExecute () {
+            if(act.get() != null){
+                context = act.get().getApplicationContext();
+                userPref = new UserPref();
+                userPref.setUserPref(PreferenceManager.getDefaultSharedPreferences(context));
+            }
+        }
+
+        @Override
+        protected void onPostExecute (Boolean result) {
+            if (act.get() != null) {
+                if(!result)
+                    Toast.makeText(context, "Problème génération conversation", Toast.LENGTH_LONG).show();
+            }
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            if(act.get() != null){
+                Cursor allMms = context.getContentResolver().query(
+                        Uri.parse(mms_uri),
+                        projection,
+                        selection,
+                        selectionArgs.toArray(new String[selectionArgs.size()]),
+                        "date DESC");
+
+                if(allMms != null){
+                    int count = 0;
+                    while(count < userPref.max_sms && allMms.moveToNext()){
+                        long mmsId = allMms.getLong(allMms.getColumnIndexOrThrow("_id"));
+                        int read = allMms.getInt(allMms.getColumnIndexOrThrow("read"));
+//Log.v("LHEIDO SMS LOG", "_id = "+mmsId+",\n body = "+string+",\n read = "+read);
+                        Message mms = getMMSData(mmsId, read);
+                        long date = allMms.getLong(allMms.getColumnIndex("date"));
+                        Time t = new Time();
+                        t.set(date);
+                        mms.setDate(t);
+                        publishProgress(mms);
+//add_sms(_id, string, type, read, t, 1, liste);
+                        count += 1;
+                    }
+                    allMms.close();
+                    if(count == 0 && last_sms == -1){
+                        Time now = new Time();
+                        now.setToNow();
+                        Message sms = new Message(-1L, "Pas de mms", "1", 0, now);
+                        publishProgress(sms);
+                    }
+                }
+                return true;
+            }
+            return false;
+        }
+
+        private Message getMMSData(long mmsId, int read) {
+            Message mms = null;
+            String selectionPart = "mid=" + mmsId;
+            Uri uri = Uri.parse("content://mms/part");
+            try{
+                mms = new Message();
+                Cursor cPart = context.getContentResolver().query(uri, new String[] {"*"}, selectionPart, null, null);
+                if(cPart != null) {
+                    for (int i = 0; i < cPart.getColumnCount(); i++) {
+                        Log.v("LheidoSMS Log MMS content://mms/part", ""+cPart.getColumnName(i));
+                    }
+                    if (cPart.moveToFirst()) {
+                        do {
+                            mms.setId(mmsId);
+                            mms.setRead(read > 0);
+                            String partId = cPart.getString(cPart.getColumnIndex("_id"));
+                            String type = cPart.getString(cPart.getColumnIndex("ct"));
+                            if ("image/jpeg".equals(type) || "image/bmp".equals(type) ||
+                                    "image/gif".equals(type) || "image/jpg".equals(type) ||
+                                    "image/png".equals(type)) {
+                                Uri pict = getMmsImageUri(partId);
+                                mms.setUriPicture(pict);
+                            }
+                            if ("text/plain".equals(type)) {
+                                String data = cPart.getString(cPart.getColumnIndex("_data"));
+                                String body;
+                                if (data != null) {
+                                    body = getMmsText(partId);
+                                } else {
+                                    body = cPart.getString(cPart.getColumnIndex("text"));
+                                }
+                                mms.setBody(body);
+                            }
+                        } while (cPart.moveToNext());
+                        cPart.close();
+                    }
+                }
+            }catch(Exception ex){ex.printStackTrace();}
+            return mms;
+        }
+
+        private String getMmsText(String partId) {
+            Uri partURI = Uri.parse("content://mms/part/" + partId);
+            InputStream is = null;
+            StringBuilder sb = new StringBuilder();
+            try {
+                is = context.getContentResolver().openInputStream(partURI);
+                if (is != null) {
+                    InputStreamReader isr = new InputStreamReader(is, "UTF-8");
+                    BufferedReader reader = new BufferedReader(isr);
+                    String temp = reader.readLine();
+                    while (temp != null) {
+                        sb.append(temp);
+                        temp = reader.readLine();
+                    }
+                }
+            } catch (IOException e) {e.printStackTrace();}
+            finally {
+                if (is != null) {
+                    try {
+                        is.close();
+                    } catch (IOException e) {e.printStackTrace();}
+                }
+            }
+            return sb.toString();
+        }
+
+        private Uri getMmsImageUri(String partId) {
+            return Uri.parse("content://mms/part/" + partId);
         }
 
         @Override

@@ -1,12 +1,14 @@
 package com.lheidosms.app;
 
 import android.app.PendingIntent;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -42,6 +44,7 @@ public class MainLheidoSMS extends ActionBarActivity
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private String mTitle;
+
     private ArrayList<Fragment> pages;
     private ViewPagerAdapter mViewPagerAdapter;
     private ViewPager mViewPager;
@@ -65,8 +68,10 @@ public class MainLheidoSMS extends ActionBarActivity
         userPref = new LheidoUtils.UserPref();
         userPref.setUserPref(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()));
 
+        mmsImgPath = null;
+
         pages = new ArrayList<Fragment>();
-        Log.v("LheidoSMS LOG", "onCreate() pages = "+pages);
+//        Log.v("LheidoSMS LOG", "onCreate() pages = "+pages);
         mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), pages);
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mViewPagerAdapter);
@@ -76,7 +81,7 @@ public class MainLheidoSMS extends ActionBarActivity
 
             @Override
             public void onPageSelected(int position) {
-                Log.v("LheidoSMS LOG", "======> onPageSelected           <====== "+position);
+//                Log.v("LheidoSMS LOG", "======> onPageSelected           <====== "+position);
                 currentPage = position;
                 if(send_button != null){
                     if(currentPage == PAGE_SMS)
@@ -124,11 +129,11 @@ public class MainLheidoSMS extends ActionBarActivity
     public void onNavigationDrawerItemSelected(int position, LheidoContact contact) {
         currentConversation = position;
         currentPage = 0;
+//        MMSFragment mmsFrag = MMSFragment.newInstance(position, contact);
         SMSFragment smsFrag = SMSFragment.newInstance(position, contact);
-//        SMSFragment smsFrag2 = SMSFragment.newInstance(position, contact);
         pages.clear();
+//        pages.add(mmsFrag);
         pages.add(smsFrag);
-//        pages.add(smsFrag2);
         mViewPagerAdapter.notifyDataSetChanged();
     }
 
@@ -306,6 +311,12 @@ public class MainLheidoSMS extends ActionBarActivity
             call.setData(Uri.parse("tel:" + frag.phoneContact));
             startActivity(call);
             return true;
+        } else if(id == R.id.action_voir_contact){
+            Uri contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, Global.conversationsList.get(currentConversation).getId());
+            Intent look = new Intent(Intent.ACTION_VIEW, contactUri);
+            look.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(look);
+            return true;
         } else if(id == R.id.action_new_sms){
             Toast.makeText(this, "TODO :P", Toast.LENGTH_SHORT).show();
             return true;
@@ -320,6 +331,9 @@ public class MainLheidoSMS extends ActionBarActivity
                 startActivity(intent);
             }
             return true;
+        } else if(id == R.id.action_delete_old){
+            Intent i = new Intent(getApplicationContext(), DeleteOldSMSService.class);
+            startService(i);
         }
         return super.onOptionsItemSelected(item);
     }

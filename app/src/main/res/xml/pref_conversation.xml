@@ -16,15 +16,16 @@
         android:title="@string/pref_text_size_dialog"/>
     <PreferenceCategory
         android:title="@string/hold_message"
-        android:key="hold_message">
+        android:key="old_message">
         <CheckBoxPreference
-            android:key="delete_hold_sms"
+            android:key="delete_old_sms"
             android:title="@string/delete_hold_sms"
             android:defaultValue="false" />
         <EditTextPreference
-            android:key="limit_hold_sms"
+            android:key="limit_old_sms"
             android:numeric="integer"
-            android:dependency="delete_hold_sms"
+            android:dependency="delete_old_sms"
+            android:title="@string/delete_old_nb"
             android:defaultValue="@string/limit_hold_sms"/>
     </PreferenceCategory>
 

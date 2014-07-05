@@ -1,6 +1,7 @@
 package com.lheidosms.app;
 
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.text.format.Time;
 
 /**
@@ -9,7 +10,7 @@ import android.text.format.Time;
 public class Message {
     private String phone_ = null;
     private String body_ = null;
-    private Bitmap img_ = null;
+    private Uri img_ = null;
     private Time date_ = null;
     private boolean right = false;
     private boolean read_ = false;
@@ -61,18 +62,18 @@ public class Message {
     }
 
     public void setBody(String string) {
-        this.body_ = string;
+        this.body_ = string != null ? string : "";
     }
 
     public String getBody() {
         return this.body_;
     }
 
-    public Bitmap getPicture() {
+    public Uri getUriPicture() {
         return this.img_;
     }
 
-    public void setPicture(Bitmap pict){
+    public void setUriPicture(Uri pict){
         this.img_ = pict;
     }
 
