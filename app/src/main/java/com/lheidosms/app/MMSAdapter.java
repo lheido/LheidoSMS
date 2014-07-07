@@ -4,6 +4,7 @@ package com.lheidosms.app;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -56,7 +57,7 @@ public class MMSAdapter extends BaseAdapter {
         if(convertView == null)
         {
             holder = new ConversationViewHolder();
-            convertView = LayoutInflater.from(mContext).inflate(R.layout.message, parent, false);
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.message_mms, parent, false);
             holder.mBody = (TextView) convertView.findViewById(R.id.message);
             holder.mPict = (ImageView) convertView.findViewById(R.id.m_pict);
             holder.mdate = (TextView) convertView.findViewById(R.id.date_message);
@@ -70,10 +71,11 @@ public class MMSAdapter extends BaseAdapter {
         holder.mBody.setText(message.getBody());
         holder.mBody.setTextSize(userPref.text_size);
         holder.mdate.setText(message.getDate());
-        if(message.getUriPicture() != null)
+        if(message.getUriPicture() != null) {
             Picasso.with(mContext).load(message.getUriPicture()).fit().centerCrop().into(holder.mPict);
+        }
         //RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) holder.mLayout.getLayoutParams();
-        if(message.isRight()) {
+        if(LheidoUtils.isRight(mContext, message.getSender())) {
             holder.mLayout.setGravity(Gravity.RIGHT);
             holder.mLayout.setPadding(42, 0, 0, 0);
             holder.mBody.setBackgroundColor(mContext.getResources().getColor(R.color.grey_mid_high));

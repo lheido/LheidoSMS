@@ -15,13 +15,13 @@ public class DeleteOldSMSService extends Service {
 
     @Override
     public void onCreate() {
-        Log.v(SERVICE_TAG, "=====> Service start! <=====");
+//        Log.v(SERVICE_TAG, "=====> Service start! <=====");
         context = getApplicationContext();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
-        Log.v(SERVICE_TAG, "=====> onStartCommand <=====");
+//        Log.v(SERVICE_TAG, "=====> onStartCommand <=====");
         DeleteAllOldTask delete = new DeleteAllOldTask();
         delete.execTask();
         return START_STICKY;
@@ -34,9 +34,7 @@ public class DeleteOldSMSService extends Service {
 
     @Override
     public void onDestroy(){
-        Log.v(SERVICE_TAG, "=====> Service done! <=====");
-//        getApplication().unregisterReceiver(smsReceiver);
-//        getApplication().unregisterReceiver(mBroadcast);
+//        Log.v(SERVICE_TAG, "=====> Service done! <=====");
         super.onDestroy();
     }
 
@@ -45,22 +43,19 @@ public class DeleteOldSMSService extends Service {
         @Override
         protected Boolean doInBackground(Void... voids) {
             LheidoUtils.UserPref userPref = new LheidoUtils.UserPref();
-            userPref.setUserPref(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()));
+            userPref.setUserPref(PreferenceManager.getDefaultSharedPreferences(context));
             for(LheidoContact c : Global.conversationsList){
-                Log.v(SERVICE_TAG, "contact = "+c.getName());
                 if(c.getNb_sms() > userPref.old_message_num){
-                    Log.v(SERVICE_TAG, "contact = "+c.getName()+", true");
                     LheidoUtils.delete_sms(context, c, userPref.old_message_num);
                     int i = Global.conversationsList.indexOf(c);
                     String nb_sms_updated = LheidoUtils.getMessageCount(context, c.getConversationId());
                     if(nb_sms_updated != null) {
                         Global.conversationsList.get(i).setNb_sms(nb_sms_updated);
-                        Log.v(SERVICE_TAG, "contact = " + c.getName() + ", nb_sms" + Global.conversationsList.get(i).getNb_sms());
                         LheidoUtils.Send.notifyDataChanged(context);
                     }
                 }
             }
-            return true;
+            return null;
         }
 
         @Override
@@ -75,7 +70,6 @@ public class DeleteOldSMSService extends Service {
                 execute();
             }
         }
-
     }
 
 }

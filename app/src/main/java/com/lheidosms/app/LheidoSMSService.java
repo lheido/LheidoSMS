@@ -193,44 +193,4 @@ public class LheidoSMSService extends Service {
             }
         }
     }
-
-    private final class DeleteAllOldTask extends AsyncTask<Void, Message, Boolean>{
-
-        @Override
-        protected Boolean doInBackground(Void... voids) {
-            LheidoUtils.UserPref userPref = new LheidoUtils.UserPref();
-            userPref.setUserPref(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()));
-            for(LheidoContact c : Global.conversationsList){
-                if(c.getNb_sms() > userPref.old_message_num){
-                    delete_sms(c.getConversationId());
-                }
-            }
-            return null;
-        }
-    }
-
-    public void delete_sms(String conversationId){
-        LheidoUtils.UserPref userPref = new LheidoUtils.UserPref();
-        userPref.setUserPref(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()));
-        Uri uri = Uri.parse("content://sms");
-        String[] projection = {"*"};
-        String selection = "thread_id = ?";
-        String[] selectionArgs = {conversationId};
-        try {
-            Cursor cr = getContentResolver().query(uri, projection, selection, selectionArgs, "date DESC");
-            if (cr != null) {
-                ArrayList<Long> list_id_delete = new ArrayList<Long>();
-                long c = 0;
-                while (cr.moveToNext()) {
-                    if (c >= userPref.old_message_num)
-                        list_id_delete.add(cr.getLong(cr.getColumnIndexOrThrow("_id")));
-                    c++;
-                }
-                cr.close();
-                for (Long id : list_id_delete) {
-                    getContentResolver().delete(Uri.parse("content://sms/" + id), selection, selectionArgs);
-                }
-            }
-        }catch (Exception e){e.printStackTrace();}
-    }
 }

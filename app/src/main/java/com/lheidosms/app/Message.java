@@ -1,14 +1,10 @@
 package com.lheidosms.app;
 
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.text.format.Time;
 
-/**
- * Created by lheido on 04/06/14.
- */
 public class Message {
-    private String phone_ = null;
+    private String sender = null;
     private String body_ = null;
     private Uri img_ = null;
     private Time date_ = null;
@@ -18,16 +14,14 @@ public class Message {
 
     public Message(){}
 
-    public Message(long _id, String body, String type, int deli,Time t){
+    public Message(long _id, String body, String sender, int deli,Time t){
         if(_id != -1)
             this._id = _id;
         this.body_ = body;
         this.date_ = t;
-        if(type.equals("2")){
-            this.right = true;
-            if(deli == 0) this.read_ = true;
-            else this.read_ = false;
-        }
+        this.sender = sender;
+        if(deli == 0) this.read_ = true;
+        else this.read_ = false;
     }
 
     public static String formatDate(Time date){
@@ -77,12 +71,12 @@ public class Message {
         this.img_ = pict;
     }
 
-    public boolean isRight() {
-        return right;
+    public String getSender(){
+        return this.sender;
     }
 
-    public void setRight(boolean bool) {
-        this.right = bool;
+    public void setSender(String s){
+        this.sender = s;
     }
 
     public boolean isRead() {
@@ -91,9 +85,6 @@ public class Message {
 
     public void setRead(boolean b) {
         this.read_ = b;
-    }
-    public String getPhone() {
-        return this.phone_;
     }
 
     public void setId(long sms_id) {

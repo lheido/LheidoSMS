@@ -67,7 +67,7 @@ public class ConversationAdapter extends BaseAdapter {
         holder.mdate.setText(message.getDate());
 
         //RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) holder.mLayout.getLayoutParams();
-        if(message.isRight()) {
+        if(LheidoUtils.isRight(mContext, message.getSender())) {
 
             holder.mLayout.setGravity(Gravity.RIGHT);
             holder.mLayout.setPadding(42, 0, 0, 0);

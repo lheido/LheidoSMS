@@ -57,5 +57,6 @@
     <string name="action_voir_contact">Voir contact</string>
     <string name="action_delete_old">Delete old sms</string>
     <string name="delete_old_nb">Nombre de sms</string>
+    <string name="delete_service_name">LheidoSMS DeleteOldSms Service</string>
 
 </resources>

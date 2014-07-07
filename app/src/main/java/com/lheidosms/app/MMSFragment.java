@@ -90,18 +90,18 @@ public class MMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
         gen_list.execConversationTask();
     }
 
-    public void add_sms(long _id, String body, String type, int deli,Time t, int position){
-        Message sms = new Message();
-        if(_id != -1)
-            sms.setId(_id);
-        sms.setBody(body);
-        sms.setDate(t);
-        if(type.equals("2")){
-            sms.setRight(true);
-            if(deli == 0)
-                sms.setRead(true);
-            else sms.setRead(false);
-        }
+    public void add_sms(long _id, String body, String sender, int deli,Time t, int position){
+        Message sms = new Message(_id, body, sender, deli, t);
+//        if(_id != -1)
+//            sms.setId(_id);
+//        sms.setBody(body);
+//        sms.setDate(t);
+//        if(type.equals("2")){
+//            sms.setRight(true);
+//            if(deli == 0)
+//                sms.setRead(true);
+//            else sms.setRead(false);
+//        }
         add_sms_(sms, position);
     }
 
@@ -125,7 +125,7 @@ public class MMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
                     //on est dans la bonne conversation !
                     Time t = new Time();
                     t.set(date);
-                    add_sms(-1L, body, "", 0, t, 0);
+                    add_sms(-1L, body, phoneContact, 0, t, 0);
                     conversationMmsAdapter.notifyDataSetChanged();
                     conversation_nb_sms += 1;
                     liste.smoothScrollToPosition(liste.getBottom());

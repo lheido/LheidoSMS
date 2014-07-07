@@ -129,11 +129,11 @@ public class MainLheidoSMS extends ActionBarActivity
     public void onNavigationDrawerItemSelected(int position, LheidoContact contact) {
         currentConversation = position;
         currentPage = 0;
-//        MMSFragment mmsFrag = MMSFragment.newInstance(position, contact);
+        MMSFragment mmsFrag = MMSFragment.newInstance(position, contact);
         SMSFragment smsFrag = SMSFragment.newInstance(position, contact);
         pages.clear();
-//        pages.add(mmsFrag);
         pages.add(smsFrag);
+        pages.add(mmsFrag);
         mViewPagerAdapter.notifyDataSetChanged();
     }
 
@@ -188,7 +188,7 @@ public class MainLheidoSMS extends ActionBarActivity
                     if (body.length() > 0) {
                         Message new_sms = new Message();
                         new_sms.setBody(body);
-                        new_sms.setRight(true);
+                        new_sms.setSender(LheidoUtils.getUserPhone(getApplicationContext()));
                         new_sms.setRead(false);
                         Time now = new Time();
                         now.setToNow();
@@ -196,7 +196,7 @@ public class MainLheidoSMS extends ActionBarActivity
                         long thread_id = Long.parseLong(Global.conversationsList.get(currentConversation).getConversationId());
                         String phoneContact = Global.conversationsList.get(currentConversation).getPhone();
                         long new_id = LheidoUtils.store_sms(getApplicationContext(), new_sms, thread_id);
-                        ((SMSFragment) pages.get(PAGE_SMS)).userAddSms(new_id, body, "2", 32, now, 0);
+                        ((SMSFragment) pages.get(PAGE_SMS)).userAddSms(new_id, body, new_sms.getSender(), 32, now, 0);
                         sms_body.setText(R.string.empty_sms);
                         SmsManager manager = SmsManager.getDefault();
                         ArrayList<String> bodyPart = manager.divideMessage(body);
