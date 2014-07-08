@@ -2,6 +2,7 @@ package com.lheidosms.app;
 
 import android.content.Context;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -12,10 +13,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
 import com.twotoasters.jazzylistview.JazzyListView;
 
 import java.util.ArrayList;
@@ -39,6 +43,7 @@ public class MMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
     private int list_conversationId;
     private LheidoUtils.UserPref userPref;
     private JazzyListView liste;
+    private ImageButton zoom;
 
     public static MMSFragment newInstance(int position, LheidoContact contact) {
         MMSFragment fragment = new MMSFragment();
@@ -68,6 +73,14 @@ public class MMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
             liste = (JazzyListView) rootView.findViewById(R.id.list_conversation_mms);
             liste.setTransitionEffect(userPref.conversation_effect);
             liste.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
+            liste.setOnItemClickListener(new MMSItemClickListener());
+            zoom = (ImageButton)rootView.findViewById(R.id.expanded_image);
+            zoom.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    zoom.setVisibility(View.INVISIBLE);
+                }
+            });
             conversation_nb_sms = getArguments().getLong(ARG_CONVERSATION_COUNT);
             conversationMmsAdapter = new MMSAdapter(context, Message_list);
             liste.setAdapter(conversationMmsAdapter);
@@ -91,18 +104,7 @@ public class MMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
     }
 
     public void add_sms(long _id, String body, String sender, int deli,Time t, int position){
-        Message sms = new Message(_id, body, sender, deli, t);
-//        if(_id != -1)
-//            sms.setId(_id);
-//        sms.setBody(body);
-//        sms.setDate(t);
-//        if(type.equals("2")){
-//            sms.setRight(true);
-//            if(deli == 0)
-//                sms.setRead(true);
-//            else sms.setRead(false);
-//        }
-        add_sms_(sms, position);
+        add_sms_(new Message(_id, body, sender, deli, t), position);
     }
 
     public void add_sms_(Message message, int i) {
@@ -213,5 +215,18 @@ public class MMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
             }
         };
         more.execConversationTask();
+    }
+
+    private class MMSItemClickListener implements android.widget.AdapterView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+            Uri uri = Message_list.get(Message_list.size()-1-position).getUriPicture();
+            try{
+                Picasso.with(context).load(uri).resize(zoom.getMeasuredWidth()-zoom.getPaddingLeft()*2, zoom.getMeasuredHeight()-zoom.getPaddingTop()*2).centerInside().into(zoom);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            zoom.setVisibility(View.VISIBLE);
+        }
     }
 }

@@ -133,19 +133,7 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
     }
 
     public void add_sms(long _id, String body, String sender, int deli,Time t, int position){
-        Message sms = new Message(_id, body, sender, deli, t);
-//        if(_id != -1)
-//            sms.setId(_id);
-//        sms.setBody(body);
-//        sms.setDate(t);
-//        if(type.equals("2")){
-//            sms.setRight(true);
-//            if(deli == 0)
-//                sms.setRead(true);
-//            else sms.setRead(false);
-//        }
-
-        add_sms_(sms, position);
+        add_sms_(new Message(_id, body, sender, deli, t), position);
     }
 
     public void add_sms_(Message sms, int position){
