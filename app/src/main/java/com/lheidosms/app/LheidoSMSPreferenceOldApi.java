@@ -67,7 +67,7 @@ public class LheidoSMSPreferenceOldApi extends ActionBarActivity {
 
     }
 
-    private class PreferenceOldApi extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
+    public static class PreferenceOldApi extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
         private int res;
 

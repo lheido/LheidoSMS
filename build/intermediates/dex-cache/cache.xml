@@ -2,52 +2,52 @@
 <pre-dex-items>
 
     <item
-        dex="/home/lheido/AndroidStudioProjects/LheidoSMS/app/build/intermediates/pre-dexed/debug/classes-104c6e0499b0ece37b430a776695c41aabaaa1c6.jar"
-        jar="/home/lheido/AndroidStudioProjects/LheidoSMS/build/intermediates/exploded-aar/com.android.support/appcompat-v7/19.1.0/classes.jar"
+        dex="/home/ubuntu/projetsAndroid/LheidoSMS/app/build/intermediates/pre-dexed/debug/support-v13-18.0.0-4d11bb0df55b36d294453005dedb8f9aace9ed6b.jar"
+        jar="/home/ubuntu/android-studio/sdk/extras/android/m2repository/com/android/support/support-v13/18.0.0/support-v13-18.0.0.jar"
         jumboMode="false"
         revision="19.1.0"
-        sha1="3499ceba05ca1f6037c6a2fad73df8f636224a28"/>
+        sha1="6a2fa0c0b54359ee359fd40244e1ce2dc6cab408"/>
     <item
-        dex="/home/lheido/AndroidStudioProjects/LheidoSMS/app/build/intermediates/pre-dexed/debug/library-2.4.0-93303798f41e97ae55b5219adc5c665b2ab4ddf9.jar"
-        jar="/home/lheido/.gradle/caches/modules-2/files-2.1/com.nineoldandroids/library/2.4.0/e9b63380f3a242dbdbf103a2355ad7e43bad17cb/library-2.4.0.jar"
-        jumboMode="false"
-        revision="19.1.0"
-        sha1="e9b63380f3a242dbdbf103a2355ad7e43bad17cb"/>
-    <item
-        dex="/home/lheido/AndroidStudioProjects/LheidoSMS/app/build/intermediates/pre-dexed/debug/classes-69360b57aaf2f157ba0f18c40716a5de17770293.jar"
-        jar="/home/lheido/AndroidStudioProjects/LheidoSMS/build/intermediates/exploded-aar/com.github.machinarius/preferencefragment/0.1.1/classes.jar"
+        dex="/home/ubuntu/projetsAndroid/LheidoSMS/app/build/intermediates/pre-dexed/debug/classes-b18aec5ed98bf0a455e2f2f6bd7859a970a434a1.jar"
+        jar="/home/ubuntu/projetsAndroid/LheidoSMS/build/intermediates/exploded-aar/com.github.machinarius/preferencefragment/0.1.1/classes.jar"
         jumboMode="false"
         revision="19.1.0"
         sha1="648463e00c6883d01b6c11a6781776203334b6fc"/>
     <item
-        dex="/home/lheido/AndroidStudioProjects/LheidoSMS/app/build/intermediates/pre-dexed/debug/support-v4-19.1.0-39c13fcf82814051c6b10d2fdd2c6b4bac3aa2c1.jar"
-        jar="/home/lheido/android-studio/sdk/extras/android/m2repository/com/android/support/support-v4/19.1.0/support-v4-19.1.0.jar"
+        dex="/home/ubuntu/projetsAndroid/LheidoSMS/app/build/intermediates/pre-dexed/debug/library-2.4.0-346eeedcb345faf5d272eecbeebb7ca636e978d5.jar"
+        jar="/home/ubuntu/.gradle/caches/modules-2/files-2.1/com.nineoldandroids/library/2.4.0/e9b63380f3a242dbdbf103a2355ad7e43bad17cb/library-2.4.0.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="e9b63380f3a242dbdbf103a2355ad7e43bad17cb"/>
+    <item
+        dex="/home/ubuntu/projetsAndroid/LheidoSMS/app/build/intermediates/pre-dexed/debug/support-v4-19.1.0-8d80fdcdd4e65520aacf6bb604b00660dba36050.jar"
+        jar="/home/ubuntu/android-studio/sdk/extras/android/m2repository/com/android/support/support-v4/19.1.0/support-v4-19.1.0.jar"
         jumboMode="false"
         revision="19.1.0"
         sha1="85f201b380937e61a9dce6ca90ccf6872abbfb67"/>
     <item
-        dex="/home/lheido/AndroidStudioProjects/LheidoSMS/app/build/intermediates/pre-dexed/debug/picasso-2.3.1-7349c8264447fe1732347f6278370c8280a3a45e.jar"
-        jar="/home/lheido/.gradle/caches/modules-2/files-2.1/com.squareup.picasso/picasso/2.3.1/7ed01353649330c692473b85d5c64db4218338db/picasso-2.3.1.jar"
+        dex="/home/ubuntu/projetsAndroid/LheidoSMS/app/build/intermediates/pre-dexed/debug/picasso-2.3.1-cffde4bbf241096ed46576c3f84edaca79c32618.jar"
+        jar="/home/ubuntu/.gradle/caches/modules-2/files-2.1/com.squareup.picasso/picasso/2.3.1/7ed01353649330c692473b85d5c64db4218338db/picasso-2.3.1.jar"
         jumboMode="false"
         revision="19.1.0"
         sha1="7ed01353649330c692473b85d5c64db4218338db"/>
     <item
-        dex="/home/lheido/AndroidStudioProjects/LheidoSMS/app/build/intermediates/pre-dexed/debug/classes-e00e9e373bed0d060c2303655009c162b9dfd372.jar"
-        jar="/home/lheido/AndroidStudioProjects/LheidoSMS/build/intermediates/exploded-aar/eu.inmite.android.lib/android-styled-dialogs/1.1.2/classes.jar"
+        dex="/home/ubuntu/projetsAndroid/LheidoSMS/app/build/intermediates/pre-dexed/debug/classes-b16ee53899c0a2164a20d77fee0457d9f52b7586.jar"
+        jar="/home/ubuntu/projetsAndroid/LheidoSMS/build/intermediates/exploded-aar/com.android.support/appcompat-v7/19.1.0/classes.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="3499ceba05ca1f6037c6a2fad73df8f636224a28"/>
+    <item
+        dex="/home/ubuntu/projetsAndroid/LheidoSMS/app/build/intermediates/pre-dexed/debug/classes-1b104f1b504be374ab7472d4417e818b03416886.jar"
+        jar="/home/ubuntu/projetsAndroid/LheidoSMS/build/intermediates/exploded-aar/eu.inmite.android.lib/android-styled-dialogs/1.1.2/classes.jar"
         jumboMode="false"
         revision="19.1.0"
         sha1="f08d50cb07664faae4a99d74de117b7adef5b82b"/>
     <item
-        dex="/home/lheido/AndroidStudioProjects/LheidoSMS/app/build/intermediates/pre-dexed/debug/classes-250bd452bfd86953023306d1cf0093ab896958e7.jar"
-        jar="/home/lheido/AndroidStudioProjects/LheidoSMS/build/intermediates/exploded-aar/com.twotoasters.jazzylistview/library/1.0.1/classes.jar"
+        dex="/home/ubuntu/projetsAndroid/LheidoSMS/app/build/intermediates/pre-dexed/debug/classes-8e1d04b3fc8aeba53c601bfadc8924da3e45679a.jar"
+        jar="/home/ubuntu/projetsAndroid/LheidoSMS/build/intermediates/exploded-aar/com.twotoasters.jazzylistview/library/1.0.1/classes.jar"
         jumboMode="false"
         revision="19.1.0"
         sha1="57b2e2d8ba828b125939f621aa74f7edabe7aa71"/>
-    <item
-        dex="/home/lheido/AndroidStudioProjects/LheidoSMS/app/build/intermediates/pre-dexed/debug/support-v13-18.0.0-13eed65b4fb795c6546607ee767629094ebc08f4.jar"
-        jar="/home/lheido/android-studio/sdk/extras/android/m2repository/com/android/support/support-v13/18.0.0/support-v13-18.0.0.jar"
-        jumboMode="false"
-        revision="19.1.0"
-        sha1="6a2fa0c0b54359ee359fd40244e1ce2dc6cab408"/>
 
 </pre-dex-items>

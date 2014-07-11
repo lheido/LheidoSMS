@@ -307,7 +307,8 @@ public class MainLheidoSMS extends ActionBarActivity
         int id = item.getItemId();
         if(id == R.id.action_call){
             Intent call = new Intent(Intent.ACTION_CALL);
-            SMSFragment frag = (SMSFragment)getSupportFragmentManager().findFragmentById(R.id.container);
+            SMSFragment frag = (SMSFragment)pages.get(PAGE_SMS);
+//            SMSFragment frag = (SMSFragment)getSupportFragmentManager().findFragmentById(R.id.container);
             call.setData(Uri.parse("tel:" + frag.phoneContact));
             startActivity(call);
             return true;
