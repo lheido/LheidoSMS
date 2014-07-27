@@ -20,9 +20,9 @@ How to use
 
 Screenshots
 -----------
-![alt text](https://github.com/lheido/LheidoSMS/screenshots/conversation_list.png "conversation list")
+![alt text](/screenshots/conversation_list.png?raw=true "conversation list")
 
-![alt text](https://github.com/lheido/LheidoSMS/screenshots/conversation.png "conversation")
+![alt text](/screenshots/conversation.png?raw=true "conversation")
 
 ToDo
 ----
