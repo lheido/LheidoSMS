@@ -78,7 +78,6 @@ public class NavigationDrawerFragment extends Fragment {
     private BroadcastReceiver notificationsBroadcast;
     private BroadcastReceiver mBroadcast ;
     private LheidoUtils.ConversationListTask gen_list;
-    private boolean onPauseDrawerOpened = false;
 
     public NavigationDrawerFragment() {}
 
@@ -278,7 +277,7 @@ public class NavigationDrawerFragment extends Fragment {
         if (mDrawerListView != null) {
             //mDrawerListView.setItemChecked(position, true);
         }
-        if (mDrawerLayout != null && !onPauseDrawerOpened) {
+        if (mDrawerLayout != null) {
             mDrawerLayout.closeDrawer(mFragmentContainerView);
         }
         if (mCallbacks != null) {
@@ -286,7 +285,6 @@ public class NavigationDrawerFragment extends Fragment {
             LheidoUtils.Send.newMessageRead(getActivity().getApplicationContext(), position, contact.getPhone());
             Log.v(DRAWER_LOG, "mCallbacks not null, "+position+", "+contact);
             mCallbacks.onNavigationDrawerItemSelected(position, contact);
-            if(!onPauseDrawerOpened) getActionBar().setTitle(contact.getName());
         }
     }
 
@@ -376,7 +374,6 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public void onPause(){
         super.onPause();
-        onPauseDrawerOpened = isDrawerOpen();
     }
 
     @Override

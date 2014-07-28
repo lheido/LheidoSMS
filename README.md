@@ -7,7 +7,7 @@ How to use
 ----------
  - Swipe from left edge to right : show conversations list.
  - Long tap on message : copy message
- - When conversation list is opened :
+ - When conversation list is open :
     - On top right menu :
         - New conversation (coming soon).
         - Settings.

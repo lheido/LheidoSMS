@@ -156,7 +156,7 @@ public class MainLheidoSMS extends ActionBarActivity
 //        liste.setOnItemClickListener(new ListView.OnItemClickListener(){
 //            @Override
 //            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-////                sms_body.clearFocus();
+//                sms_body.clearFocus();
 //                liste.requestFocus();
 //            }
 //        });
@@ -333,8 +333,12 @@ public class MainLheidoSMS extends ActionBarActivity
             }
             return true;
         } else if(id == R.id.action_delete_old){
-            Intent i = new Intent(getApplicationContext(), DeleteOldSMSService.class);
-            startService(i);
+            if(userPref.old_message) {
+                Intent i = new Intent(getApplicationContext(), DeleteOldSMSService.class);
+                startService(i);
+            }else{
+                Toast.makeText(this, R.string.old_message_false, Toast.LENGTH_SHORT).show();
+            }
         }
         return super.onOptionsItemSelected(item);
     }

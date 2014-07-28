@@ -59,5 +59,6 @@
     <string name="delete_old_nb">Nombre de sms</string>
     <string name="delete_service_name">LheidoSMS DeleteOldSms Service</string>
     <string name="description_zoom_mms">mms zoom</string>
+    <string name="old_message_false">L\'option supprimer anciens messages n\'est pas activée</string>
 
 </resources>
