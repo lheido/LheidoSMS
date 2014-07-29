@@ -132,8 +132,10 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
         swipeLayout.setOnRefreshListener(this);
     }
 
-    public void add_sms(long _id, String body, String sender, int deli,Time t, int position){
-        add_sms_(new Message(_id, body, sender, deli, t), position);
+    public void add_sms(String phone, long _id, String body, String sender, int deli,Time t, int position){
+        Message sms = new Message(_id, body, sender, deli, t);
+        sms.setSender(phone);
+        add_sms_(sms, position);
     }
 
     public void add_sms_(Message sms, int position){
@@ -146,8 +148,7 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
     }
 
     public void userAddSms(long new_id, String body, String s, int i, Time now, int i1){
-        add_sms(new_id, body, s, i, now, i1);
-        conversationAdapter.notifyDataSetChanged();
+        add_sms("", new_id, body, s, i, now, i1);
         conversation_nb_sms += 1;
         liste.smoothScrollToPosition(liste.getBottom());
     }
@@ -185,8 +186,7 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
                     //on est dans la bonne conversation !
                     Time t = new Time();
                     t.set(date);
-                    add_sms(-1L, body, "", 0, t, 0);
-                    conversationAdapter.notifyDataSetChanged();
+                    add_sms(phone, -1L, body, "", 0, t, 0);
                     conversation_nb_sms += 1;
                     liste.smoothScrollToPosition(liste.getBottom());
                     LheidoUtils.Send.newMessageRead(context, list_conversationId, phoneContact);
