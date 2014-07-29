@@ -126,7 +126,7 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
                 return true;
             }
         });
-        conversationAdapter = new ConversationAdapter(context, R.layout.message, Message_list);
+        conversationAdapter = new ConversationAdapter(context, phoneContact, Message_list);
         liste.setAdapter(conversationAdapter);
         swipeLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_container);
         swipeLayout.setOnRefreshListener(this);

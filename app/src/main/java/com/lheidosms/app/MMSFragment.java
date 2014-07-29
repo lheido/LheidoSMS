@@ -82,7 +82,7 @@ public class MMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
                 }
             });
             conversation_nb_sms = getArguments().getLong(ARG_CONVERSATION_COUNT);
-            conversationMmsAdapter = new MMSAdapter(context, Message_list);
+            conversationMmsAdapter = new MMSAdapter(context, phoneContact, Message_list);
             liste.setAdapter(conversationMmsAdapter);
             swipeLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_container);
             swipeLayout.setOnRefreshListener(this);

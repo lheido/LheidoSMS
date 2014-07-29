@@ -4,6 +4,7 @@ package com.lheidosms.app;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
+import android.telephony.PhoneNumberUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -28,10 +29,12 @@ public class MMSAdapter extends BaseAdapter {
     //private LayoutInflater mInflater;
     private ArrayList<Message> mListSms;
     private Context mContext;
+    private String mPhoneContact;
 
-    public MMSAdapter(Context context, ArrayList<Message> conversation){
+    public MMSAdapter(Context context,String contactPhone, ArrayList<Message> conversation){
         mContext = context;
         mListSms = conversation;
+        mPhoneContact = contactPhone;
         userPref = new LheidoUtils.UserPref();
         userPref.setUserPref(PreferenceManager.getDefaultSharedPreferences(mContext));
 //mInflater = LayoutInflater.from(mContext);
@@ -75,7 +78,7 @@ public class MMSAdapter extends BaseAdapter {
             Picasso.with(mContext).load(message.getUriPicture()).fit().centerCrop().into(holder.mPict);
         }
         //RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) holder.mLayout.getLayoutParams();
-        if(LheidoUtils.isRight(mContext, message.getSender())) {
+        if(!PhoneNumberUtils.compare(mPhoneContact, message.getSender())) {
             holder.mLayout.setGravity(Gravity.RIGHT);
             holder.mLayout.setPadding(42, 0, 0, 0);
             holder.mBody.setBackgroundColor(mContext.getResources().getColor(R.color.grey_mid_high));

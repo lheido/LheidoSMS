@@ -3,6 +3,7 @@ package com.lheidosms.app;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
+import android.telephony.PhoneNumberUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 public class ConversationAdapter extends BaseAdapter {
+    private final String mPhoneContact;
     /**
      * Récupérer un item de la liste en fonction de sa position
      * @param position - Position de l'item à récupérer
@@ -24,9 +26,10 @@ public class ConversationAdapter extends BaseAdapter {
     private ArrayList<Message> mListSms;
     private Context mContext;
 
-    public ConversationAdapter(Context context, int ressource, ArrayList<Message> conversation){
+    public ConversationAdapter(Context context,String contactPhone, ArrayList<Message> conversation){
         mContext = context;
         mListSms = conversation;
+        mPhoneContact = contactPhone;
         userPref = new LheidoUtils.UserPref();
         userPref.setUserPref(PreferenceManager.getDefaultSharedPreferences(mContext));
 //mInflater = LayoutInflater.from(mContext);
@@ -67,7 +70,7 @@ public class ConversationAdapter extends BaseAdapter {
         holder.mdate.setText(message.getDate());
 
         //RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) holder.mLayout.getLayoutParams();
-        if(LheidoUtils.isRight(mContext, message.getSender())) {
+        if(!PhoneNumberUtils.compare(mPhoneContact, message.getSender())) {
 
             holder.mLayout.setGravity(Gravity.RIGHT);
             holder.mLayout.setPadding(42, 0, 0, 0);
