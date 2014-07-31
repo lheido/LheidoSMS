@@ -65,6 +65,7 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
     private ConversationAdapter conversationAdapter;
     private BroadcastReceiver mBroadCast;
     private SwipeRefreshLayout swipeLayout;
+    private boolean mOnPause = false;
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -189,7 +190,8 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
                     add_sms(phone, -1L, body, "", 0, t, 0);
                     conversation_nb_sms += 1;
                     liste.smoothScrollToPosition(liste.getBottom());
-                    LheidoUtils.Send.newMessageRead(context, list_conversationId, phoneContact);
+                    if(!mOnPause)
+                        LheidoUtils.Send.newMessageRead(context, list_conversationId, phoneContact);
                 }
             }
 
@@ -238,8 +240,15 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
     }
 
     @Override
+    public void onPause(){
+        super.onPause();
+        mOnPause = true;
+    }
+
+    @Override
     public void onResume(){
         super.onResume();
+        mOnPause = false;
         updateFragment();
     }
 
@@ -252,6 +261,8 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
             }
             liste.setTransitionEffect(userPref.conversation_effect);
         }
+        Log.v("onResume", "id = "+list_conversationId);
+        LheidoUtils.Send.newMessageRead(context, list_conversationId, phoneContact);
     }
 
     @Override

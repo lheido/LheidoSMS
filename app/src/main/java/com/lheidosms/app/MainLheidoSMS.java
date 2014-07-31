@@ -25,6 +25,8 @@ import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
@@ -58,6 +60,7 @@ public class MainLheidoSMS extends ActionBarActivity
     private ImageButton send_button;
     private int PICK_IMAGE = 1;
     protected String mmsImgPath = null;
+    private ArrayList<LheidoContact> contactsList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +72,7 @@ public class MainLheidoSMS extends ActionBarActivity
         userPref.setUserPref(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()));
 
         mmsImgPath = null;
+        contactsList = new ArrayList<LheidoContact>();
 
         pages = new ArrayList<Fragment>();
 //        Log.v("LheidoSMS LOG", "onCreate() pages = "+pages);
@@ -193,9 +197,10 @@ public class MainLheidoSMS extends ActionBarActivity
                         Time now = new Time();
                         now.setToNow();
                         new_sms.setDate(now);
-                        long thread_id = Long.parseLong(Global.conversationsList.get(currentConversation).getConversationId());
+//                        long thread_id = Long.parseLong(Global.conversationsList.get(currentConversation).getConversationId());
                         String phoneContact = Global.conversationsList.get(currentConversation).getPhone();
-                        long new_id = LheidoUtils.store_sms(getApplicationContext(), new_sms, thread_id);
+                        long thread_id = LheidoUtils.getOrCreateThreadId(getApplicationContext(), phoneContact);
+                        long new_id = LheidoUtils.store_sms(getApplicationContext(), phoneContact, new_sms, thread_id);
                         ((SMSFragment) pages.get(PAGE_SMS)).userAddSms(new_id, body, new_sms.getSender(), 32, now, 0);
                         sms_body.setText(R.string.empty_sms);
                         SmsManager manager = SmsManager.getDefault();
@@ -243,6 +248,7 @@ public class MainLheidoSMS extends ActionBarActivity
                         ""+currentConversation+"\n"+
                                 Global.conversationsList.get(currentConversation).getPhone()+"\n"+
                                 Global.conversationsList.get(currentConversation).getName()+"\n"+
+                                Global.conversationsList.get(currentConversation).getConversationId()+"\n"+
                                 "page "+((currentPage==PAGE_SMS)?"sms":"mms"),
                         Toast.LENGTH_LONG).show();
                 return true;
@@ -318,8 +324,87 @@ public class MainLheidoSMS extends ActionBarActivity
             look.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(look);
             return true;
-        } else if(id == R.id.action_new_sms){
-            Toast.makeText(this, "TODO :P", Toast.LENGTH_SHORT).show();
+        } else if(id == R.id.action_new_conversation){
+            if(contactsList.isEmpty()){
+                LheidoUtils.GetContacts task = new LheidoUtils.GetContacts(this) {
+                    @Override
+                    protected void onProgressUpdate(LheidoContact... prog) {
+                        contactsList.add(prog[0]);
+                    }
+                };
+                task.execTask();
+            }
+            final Context context = this;
+            LheidoUtils.LheidoDialog dialog = new LheidoUtils.LheidoDialog(
+                    this, R.layout.new_conversation, "Nouvelle conversation") {
+                LheidoContact contact = null;
+                @Override
+                public void customInit() {
+                    final AutoCompleteTextView entry = (AutoCompleteTextView)findViewById(R.id.new_conversation_phone);
+                    if(entry != null){
+                        entry.setAdapter(new AutoCompleteAdapter(context, R.layout.auto_complete, contactsList));
+                    }
+                    entry.setThreshold(1);
+                    entry.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                            contact = contactsList.get(position);
+                            entry.setText(contact.getName());
+                        }
+                    });
+                }
+
+                @Override
+                public void customCancel() {}
+
+                @Override
+                public void cancel(){
+                    super.cancel();
+                    contact = null;
+                }
+
+                @Override
+                public void customOk() {
+                    AutoCompleteTextView nConversationPhone = (AutoCompleteTextView)findViewById(
+                            R.id.new_conversation_phone);
+                    String str = nConversationPhone.getText().toString();
+
+                    if(!PhoneNumberUtils.isGlobalPhoneNumber(str)){
+                        if(contact == null){
+                            for (LheidoContact tmp : contactsList) {
+                                if (tmp.getName().equals(str)) contact = tmp;
+                            }
+                        }
+                        if(contact != null) {
+                            int position = -1;
+                            for (LheidoContact c : Global.conversationsList) {
+                                if (c.getName().equals(contact.getName()))
+                                    position = Global.conversationsList.indexOf(c);
+                            }
+                            if (position != -1) {
+                                onNavigationDrawerItemSelected(position, Global.conversationsList.get(position));
+                            } else {
+                                createNewConversation(contact, str);
+                            }
+                        }else{
+                            Toast.makeText(context, R.string.error_contact_name, Toast.LENGTH_SHORT).show();
+                        }
+                    }else{
+                        int position = -1;
+                        for (LheidoContact c : Global.conversationsList) {
+                            if (c.getName().equals(str))
+                                position = Global.conversationsList.indexOf(c);
+                        }
+                        if(position != -1) {
+                            onNavigationDrawerItemSelected(position, Global.conversationsList.get(position));
+                        }else{
+                            createNewConversation(new LheidoContact(str, str, 0L, null), str);
+                        }
+                    }
+                    contact = null;
+                }
+            };
+            dialog.show();
             return true;
         } else if (id == R.id.action_settings) {
             Intent intent;
@@ -343,6 +428,17 @@ public class MainLheidoSMS extends ActionBarActivity
         return super.onOptionsItemSelected(item);
     }
 
+    private void createNewConversation(LheidoContact contact, String phone) {
+        if(contact == null)
+            contact = new LheidoContact(phone, phone, 0L, null);
+        String _newThreadId = LheidoUtils.getNewThreadID(this);
+        Log.v("createNewConversation", "id = " + _newThreadId);
+        contact.setConversationId("" + _newThreadId);
+        Global.conversationsList.add(0, contact);
+        LheidoUtils.Send.notifyDataChanged(this);
+        onNavigationDrawerItemSelected(0, contact);
+    }
+
     @Override
     public void onResume(){
         super.onResume();
@@ -358,12 +454,12 @@ public class MainLheidoSMS extends ActionBarActivity
 
     @Override
     public void onPause(){
+        super.onPause();
         if(sms_body != null){
             if(sms_body.getText() != null)
                 mem_body = sms_body.getText().toString();
             else mem_body = "";
         }
-        super.onPause();
     }
 
 }

@@ -7,10 +7,6 @@ import android.net.Uri;
 import android.provider.ContactsContract;
 import android.telephony.PhoneNumberUtils;
 
-
-/**
- * Created by lheido on 04/06/14.
- */
 public class LheidoContact {
     private String name_ = null;
     private String lastsms_ = null;
@@ -23,6 +19,14 @@ public class LheidoContact {
     public LheidoContact(){
         // Empty constructor
     }
+
+    /**
+     *
+     * @param name            : contact name.
+     * @param phone           : contact phone number
+     * @param nb_sms          : sms count
+     * @param conversation_id : conversation id to fetch database
+     */
     public LheidoContact(String name, String phone, long nb_sms, String conversation_id){
         this.name_ = name;
         this.phone_ = phone;
@@ -69,9 +73,6 @@ public class LheidoContact {
     }
     public void setPhone(String address){
         this.phone_ = address;
-    }
-    public void setName(Context context, String name){
-        this.name_ = getContactName(context, name);
     }
     public void setConversationId(String id){
         this.conversation_id_ = id;

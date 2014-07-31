@@ -61,7 +61,13 @@ public class LheidoSMSService extends Service {
             @Override
             public void customNewMessageRead(int position, String phone) {
                 cancelNotif(phone);
-                Global.conversationsList.get(position).markNewMessage(false);
+                int i = 0;
+                int size = Global.conversationsList.size();
+                while(i < size && !PhoneNumberUtils.compare(Global.conversationsList.get(i).getPhone(), phone)) {i++;}
+                if(i < size && PhoneNumberUtils.compare(Global.conversationsList.get(i).getPhone(), phone)) {
+                    // retrieved position in conversationsList
+                    Global.conversationsList.get(i).markNewMessage(false);
+                }
                 LheidoUtils.Send.notifyDataChanged(context);
             }
 

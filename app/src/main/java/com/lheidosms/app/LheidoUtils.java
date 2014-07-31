@@ -1,5 +1,6 @@
 package com.lheidosms.app;
 
+import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +16,8 @@ import android.telephony.PhoneNumberUtils;
 import android.telephony.TelephonyManager;
 import android.text.format.Time;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
@@ -361,6 +364,7 @@ public class LheidoUtils {
                             _id = query.getLong(query.getColumnIndexOrThrow("_id"));
                             body = query.getString(query.getColumnIndexOrThrow("body"));
 //                            type = query.getString(query.getColumnIndexOrThrow("type"));
+//                            Log.v("LOG type", "type = "+type+", body = "+body);
                             sender = query.getString(query.getColumnIndexOrThrow("address"));
                             if(sender == null) sender = getUserPhone(context);
                             status = query.getInt(query.getColumnIndexOrThrow("status"));
@@ -606,13 +610,13 @@ public class LheidoUtils {
         }
     }
 
-    public static long store_sms(Context context, Message sms, long thread_id){
+    public static long store_sms(Context context, String phoneContact, Message sms, long thread_id){
         try {
             ContentValues values = new ContentValues();
             values.put("address", sms.getSender());
             values.put("body", sms.getBody());
             values.put("read", false);
-            values.put("type", isRight(context, sms.getSender()) ? 2 : 1);
+            values.put("type", (!PhoneNumberUtils.compare(phoneContact, sms.getSender())) ? 2 : 1);
             values.put("status", 32);
             if(thread_id != -1)
                 values.put("thread_id", thread_id);
@@ -634,6 +638,180 @@ public class LheidoUtils {
     public static String getUserPhone(Context context){
         TelephonyManager telemamanger = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
         return telemamanger.getLine1Number();
+    }
+
+    public static abstract class LheidoDialog extends Dialog {
+        /**
+         *
+         * @param context   : Context android.
+         * @param ressource : layout.
+         * @param title     : dialog title.
+         */
+        public LheidoDialog(Context context, int ressource, String title) {
+            super(context);
+            setContentView(ressource);
+            setTitle(title);
+            customInit();
+            Button ok = (Button) findViewById(R.id.ok_button);
+            if(ok != null){
+                ok.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        customOk();
+                        dismiss();
+                    }
+                });
+            }
+            Button cancel = (Button) findViewById(R.id.cancel_button);
+            if(cancel != null){
+                cancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        customCancel();
+                        cancel();
+                    }
+                });
+            }
+        }
+
+        public abstract void customInit();
+
+        public abstract void customCancel();
+
+        public abstract void customOk();
+    }
+
+    public static String getNewThreadID(Context context){
+        int new_id = 0;
+        final String[] projection = new String[] {"_id"};
+        Uri uri = Uri.parse("content://mms-sms/conversations?simple=true");
+        Cursor query = context.getContentResolver().query(uri, projection, null, null, "date DESC");
+        if(query != null){
+            while(query.moveToNext()) {
+                int tmp = query.getInt(query.getColumnIndexOrThrow("_id")) + 1;
+                if(tmp > new_id) {
+                    new_id = tmp;
+                }
+            }
+//            Log.v("LHEIDO SMS LOG", last);
+//            Log.v("LHEIDO SMS LOG", "nb rows = " + query.getCount());
+            query.close();
+        }
+        return ""+new_id;
+    }
+
+    public static Long getOrCreateThreadId(Context context, String phone){
+        try{
+            Uri threadIdUri = Uri.parse("content://mms-sms/threadID");
+            Uri.Builder builder = threadIdUri.buildUpon();
+            String[] recipients = {phone};
+            for(String recipient : recipients){
+                builder.appendQueryParameter("recipient", recipient);
+            }
+            Uri uri = builder.build();
+            Long threadId = 0L;
+            Cursor cursor = context.getContentResolver().query(uri, new String[]{"_id"}, null, null, null);
+            if (cursor != null) {
+                try {
+                    if (cursor.moveToFirst()) {
+                        threadId = cursor.getLong(0);
+                    }
+                } finally {
+                    cursor.close();
+                }
+                Log.v("threadId TEST", "threadId = "+threadId);
+                return threadId;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return -1L;
+    }
+
+    public static abstract class GetContacts extends AsyncTask<Void, LheidoContact, Boolean>{
+
+        private WeakReference<MainLheidoSMS> act;
+        private Context context;
+
+        public GetContacts(MainLheidoSMS activity){
+            link(activity);
+        }
+
+        @Override
+        protected void onPreExecute () {
+            if(act.get() != null){
+                context = act.get().getApplicationContext();
+            }
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            String[] projection = {
+                    ContactsContract.Contacts._ID,
+                    ContactsContract.Contacts.DISPLAY_NAME,
+                    ContactsContract.Contacts.HAS_PHONE_NUMBER,
+
+            };
+            if(act.get() != null){
+                Cursor c = context.getContentResolver().query(
+                        ContactsContract.Contacts.CONTENT_URI, projection, null, null, null);
+                if(c != null){
+                    while(c.moveToNext()){
+                        String phone = null;
+                        String id = c.getString(c.getColumnIndex(ContactsContract.Contacts._ID));
+                        String name = c.getString(c.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                        int hasPhone = c.getInt(c.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER));
+                        if(hasPhone > 0) {
+                            String[] pr = {
+                                ContactsContract.CommonDataKinds.Phone.NUMBER
+                            };
+                            Cursor cur = context.getContentResolver().query(
+                                    ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                                    pr, ContactsContract.CommonDataKinds.Phone.CONTACT_ID +" = "+id,
+                                    null, null);
+                            if(cur != null) {
+                                while(cur.moveToNext()) {
+                                    phone = cur.getString(cur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                                }
+                                cur.close();
+                                LheidoContact contact = new LheidoContact();
+                                contact.setId(Long.parseLong(id));
+                                contact.setName(name);
+                                contact.setPhone(phone);
+                                contact.setPic();
+                                publishProgress(contact);
+                            }
+                        }
+                    }
+                    c.close();
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        @Override
+        abstract protected void onProgressUpdate (LheidoContact... prog);
+
+        @Override
+        protected void onPostExecute (Boolean result) {
+            if (act.get() != null) {
+                if(!result)
+                    Toast.makeText(context, "Problème GetContacts", Toast.LENGTH_LONG).show();
+            }
+        }
+
+        public void link (MainLheidoSMS pActivity) {
+            act = new WeakReference<MainLheidoSMS>(pActivity);
+        }
+
+        public void execTask(){
+            if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
+                executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            } else {
+                execute();
+            }
+        }
     }
 
 }

@@ -60,5 +60,10 @@
     <string name="delete_service_name">LheidoSMS DeleteOldSms Service</string>
     <string name="description_zoom_mms">mms zoom</string>
     <string name="old_message_false">L\'option supprimer anciens messages n\'est pas activée</string>
+    <string name="cancel_button">Annuler</string>
+    <string name="ok_button">Ok</string>
+    <string name="new_conversation_phone">Numéro de tel ou nom de contact</string>
+    <string name="error_invalide_phone">Erreur: numéro incorrect</string>
+    <string name="error_contact_name">Erreur: nom de contact inconnu</string>
 
 </resources>

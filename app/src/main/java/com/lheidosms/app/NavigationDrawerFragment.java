@@ -17,7 +17,6 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.telephony.PhoneNumberUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,7 +24,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Toast;
 
 import com.twotoasters.jazzylistview.JazzyListView;
 
@@ -272,7 +270,7 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     private void selectItem(int position) {
-        Log.v(DRAWER_LOG, "SelectItem "+position);
+//        Log.v(DRAWER_LOG, "SelectItem "+position);
         mCurrentSelectedPosition = position;
         if (mDrawerListView != null) {
             //mDrawerListView.setItemChecked(position, true);
@@ -283,7 +281,7 @@ public class NavigationDrawerFragment extends Fragment {
         if (mCallbacks != null) {
             LheidoContact contact = Global.conversationsList.get(position);
             LheidoUtils.Send.newMessageRead(getActivity().getApplicationContext(), position, contact.getPhone());
-            Log.v(DRAWER_LOG, "mCallbacks not null, "+position+", "+contact);
+//            Log.v(DRAWER_LOG, "mCallbacks not null, "+position+", "+contact);
             mCallbacks.onNavigationDrawerItemSelected(position, contact);
         }
     }
@@ -331,11 +329,6 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-
-        if (item.getItemId() == R.id.action_new_sms) {
-            Toast.makeText(getActivity(), "TODO :P", Toast.LENGTH_SHORT).show();
             return true;
         }
 
