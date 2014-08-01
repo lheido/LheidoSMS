@@ -41,6 +41,7 @@ public class LheidoUtils {
     public static final String ACTION_NEW_MESSAGE_READ = "com.lheido.app.new_message_read";
     public static final String ACTION_NOTIFY_DATA_CHANGED = "com.lheido.app.notify_data_changed";
     public static final String ACTION_USER_NEW_MESSAGE = "com.lheido.app.user_new_message";
+    public static final String ACTION_CANCEL_VIBRATOR = "com.lheido.app.cancel_vibrator";
 
     public static final String drawer_start_opened_key = "drawer_start_opened";
     public static final String hide_keyboard_key = "hide_keyboard";
@@ -83,6 +84,11 @@ public class LheidoUtils {
         public static void userNewMessage(Context context, String phoneContact) {
             Intent i = new Intent(ACTION_USER_NEW_MESSAGE);
             i.putExtra("phone", phoneContact);
+            context.sendBroadcast(i);
+        }
+
+        public static void cancelVibrator(Context context){
+            Intent i = new Intent(ACTION_CANCEL_VIBRATOR);
             context.sendBroadcast(i);
         }
     }

@@ -61,21 +61,26 @@ public abstract class SmsReceiver extends BroadcastReceiver {
 
     public void playNotificationSound(){
         AudioManager am = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
-
+        SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(context);
         switch (am.getRingerMode()) {
             case AudioManager.RINGER_MODE_SILENT:
                 break;
             case AudioManager.RINGER_MODE_VIBRATE:
+                try {
+                    if (vibrate) v.vibrate(1000);
+                }catch (Exception e){
+                    Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
+                }
                 break;
             case AudioManager.RINGER_MODE_NORMAL:
-                SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(context);
+
                 if(userPref.getBoolean(LheidoUtils.receiver_ringtone_key, true)) {
                     try {
                         Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
                         Ringtone r = RingtoneManager.getRingtone(context, notification);
                         r.play();
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 }
                 break;
@@ -101,7 +106,9 @@ public abstract class SmsReceiver extends BroadcastReceiver {
         vibrate = userPref.getBoolean(LheidoUtils.vibration_key, true);
         v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
         String iAction = intent.getAction();
-        if(iAction.equals(LheidoUtils.ACTION_RECEIVE_SMS)){
+        if(iAction.equals(LheidoUtils.ACTION_CANCEL_VIBRATOR)){
+            v.cancel();
+        }else if(iAction.equals(LheidoUtils.ACTION_RECEIVE_SMS)){
             Bundle bundle = intent.getExtras();
             if(bundle != null){
                 Object[] pdus = (Object[]) bundle.get("pdus");
@@ -141,7 +148,11 @@ public abstract class SmsReceiver extends BroadcastReceiver {
                     break;
                 default:
                     Toast.makeText(context, "Erreur, message non remis", Toast.LENGTH_SHORT).show();
-                    if(vibrate) v.vibrate(2000);
+                    try {
+                        if (vibrate) v.vibrate(2000);
+                    }catch (Exception e){
+                        Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
                     break;
             }
         } else if(iAction.equals(LheidoUtils.ACTION_SENT_SMS)){
@@ -152,7 +163,11 @@ public abstract class SmsReceiver extends BroadcastReceiver {
                     break;
                 default:
                     Toast.makeText(context, "Erreur, le message n'a pas était envoyé", Toast.LENGTH_SHORT).show();
-                    if(vibrate) v.vibrate(2000);
+                    try {
+                        if (vibrate) v.vibrate(2000);
+                    }catch (Exception e){
+                        Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
                     break;
             }
         } else if(iAction.equals(LheidoUtils.ACTION_NEW_MESSAGE_READ)){

@@ -44,7 +44,6 @@ public class LheidoSMSService extends Service {
                     showNotification(body, new_name, phone, pIntent);
                 }
                 playNotificationSound();
-                if(vibrate) v.vibrate(1000);
                 moveConversationOnTop(phone, true);
                 LheidoUtils.Send.receiveNewMessage(context);
             }
@@ -75,11 +74,15 @@ public class LheidoSMSService extends Service {
             public void customDelivered(long id) {
                 Toast.makeText(context, "Message remis" , Toast.LENGTH_SHORT).show();
                 if(userPref.getBoolean("delivered_vibration", true)){
-                    long[] pattern = {
-                            0, // Start immediately
-                            100,100,100,100,100,100,100
-                    };
-                    v.vibrate(pattern, -1);
+                    try {
+                        long[] pattern = {
+                                0, // Start immediately
+                                100, 100, 100, 100, 100, 100, 100
+                        };
+                        v.vibrate(pattern, -1);
+                    }catch (Exception e){
+                        Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
                 }
             }
         };
@@ -104,6 +107,7 @@ public class LheidoSMSService extends Service {
         };
         IntentFilter filter2 = new IntentFilter();
         filter2.addAction(LheidoUtils.ACTION_USER_NEW_MESSAGE);
+        filter2.addAction(LheidoUtils.ACTION_CANCEL_VIBRATOR);
         filter2.setPriority(2000);
         getApplication().registerReceiver(mBroadcast, filter2);
         super.onCreate();

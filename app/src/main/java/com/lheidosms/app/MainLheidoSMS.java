@@ -116,6 +116,7 @@ public class MainLheidoSMS extends ActionBarActivity
 
     @Override
     protected void onDestroy(){
+        LheidoUtils.Send.cancelVibrator(this);
         super.onDestroy();
     }
 
