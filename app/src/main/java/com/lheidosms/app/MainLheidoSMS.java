@@ -320,7 +320,7 @@ public class MainLheidoSMS extends ActionBarActivity
             startActivity(call);
             return true;
         } else if(id == R.id.action_voir_contact){
-            if(contactsList.contains(Global.conversationsList.get(currentConversation))) {
+            if(!PhoneNumberUtils.isGlobalPhoneNumber(Global.conversationsList.get(currentConversation).getName())) {
                 Uri contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, Global.conversationsList.get(currentConversation).getId());
                 Intent look = new Intent(Intent.ACTION_VIEW, contactUri);
                 look.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
