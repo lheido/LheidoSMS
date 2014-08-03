@@ -17,9 +17,12 @@ import android.support.v7.app.ActionBar;
 import android.os.Bundle;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.SmsManager;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.text.format.Time;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
@@ -29,6 +32,7 @@ import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -338,18 +342,55 @@ public class MainLheidoSMS extends ActionBarActivity
             LheidoUtils.LheidoDialog dialog = new LheidoUtils.LheidoDialog(
                     this, R.layout.new_conversation, "Nouvelle conversation") {
                 LheidoContact contact = null;
+                public EditText edit;
+                public ListView list;
+                public ContactsListAdapter list_adapter;
+                public ArrayList<LheidoContact> suggestions;
+
                 @Override
                 public void customInit() {
-                    final AutoCompleteTextView entry = (AutoCompleteTextView)findViewById(R.id.new_conversation_phone);
-                    if(entry != null){
-                        entry.setAdapter(new AutoCompleteAdapter(context, R.layout.auto_complete, contactsList));
-                    }
-                    entry.setThreshold(1);
-                    entry.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    edit = (EditText) findViewById(R.id.new_conversation_phone);
+                    list = (ListView) findViewById(R.id.contact_list);
+                    suggestions = new ArrayList<LheidoContact>();
+                    list_adapter = new ContactsListAdapter(context, suggestions);
+                    list.setAdapter(list_adapter);
+                    list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                            contact = contactsList.get(position);
-                            entry.setText(contact.getName());
+                            edit.setText(suggestions.get(position).getName());
+                            list.requestFocus();
+                        }
+                    });
+                    edit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                        @Override
+                        public void onFocusChange(View view, boolean hasFocus) {
+                            if(!hasFocus) {
+                                InputMethodManager inputManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                                inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                            }
+                        }
+                    });
+                    edit.addTextChangedListener(new TextWatcher() {
+                        public String s;
+
+                        @Override
+                        public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {}
+
+                        @Override
+                        public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
+                            this.s = charSequence.toString();
+                        }
+
+                        @Override
+                        public void afterTextChanged(Editable editable) {
+                            suggestions.clear();
+                            for(LheidoContact c: contactsList){
+                                if(c.getName().toLowerCase().contains(this.s.toLowerCase()) ||
+                                   c.getPhone().toLowerCase().contains(this.s.toLowerCase())){
+                                    suggestions.add(c.newInstance());
+                                }
+                            }
+                            list_adapter.notifyDataSetChanged();
                         }
                     });
                 }
@@ -365,12 +406,9 @@ public class MainLheidoSMS extends ActionBarActivity
 
                 @Override
                 public void customOk() {
-                    AutoCompleteTextView nConversationPhone = (AutoCompleteTextView)findViewById(
+                    EditText nConversationPhone = (EditText)findViewById(
                             R.id.new_conversation_phone);
                     String str = nConversationPhone.getText().toString();
-//                    for (LheidoContact c : contactsList){
-//                        Log.v("contactstList", c.getName());
-//                    }
                     if(!PhoneNumberUtils.isGlobalPhoneNumber(str)){
                         if(contact == null){
                             for (LheidoContact tmp : contactsList) {

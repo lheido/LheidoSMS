@@ -1,6 +1,7 @@
 package com.lheidosms.app;
 
 import android.app.Dialog;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -27,6 +28,8 @@ import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class LheidoUtils {
@@ -57,6 +60,7 @@ public class LheidoUtils {
     public static final String list_conversations_jazzyeffect_key = "list_conversations_jazzyeffect";
     public static final String receiver_notification_key = "receiver_notification";
     public static final String conversation_onload_key = "conversation_onload";
+    private static Pattern accountTypePattern = Pattern.compile("([a-zA-Z0-9]+)");
 
 
     public static class Send {
@@ -649,7 +653,7 @@ public class LheidoUtils {
     public static abstract class LheidoDialog extends Dialog {
         /**
          *
-         * @param context   : Context android.
+         * @param context   : Context.
          * @param ressource : layout.
          * @param title     : dialog title.
          */
@@ -734,6 +738,38 @@ public class LheidoUtils {
         return -1L;
     }
 
+    public static String getAccountType(Context context, long id, String name){
+        try {
+            Cursor cur = context.getContentResolver().query(
+                    ContactsContract.RawContacts.CONTENT_URI,
+                    new String[]{
+                            ContactsContract.RawContacts.ACCOUNT_TYPE,
+                            ContactsContract.RawContacts.ACCOUNT_NAME
+                    },
+                    ContactsContract.RawContacts.CONTACT_ID +" = ?",
+                    new String[]{String.valueOf(id)},
+                    null
+            );
+            if(cur != null){
+                String str = "";
+                while(cur.moveToNext()) {
+                    str += cur.getString(cur.getColumnIndex(ContactsContract.RawContacts.ACCOUNT_TYPE));
+                }
+//                Log.v("getAccountType", name+" => "+str);
+                cur.close();
+                Matcher m = accountTypePattern.matcher(str);
+                String last = "";
+                while (m.find()) {
+                    last = m.group(1);
+                }
+                return last;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static abstract class GetContacts extends AsyncTask<Void, LheidoContact, Boolean>{
 
         private WeakReference<MainLheidoSMS> act;
@@ -755,8 +791,7 @@ public class LheidoUtils {
             String[] projection = {
                     ContactsContract.Contacts._ID,
                     ContactsContract.Contacts.DISPLAY_NAME,
-                    ContactsContract.Contacts.HAS_PHONE_NUMBER,
-
+                    ContactsContract.Contacts.HAS_PHONE_NUMBER
             };
             if(act.get() != null){
                 Cursor c = context.getContentResolver().query(
@@ -784,6 +819,8 @@ public class LheidoUtils {
                                 contact.setId(Long.parseLong(id));
                                 contact.setName(name);
                                 contact.setPhone(phone);
+                                contact.setAccountType(getAccountType(context, contact.getId(), contact.getName()));
+//                                Log.v("contact", contact.getName()+" => "+contact.getAccountType());
                                 contact.setPic();
                                 publishProgress(contact);
                             }

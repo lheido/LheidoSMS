@@ -2,20 +2,30 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent">
-    <AutoCompleteTextView
+    <EditText
         android:id="@+id/new_conversation_phone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textAutoComplete"
+        android:inputType="textAutoCorrect|textCapSentences"
         android:textSize="16sp"
         android:hint="@string/new_conversation_phone"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"/>
+    <ListView
+        android:id="@+id/contact_list"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_gravity="start"
+        android:choiceMode="singleChoice"
+        android:layout_margin="10dp"
+        android:cacheColorHint="@android:color/transparent"
+        android:background="@android:color/transparent"
+        android:layout_below="@id/new_conversation_phone"/>
     <Button
         android:id="@+id/cancel_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/new_conversation_phone"
+        android:layout_below="@id/contact_list"
         android:textSize="20sp"
         android:layout_marginTop="10dp"
         android:text="@string/cancel_button"/>
@@ -24,7 +34,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/cancel_button"
-        android:layout_below="@id/new_conversation_phone"
+        android:layout_below="@id/contact_list"
         android:textSize="20sp"
         android:layout_marginTop="10dp"
         android:text="@string/ok_button"/>

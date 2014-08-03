@@ -16,6 +16,8 @@ public class LheidoContact {
     private Uri pic;
     private long id;
     private boolean mark_new_messsage = false;
+    private String accountType = null;
+
     public LheidoContact(){
         // Empty constructor
     }
@@ -60,6 +62,7 @@ public class LheidoContact {
         c.setConversationId(this.conversation_id_);
         c.setPic();
         c.setNb_sms(""+this.nb_sms_);
+        c.setAccountType(this.accountType);
         return c;
     }
 
@@ -116,5 +119,13 @@ public class LheidoContact {
 
     public boolean hasNewMessage() {
         return this.mark_new_messsage;
+    }
+
+    public void setAccountType(String accountType) {
+        this.accountType = accountType;
+    }
+
+    public String getAccountType() {
+        return this.accountType;
     }
 }
