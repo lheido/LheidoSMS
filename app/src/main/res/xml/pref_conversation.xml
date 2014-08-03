@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <ListPreference
-        android:defaultValue="21"
+        android:defaultValue="15"
         android:dialogTitle="@string/pref_sms_onload"
         android:entries="@array/sms_onload"
         android:entryValues="@array/sms_onload"
