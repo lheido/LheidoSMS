@@ -88,7 +88,7 @@ public abstract class SmsReceiver extends BroadcastReceiver {
     }
 
     public void cancelNotif(String phone){
-        Log.v("LHEIDO SMS LOG", notificationsId.keySet().toString());
+//        Log.v("LHEIDO SMS LOG", notificationsId.keySet().toString());
         try {
             NotificationManager notificationmanager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             for(String p : notificationsId.keySet()){
@@ -124,10 +124,10 @@ public abstract class SmsReceiver extends BroadcastReceiver {
                     date = messages[0].getTimestampMillis();
                     phone = messages[0].getDisplayOriginatingAddress();
                     new_name = LheidoContact.getContactName(context, phone);
-                    Log.v("LHEIDO SMS LOG", "phone = "+phone);
+//                    Log.v("LHEIDO SMS LOG", "phone = "+phone);
                     if(!notificationsId.containsKey(phone))
                         notificationsId.put(phone, notificationsId.size());
-                    Log.v("LHEIDO SMS LOG", notificationsId.toString());
+//                    Log.v("LHEIDO SMS LOG", notificationsId.toString());
                     customReceivedSMS();
                 }
             }

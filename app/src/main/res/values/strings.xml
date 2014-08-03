@@ -65,5 +65,6 @@
     <string name="new_conversation_phone">Numéro de tel ou nom de contact</string>
     <string name="error_invalide_phone">Erreur: numéro incorrect</string>
     <string name="error_contact_name">Erreur: nom de contact inconnu</string>
+    <string name="message_copy">Message copié</string>
 
 </resources>

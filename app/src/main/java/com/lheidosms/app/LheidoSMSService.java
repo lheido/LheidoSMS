@@ -27,7 +27,7 @@ public class LheidoSMSService extends Service {
 
     @Override
     public void onCreate(){
-        Log.v(SERVICE_TAG, "=====> Service start! <=====");
+//        Log.v(SERVICE_TAG, "=====> Service start! <=====");
         context = getApplicationContext();
         // load conversations
         Global.conversationsList.clear();
@@ -131,19 +131,19 @@ public class LheidoSMSService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
-        Log.v(SERVICE_TAG, "=====> onStartCommand <=====");
+//        Log.v(SERVICE_TAG, "=====> onStartCommand <=====");
         return START_STICKY;
     }
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.v(SERVICE_TAG, "=====> onBind <=====");
+//        Log.v(SERVICE_TAG, "=====> onBind <=====");
         return null;
     }
 
     @Override
     public void onDestroy(){
-        Log.v(SERVICE_TAG, "=====> Service done! <=====");
+//        Log.v(SERVICE_TAG, "=====> Service done! <=====");
         getApplication().unregisterReceiver(smsReceiver);
         getApplication().unregisterReceiver(mBroadcast);
         super.onDestroy();

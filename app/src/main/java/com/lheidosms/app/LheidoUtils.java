@@ -101,7 +101,7 @@ public class LheidoUtils {
         public boolean vibrate = true;
         public boolean vibrate_delivered = true;
         public float text_size = 13.0F;
-        public boolean old_message = true;
+        public boolean old_message = false;
         public int old_message_num = 500;
         public boolean drawer = false;
         public int conversation_effect = 14;
@@ -113,7 +113,7 @@ public class LheidoUtils {
             String pref_text_size = pref.getString(text_size_key, "13");
             this.conversation_effect = Integer.parseInt(pref.getString(conversation_jazzyeffect_key, "14"));
             this.listConversation_effect = Integer.parseInt(pref.getString(list_conversations_jazzyeffect_key, "14"));
-            this.old_message = pref.getBoolean(old_message_key, true);
+            this.old_message = pref.getBoolean(old_message_key, false);
             this.old_message_num = Integer.parseInt(pref.getString(old_message_num_key, "500"));
             try{
                 this.max_conversation = Integer.parseInt(pref_nb_conv);
@@ -231,7 +231,7 @@ public class LheidoUtils {
                 query.close();
             }
         }catch(Exception e){
-            Log.v("getMessageCount", "Erreur");
+//            Log.v("getMessageCount", "Erreur");
             e.printStackTrace();
         }
         return res;
@@ -725,7 +725,7 @@ public class LheidoUtils {
                 } finally {
                     cursor.close();
                 }
-                Log.v("threadId TEST", "threadId = "+threadId);
+//                Log.v("threadId TEST", "threadId = "+threadId);
                 return threadId;
             }
         }catch (Exception e){

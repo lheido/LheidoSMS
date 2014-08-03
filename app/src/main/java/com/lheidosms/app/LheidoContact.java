@@ -19,7 +19,6 @@ public class LheidoContact {
     public LheidoContact(){
         // Empty constructor
     }
-
     /**
      *
      * @param name            : contact name.
@@ -51,6 +50,17 @@ public class LheidoContact {
             cur.close();
         }
         return res;
+    }
+
+    public LheidoContact newInstance(){
+        LheidoContact c = new LheidoContact();
+        c.setName(this.name_);
+        c.setPhone(this.phone_);
+        c.setId(this.id);
+        c.setConversationId(this.conversation_id_);
+        c.setPic();
+        c.setNb_sms(""+this.nb_sms_);
+        return c;
     }
 
     public String getName(){

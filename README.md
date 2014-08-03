@@ -9,13 +9,13 @@ How to use
  - Long tap on message : copy message
  - When conversation list is open :
     - On top right menu :
-        - New conversation (coming soon).
+        - New conversation.
         - Settings.
         - Delete old message (keep the last 500 messages by default).
  - When conversation list is hidden :
     - On top right menu :
-        - New conversation (coming soon).
-        - Show contact with contact app.
+        - New conversation.
+        - Show/Create contact with contact app.
         - Settings.
 
 Screenshots
@@ -27,9 +27,8 @@ Screenshots
 ToDo
 ----
  - Receive SMS/MMS without third-party app.
- - New conversation.
  - Search in a conversation
  - Delete old messages
  - forward a message
- - View contact, clear conversation
+ - Clear conversation
  - Custom theme

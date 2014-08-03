@@ -123,8 +123,14 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
                     ClipData clip = ClipData.newPlainText("simple text", Message_list.get(Message_list.size()-1-position).getBody());
                     clipboard.setPrimaryClip(clip);
                 }
-                Toast.makeText(context, "Message copié", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, R.string.message_copy, Toast.LENGTH_LONG).show();
                 return true;
+            }
+        });
+        liste.setOnItemClickListener(new ListView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+                liste.requestFocus();
             }
         });
         conversationAdapter = new ConversationAdapter(context, phoneContact, Message_list);
@@ -261,7 +267,7 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
             }
             liste.setTransitionEffect(userPref.conversation_effect);
         }
-        Log.v("onResume", "id = "+list_conversationId);
+//        Log.v("onResume", "id = "+list_conversationId);
         LheidoUtils.Send.newMessageRead(context, list_conversationId, phoneContact);
     }
 

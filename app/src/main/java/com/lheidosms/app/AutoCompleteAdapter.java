@@ -1,6 +1,7 @@
 package com.lheidosms.app;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,11 +36,9 @@ public class AutoCompleteAdapter extends ArrayAdapter<LheidoContact> {
             TextView contactNameLabel = (TextView) v.findViewById(R.id.contact_name);
             TextView contactPhoneLabel = (TextView) v.findViewById(R.id.contact_phone);
             if (contactNameLabel != null) {
-//              Log.i(MY_DEBUG_TAG, "getView Customer Name:"+customer.getName());
                 contactNameLabel.setText(contact.getName());
             }
             if (contactPhoneLabel != null) {
-//              Log.i(MY_DEBUG_TAG, "getView Customer Name:"+customer.getName());
                 contactPhoneLabel.setText(contact.getPhone());
             }
         }
@@ -58,13 +57,13 @@ public class AutoCompleteAdapter extends ArrayAdapter<LheidoContact> {
             return str;
         }
         @Override
-        protected FilterResults performFiltering(CharSequence constraint) {
+        synchronized protected FilterResults performFiltering(CharSequence constraint) {
             if(constraint != null) {
                 suggestions.clear();
                 for (LheidoContact contact : items) {
                     if(contact.getName().toLowerCase().contains(constraint.toString().toLowerCase()) ||
                        contact.getPhone().toLowerCase().contains(constraint.toString().toLowerCase())){
-                        suggestions.add(contact);
+                        suggestions.add(contact.newInstance());
                     }
                 }
                 FilterResults filterResults = new FilterResults();
@@ -82,10 +81,10 @@ public class AutoCompleteAdapter extends ArrayAdapter<LheidoContact> {
             if (results != null && results.count > 0) {
                 clear();
                 for (LheidoContact c : filteredList) {
-                    cList.add(c);
+                    cList.add(c.newInstance());
                 }
-                for (LheidoContact customerIterator : cList) {
-                    add(customerIterator);
+                for (LheidoContact contact : cList) {
+                    add(contact.newInstance());
                 }
                 notifyDataSetChanged();
             }

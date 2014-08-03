@@ -37,6 +37,7 @@ import java.util.ArrayList;
 public class MainLheidoSMS extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
+    private static final int PICK_CONTACT = 100;
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -73,6 +74,13 @@ public class MainLheidoSMS extends ActionBarActivity
 
         mmsImgPath = null;
         contactsList = new ArrayList<LheidoContact>();
+        LheidoUtils.GetContacts task = new LheidoUtils.GetContacts(this) {
+            @Override
+            protected void onProgressUpdate(LheidoContact... prog) {
+                contactsList.add(prog[0]);
+            }
+        };
+        task.execTask();
 
         pages = new ArrayList<Fragment>();
 //        Log.v("LheidoSMS LOG", "onCreate() pages = "+pages);
@@ -144,27 +152,17 @@ public class MainLheidoSMS extends ActionBarActivity
 
     public void init_sms_body(){
         sms_body = (EditText) findViewById(R.id.send_body);
-//        sms_body.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-//            @Override
-//            public void onFocusChange(View v, boolean hasFocus) {
-//                if(hasFocus){
-//                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)
-//                        liste.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
-//                }else {
-//                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)
-//                        liste.setTranscriptMode(ListView.TRANSCRIPT_MODE_DISABLED);
-//                    InputMethodManager inputManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-//                    inputManager.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-//                }
-//            }
-//        });
-//        liste.setOnItemClickListener(new ListView.OnItemClickListener(){
-//            @Override
-//            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-//                sms_body.clearFocus();
-//                liste.requestFocus();
-//            }
-//        });
+        final Context context = this;
+        sms_body.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+//                Log.v("onFocusChange", "hasFocus = "+hasFocus);
+                if(!hasFocus) {
+                    InputMethodManager inputManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                    inputManager.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                }
+            }
+        });
         if(mem_body != null) sms_body.setText(mem_body);
         sms_body.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_FLAG_CAP_SENTENCES|InputType.TYPE_TEXT_FLAG_AUTO_CORRECT);
         if(!userPref.first_upper)
@@ -260,7 +258,7 @@ public class MainLheidoSMS extends ActionBarActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
+//        Log.v("onActivityResult", "requestCode="+requestCode+", resultCode="+resultCode+", data="+data);
         if (requestCode == PICK_IMAGE && resultCode == RESULT_OK && null != data) {
             Uri selectedImage = data.getData();
             String[] filePathColumn = { MediaStore.Images.Media.DATA };
@@ -272,9 +270,12 @@ public class MainLheidoSMS extends ActionBarActivity
             int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
             mmsImgPath = cursor.getString(columnIndex);
             cursor.close();
+        }else if(requestCode == PICK_CONTACT){
+            LheidoContact contact = Global.conversationsList.get(currentConversation);
+            LheidoUtils.retrieveContact(this, contact, contact.getPhone());
+            LheidoUtils.Send.notifyDataChanged(this);
+            onNavigationDrawerItemSelected(currentConversation, contact);
         }
-
-
     }
 
     public void onSectionAttached(String name) {
@@ -315,26 +316,24 @@ public class MainLheidoSMS extends ActionBarActivity
         if(id == R.id.action_call){
             Intent call = new Intent(Intent.ACTION_CALL);
             SMSFragment frag = (SMSFragment)pages.get(PAGE_SMS);
-//            SMSFragment frag = (SMSFragment)getSupportFragmentManager().findFragmentById(R.id.container);
             call.setData(Uri.parse("tel:" + frag.phoneContact));
             startActivity(call);
             return true;
         } else if(id == R.id.action_voir_contact){
-            Uri contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, Global.conversationsList.get(currentConversation).getId());
-            Intent look = new Intent(Intent.ACTION_VIEW, contactUri);
-            look.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(look);
+            if(contactsList.contains(Global.conversationsList.get(currentConversation))) {
+                Uri contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, Global.conversationsList.get(currentConversation).getId());
+                Intent look = new Intent(Intent.ACTION_VIEW, contactUri);
+                look.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(look);
+            }else{
+                LheidoContact c = Global.conversationsList.get(currentConversation);
+                Intent intent = new Intent(Intent.ACTION_INSERT);
+                intent.setType(ContactsContract.Contacts.CONTENT_TYPE);
+                intent.putExtra(ContactsContract.Intents.Insert.PHONE, c.getPhone());
+                startActivityForResult(intent, PICK_CONTACT);
+            }
             return true;
         } else if(id == R.id.action_new_conversation){
-            if(contactsList.isEmpty()){
-                LheidoUtils.GetContacts task = new LheidoUtils.GetContacts(this) {
-                    @Override
-                    protected void onProgressUpdate(LheidoContact... prog) {
-                        contactsList.add(prog[0]);
-                    }
-                };
-                task.execTask();
-            }
             final Context context = this;
             LheidoUtils.LheidoDialog dialog = new LheidoUtils.LheidoDialog(
                     this, R.layout.new_conversation, "Nouvelle conversation") {
@@ -369,7 +368,9 @@ public class MainLheidoSMS extends ActionBarActivity
                     AutoCompleteTextView nConversationPhone = (AutoCompleteTextView)findViewById(
                             R.id.new_conversation_phone);
                     String str = nConversationPhone.getText().toString();
-
+//                    for (LheidoContact c : contactsList){
+//                        Log.v("contactstList", c.getName());
+//                    }
                     if(!PhoneNumberUtils.isGlobalPhoneNumber(str)){
                         if(contact == null){
                             for (LheidoContact tmp : contactsList) {
@@ -433,7 +434,6 @@ public class MainLheidoSMS extends ActionBarActivity
         if(contact == null)
             contact = new LheidoContact(phone, phone, 0L, null);
         String _newThreadId = LheidoUtils.getNewThreadID(this);
-        Log.v("createNewConversation", "id = " + _newThreadId);
         contact.setConversationId("" + _newThreadId);
         Global.conversationsList.add(0, contact);
         LheidoUtils.Send.notifyDataChanged(this);
