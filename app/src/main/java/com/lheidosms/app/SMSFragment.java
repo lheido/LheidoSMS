@@ -1,38 +1,24 @@
 package com.lheidosms.app;
 
 import android.app.Activity;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
-import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.CountDownTimer;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.telephony.PhoneNumberUtils;
-import android.telephony.SmsManager;
-import android.text.InputType;
 import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -66,6 +52,7 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
     private BroadcastReceiver mBroadCast;
     private SwipeRefreshLayout swipeLayout;
     private boolean mOnPause = false;
+    private IntentFilter filter;
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -225,7 +212,7 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
                 }
             }
         };
-        IntentFilter filter = new IntentFilter();
+        filter = new IntentFilter();
         filter.addAction(LheidoUtils.ACTION_RECEIVE_SMS);
         filter.addAction(LheidoUtils.ACTION_SENT_SMS);
         filter.addAction(LheidoUtils.ACTION_DELIVERED_SMS);
@@ -235,7 +222,6 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
 
     @Override
     public void onDestroyView(){
-        context.unregisterReceiver(mBroadCast);
         super.onDestroyView();
     }
 
@@ -248,6 +234,9 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
     @Override
     public void onPause(){
         super.onPause();
+        try {
+            context.unregisterReceiver(mBroadCast);
+        }catch (Exception e){}
         mOnPause = true;
     }
 
@@ -255,7 +244,10 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
     public void onResume(){
         super.onResume();
         mOnPause = false;
-        updateFragment();
+        try {
+            context.registerReceiver(mBroadCast, filter);
+            updateFragment();
+        }catch (Exception e){}
     }
 
     public void updateFragment(){
@@ -273,35 +265,39 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
 
     @Override
     public void onRefresh() {
-        long last_id = Message_list.get(Message_list.size() - 1).getId();
-        // save index and top position
-        final int index = liste.getFirstVisiblePosition();
-        View v = liste.getChildAt(Message_list.size()-1);
-        final int top = (v == null) ? 0 : v.getTop();
-        final int start_count = liste.getCount();
-        LheidoUtils.ConversationTask more = new LheidoUtils.ConversationTask(getActivity(), conversationId, last_id) {
-            @Override
-            protected void onProgressUpdate(Message... prog) {
-                if (this.act.get() != null) {
-                    Message_list.add(prog[0]);
+        try {
+            long last_id = Message_list.get(Message_list.size() - 1).getId();
+            // save index and top position
+            final int index = liste.getFirstVisiblePosition();
+            View v = liste.getChildAt(Message_list.size() - 1);
+            final int top = (v == null) ? 0 : v.getTop();
+            final int start_count = liste.getCount();
+            LheidoUtils.ConversationTask more = new LheidoUtils.ConversationTask(getActivity(), conversationId, last_id) {
+                @Override
+                protected void onProgressUpdate(Message... prog) {
+                    if (this.act.get() != null) {
+                        Message_list.add(prog[0]);
+                    }
                 }
-            }
-            @Override
-            protected void onPreExecute () {
-                super.onPreExecute();
-            }
-            @Override
-            protected void onPostExecute (Boolean result) {
-                if (act.get() != null) {
-                    if(!result)
-                        Toast.makeText(context, "Problème génération conversation", Toast.LENGTH_LONG).show();
-                    swipeLayout.setRefreshing(false);
-                    conversationAdapter.notifyDataSetChanged();
-                    int finalposition = index + liste.getCount() - start_count;
-                    liste.setSelectionFromTop(finalposition, top);
+
+                @Override
+                protected void onPreExecute() {
+                    super.onPreExecute();
                 }
-            }
-        };
-        more.execConversationTask();
+
+                @Override
+                protected void onPostExecute(Boolean result) {
+                    if (act.get() != null) {
+                        if (!result)
+                            Toast.makeText(context, "Problème génération conversation", Toast.LENGTH_LONG).show();
+                        swipeLayout.setRefreshing(false);
+                        conversationAdapter.notifyDataSetChanged();
+                        int finalposition = index + liste.getCount() - start_count;
+                        liste.setSelectionFromTop(finalposition, top);
+                    }
+                }
+            };
+            more.execConversationTask();
+        }catch (Exception e){}
     }
 }

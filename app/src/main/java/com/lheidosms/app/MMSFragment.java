@@ -44,6 +44,7 @@ public class MMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
     private LheidoUtils.UserPref userPref;
     private JazzyListView liste;
     private ImageButton zoom;
+    private IntentFilter filter;
 
     public static MMSFragment newInstance(int position, LheidoContact contact) {
         MMSFragment fragment = new MMSFragment();
@@ -152,7 +153,7 @@ public class MMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
                 }
             }
         };
-        IntentFilter filter = new IntentFilter();
+        filter = new IntentFilter();
         filter.addAction(LheidoUtils.ACTION_RECEIVE_MMS);
 //        filter.addAction(LheidoUtils.ACTION_SENT_SMS);
 //        filter.addAction(LheidoUtils.ACTION_DELIVERED_SMS);
@@ -162,14 +163,24 @@ public class MMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
 
     @Override
     public void onDestroyView(){
-        context.unregisterReceiver(mBroadCast);
         super.onDestroyView();
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        try {
+            context.unregisterReceiver(mBroadCast);
+        }catch (Exception e){}
     }
 
     @Override
     public void onResume(){
         super.onResume();
-        updateFragment();
+        try {
+            context.registerReceiver(mBroadCast, filter);
+            updateFragment();
+        }catch (Exception e){}
     }
 
     public void updateFragment(){
@@ -185,36 +196,40 @@ public class MMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
 
     @Override
     public void onRefresh() {
-        long last_id = Message_list.get(Message_list.size() - 1).getId();
-        // save index and top position
-        final int index = liste.getFirstVisiblePosition();
-        View v = liste.getChildAt(Message_list.size()-1);
-        final int top = (v == null) ? 0 : v.getTop();
-        final int start_count = liste.getCount();
-        LheidoUtils.MMSTask more = new LheidoUtils.MMSTask(getActivity(), conversationId, last_id) {
-            @Override
-            protected void onProgressUpdate(Message... prog) {
-                if (this.act.get() != null) {
-                    Message_list.add(prog[0]);
+        try {
+            long last_id = Message_list.get(Message_list.size() - 1).getId();
+            // save index and top position
+            final int index = liste.getFirstVisiblePosition();
+            View v = liste.getChildAt(Message_list.size() - 1);
+            final int top = (v == null) ? 0 : v.getTop();
+            final int start_count = liste.getCount();
+            LheidoUtils.MMSTask more = new LheidoUtils.MMSTask(getActivity(), conversationId, last_id) {
+                @Override
+                protected void onProgressUpdate(Message... prog) {
+                    if (this.act.get() != null) {
+                        Message_list.add(prog[0]);
+                    }
                 }
-            }
-            @Override
-            protected void onPreExecute () {
-                super.onPreExecute();
-            }
-            @Override
-            protected void onPostExecute (Boolean result) {
-                if (act.get() != null) {
-                    if(!result)
-                        Toast.makeText(context, "Problème génération conversation", Toast.LENGTH_LONG).show();
-                    swipeLayout.setRefreshing(false);
-                    conversationMmsAdapter.notifyDataSetChanged();
-                    int finalposition = index + liste.getCount() - start_count;
-                    liste.setSelectionFromTop(finalposition, top);
+
+                @Override
+                protected void onPreExecute() {
+                    super.onPreExecute();
                 }
-            }
-        };
-        more.execConversationTask();
+
+                @Override
+                protected void onPostExecute(Boolean result) {
+                    if (act.get() != null) {
+                        if (!result)
+                            Toast.makeText(context, "Problème génération conversation", Toast.LENGTH_LONG).show();
+                        swipeLayout.setRefreshing(false);
+                        conversationMmsAdapter.notifyDataSetChanged();
+                        int finalposition = index + liste.getCount() - start_count;
+                        liste.setSelectionFromTop(finalposition, top);
+                    }
+                }
+            };
+            more.execConversationTask();
+        }catch (Exception e){}
     }
 
     private class MMSItemClickListener implements android.widget.AdapterView.OnItemClickListener {
