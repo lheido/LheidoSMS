@@ -125,14 +125,14 @@ public class MMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
             @Override
             public void customReceivedMMS() {
                 if(PhoneNumberUtils.compare(phoneContact, phone)){
+                    updateFragment();
                     //on est dans la bonne conversation !
-                    Time t = new Time();
-                    t.set(date);
-                    add_sms(-1L, body, phoneContact, 0, t, 0);
-                    conversationMmsAdapter.notifyDataSetChanged();
-                    conversation_nb_sms += 1;
-                    liste.smoothScrollToPosition(liste.getBottom());
-                    LheidoUtils.Send.newMessageRead(context, list_conversationId, phoneContact);
+//                    Time t = new Time();
+//                    t.set(date);
+//                    add_sms(-1L, body, phoneContact, 0, t, 0);
+//                    conversation_nb_sms += 1;
+//                    liste.smoothScrollToPosition(liste.getBottom());
+//                    LheidoUtils.Send.newMessageRead(context, list_conversationId, phoneContact);
                 }
             }
 
@@ -184,14 +184,16 @@ public class MMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
     }
 
     public void updateFragment(){
-        userPref.setUserPref(PreferenceManager.getDefaultSharedPreferences(context));
-        if(liste != null) {
-            if (Message_list != null) {
-                Message_list.clear();
-                gen_conversation();
+        try {
+            userPref.setUserPref(PreferenceManager.getDefaultSharedPreferences(context));
+            if (liste != null) {
+                if (Message_list != null) {
+                    Message_list.clear();
+                    gen_conversation();
+                }
+                liste.setTransitionEffect(userPref.conversation_effect);
             }
-            liste.setTransitionEffect(userPref.conversation_effect);
-        }
+        }catch (Exception e){e.printStackTrace();}
     }
 
     @Override

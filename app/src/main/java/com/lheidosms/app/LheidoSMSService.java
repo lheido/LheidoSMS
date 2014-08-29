@@ -11,12 +11,10 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 import android.telephony.PhoneNumberUtils;
 import android.util.Log;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 
 
 public class LheidoSMSService extends Service {
@@ -40,6 +38,8 @@ public class LheidoSMSService extends Service {
                 Toast.makeText(context, "Sms reçu de " + new_name, Toast.LENGTH_LONG).show();
                 if(activ_notif){
                     Intent notificationIntent = new Intent(context, MainLheidoSMS.class);
+                    notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                     PendingIntent pIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
                     showNotification(body, new_name, phone, pIntent);
                 }
@@ -50,11 +50,17 @@ public class LheidoSMSService extends Service {
 
             @Override
             public void customReceivedMMS() {
+                Toast.makeText(context, "Mms reçu de " + new_name, Toast.LENGTH_LONG).show();
                 if(activ_notif){
                     Intent notificationIntent = new Intent(context, MainLheidoSMS.class);
+                    notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                     PendingIntent pIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
                     showNotification("MMS", new_name, phone, pIntent);
                 }
+                playNotificationSound();
+                moveConversationOnTop(phone, true);
+                LheidoUtils.Send.receiveNewMessage(context);
             }
 
             @Override
