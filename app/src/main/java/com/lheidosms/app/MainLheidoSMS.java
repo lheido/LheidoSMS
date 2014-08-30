@@ -1,9 +1,11 @@
 package com.lheidosms.app;
 
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -66,6 +68,7 @@ public class MainLheidoSMS extends ActionBarActivity
     private int PICK_IMAGE = 1;
     protected String mmsImgPath = null;
     private ArrayList<LheidoContact> contactsList;
+    private BroadcastReceiver mBroadcast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

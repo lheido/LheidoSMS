@@ -41,7 +41,10 @@ public class LheidoSMSService extends Service {
                     notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
                             | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                     PendingIntent pIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
-                    showNotification(body, new_name, phone, pIntent);
+                    Intent openAction = new Intent(context, MainLheidoSMS.class);
+                    openAction.putExtra("name", new_name);
+                    PendingIntent openPending = PendingIntent.getActivity(context, 0, openAction, 0);
+                    showNotification(body, new_name, phone, pIntent, openPending);
                 }
                 playNotificationSound();
                 moveConversationOnTop(phone, true);
@@ -56,7 +59,10 @@ public class LheidoSMSService extends Service {
                     notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
                             | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                     PendingIntent pIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
-                    showNotification("MMS", new_name, phone, pIntent);
+                    Intent openAction = new Intent(context, MainLheidoSMS.class);
+                    openAction.putExtra("name", new_name);
+                    PendingIntent openPending = PendingIntent.getActivity(context, 0, openAction, 0);
+                    showNotification("MMS", new_name, phone, pIntent, openPending);
                 }
                 playNotificationSound();
                 moveConversationOnTop(phone, true);

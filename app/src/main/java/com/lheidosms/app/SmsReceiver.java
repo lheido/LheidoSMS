@@ -36,7 +36,7 @@ public abstract class SmsReceiver extends BroadcastReceiver {
     protected Map<String, Integer> notificationsId = new HashMap<String, Integer>();
     protected SharedPreferences userPref;
 
-    public void showNotification(String body, String name, String phone, PendingIntent pIntent){
+    public void showNotification(String body, String name, String phone, PendingIntent pIntent, PendingIntent openConversationIntent){
         // Create Notification using NotificationCompat.Builder
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
             .setSmallIcon(R.drawable.lheido_sms_icon)
@@ -44,11 +44,12 @@ public abstract class SmsReceiver extends BroadcastReceiver {
             .setContentTitle("" + name)
             .setContentText(body)
             // Add an Action Button below Notification
-            //.addAction(R.drawable.ic_launcher, "Ouvrir la conversation", pIntent)
+//            .addAction(R.drawable.lheido_sms_icon, "Ouvrir", openConversationIntent)
             // Set PendingIntent into Notification
             .setContentIntent(pIntent)
             // Dismiss Notification
-            .setAutoCancel(true);
+//            .setAutoCancel(true)
+        ;
 
         // Create Notification Manager
         NotificationManager notificationmanager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -124,10 +125,8 @@ public abstract class SmsReceiver extends BroadcastReceiver {
                     date = messages[0].getTimestampMillis();
                     phone = messages[0].getDisplayOriginatingAddress();
                     new_name = LheidoContact.getContactName(context, phone);
-//                    Log.v("LHEIDO SMS LOG", "phone = "+phone);
                     if(!notificationsId.containsKey(phone))
                         notificationsId.put(phone, notificationsId.size());
-//                    Log.v("LHEIDO SMS LOG", notificationsId.toString());
                     customReceivedSMS();
                 }
             }
@@ -175,7 +174,28 @@ public abstract class SmsReceiver extends BroadcastReceiver {
             String phone = intent.getStringExtra("phone");
             customNewMessageRead(position, phone);
         } else if(iAction.equals(LheidoUtils.ACTION_RECEIVE_MMS)){
-            customReceivedMMS();
+            try {
+                Bundle bundle = intent.getExtras();
+                if (bundle != null) {
+                    Object[] pdus = (Object[]) bundle.get("pdus");
+                    final SmsMessage[] messages = new SmsMessage[pdus.length];
+                    for (int i = 0; i < pdus.length; i++) {
+                        messages[i] = SmsMessage.createFromPdu((byte[]) pdus[i]);
+                    }
+                    if (messages.length > -1) {
+                        body = "";
+                        for (SmsMessage x : messages) {
+                            body += x.getMessageBody();
+                        }
+                        date = messages[0].getTimestampMillis();
+                        phone = messages[0].getDisplayOriginatingAddress();
+                        new_name = LheidoContact.getContactName(context, phone);
+                        if (!notificationsId.containsKey(phone))
+                            notificationsId.put(phone, notificationsId.size());
+                        customReceivedMMS();
+                    }
+                }
+            }catch (Exception e){e.printStackTrace();}
         }
     }
 
