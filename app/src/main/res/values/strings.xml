@@ -66,5 +66,7 @@
     <string name="error_invalide_phone">Erreur: numéro incorrect</string>
     <string name="error_contact_name">Erreur: nom de contact inconnu</string>
     <string name="message_copy">Message copié</string>
+    <string name="action_remove_conversation">Remove conversation</string>
+    <string name="remove_conversation_service">Remove conversation service</string>
 
 </resources>

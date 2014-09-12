@@ -326,13 +326,13 @@ public class MainLheidoSMS extends ActionBarActivity
             call.setData(Uri.parse("tel:" + frag.phoneContact));
             startActivity(call);
             return true;
-        } else if(id == R.id.action_voir_contact){
-            if(!PhoneNumberUtils.isGlobalPhoneNumber(Global.conversationsList.get(currentConversation).getName())) {
+        } else if(id == R.id.action_voir_contact) {
+            if (!PhoneNumberUtils.isGlobalPhoneNumber(Global.conversationsList.get(currentConversation).getName())) {
                 Uri contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, Global.conversationsList.get(currentConversation).getId());
                 Intent look = new Intent(Intent.ACTION_VIEW, contactUri);
                 look.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(look);
-            }else{
+            } else {
                 LheidoContact c = Global.conversationsList.get(currentConversation);
                 Intent intent = new Intent(Intent.ACTION_INSERT);
                 intent.setType(ContactsContract.Contacts.CONTENT_TYPE);
@@ -340,6 +340,12 @@ public class MainLheidoSMS extends ActionBarActivity
                 startActivityForResult(intent, PICK_CONTACT);
             }
             return true;
+        } else if(id == R.id.action_remove_conversation){
+            try {
+                Intent i = new Intent(getApplicationContext(), RemoveConversastionService.class);
+                i.putExtra("conversationId", Global.conversationsList.get(currentConversation).getConversationId());
+                startService(i);
+            }catch (Exception e){e.printStackTrace();}
         } else if(id == R.id.action_new_conversation){
             final Context context = this;
             LheidoUtils.LheidoDialog dialog = new LheidoUtils.LheidoDialog(

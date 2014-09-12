@@ -142,26 +142,28 @@ public class LheidoUtils {
         }
     }
     public static void delete_sms(Context context, LheidoContact lcontact, int count){
-        Uri uri = Uri.parse("content://sms");
-        String[] projection = {"*"};
-        String selection = "thread_id = ?";
-        String[] selectionArgs = {""+lcontact.getConversationId()};
-        Cursor cr = context.getContentResolver().query(uri, projection, selection, selectionArgs, "date DESC");
-        if(cr != null){
-            ArrayList<Long> list_id_delete = new ArrayList<Long>();
-            long c = 0;
-            while(cr.moveToNext()){
-                if(c >= count)
-                    list_id_delete.add(cr.getLong(cr.getColumnIndexOrThrow("_id")));
-                c ++;
+        try {
+            Uri uri = Uri.parse("content://sms");
+            String[] projection = {"*"};
+            String selection = "thread_id = ?";
+            String[] selectionArgs = {"" + lcontact.getConversationId()};
+            Cursor cr = context.getContentResolver().query(uri, projection, selection, selectionArgs, "date DESC");
+            if (cr != null) {
+                ArrayList<Long> list_id_delete = new ArrayList<Long>();
+                long c = 0;
+                while (cr.moveToNext()) {
+                    if (c >= count)
+                        list_id_delete.add(cr.getLong(cr.getColumnIndexOrThrow("_id")));
+                    c++;
+                }
+                cr.close();
+                int i = 0;
+                for (Long id : list_id_delete) {
+                    i += 1;
+                    context.getContentResolver().delete(Uri.parse("content://sms/" + id), selection, selectionArgs);
+                }
             }
-            cr.close();
-            int i = 0;
-            for(Long id : list_id_delete){
-                i += 1;
-                context.getContentResolver().delete(Uri.parse("content://sms/"+id), selection, selectionArgs);
-            }
-        }
+        }catch (Exception e){e.printStackTrace();}
     }
     public static void retrieveContact(Context context, LheidoContact contact, String phone){
         Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phone));
@@ -703,8 +705,6 @@ public class LheidoUtils {
                     new_id = tmp;
                 }
             }
-//            Log.v("LHEIDO SMS LOG", last);
-//            Log.v("LHEIDO SMS LOG", "nb rows = " + query.getCount());
             query.close();
         }
         return ""+new_id;
@@ -729,7 +729,6 @@ public class LheidoUtils {
                 } finally {
                     cursor.close();
                 }
-//                Log.v("threadId TEST", "threadId = "+threadId);
                 return threadId;
             }
         }catch (Exception e){

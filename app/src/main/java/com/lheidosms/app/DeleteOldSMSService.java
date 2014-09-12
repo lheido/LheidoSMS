@@ -48,10 +48,12 @@ public class DeleteOldSMSService extends Service {
                 if(c.getNb_sms() > userPref.old_message_num){
                     LheidoUtils.delete_sms(context, c, userPref.old_message_num);
                     int i = Global.conversationsList.indexOf(c);
-                    String nb_sms_updated = LheidoUtils.getMessageCount(context, c.getConversationId());
-                    if(nb_sms_updated != null) {
-                        Global.conversationsList.get(i).setNb_sms(nb_sms_updated);
-                        LheidoUtils.Send.notifyDataChanged(context);
+                    if(i != -1) {
+                        String nb_sms_updated = LheidoUtils.getMessageCount(context, c.getConversationId());
+                        if (nb_sms_updated != null) {
+                            Global.conversationsList.get(i).setNb_sms(nb_sms_updated);
+                            LheidoUtils.Send.notifyDataChanged(context);
+                        }
                     }
                 }
             }
