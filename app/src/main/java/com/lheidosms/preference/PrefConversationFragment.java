@@ -1,10 +1,12 @@
-package com.lheidosms.app;
+package com.lheidosms.preference;
 
 import android.annotation.TargetApi;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
+
+import com.lheidosms.app.R;
 
 
 /**

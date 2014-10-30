@@ -8,7 +8,7 @@
     android:divider="@android:color/transparent"
     android:dividerHeight="0dp"
     android:cacheColorHint="@android:color/transparent"
-    tools:context="com.lheidosms.app.NavigationDrawerFragment"
+    tools:context="com.lheidosms.fragment.NavigationDrawerFragment"
     app:effect="slide_in"
     app:only_animate_new_items="false"
     app:only_animate_fling="false"

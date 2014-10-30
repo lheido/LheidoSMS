@@ -1,4 +1,4 @@
-package com.lheidosms.app;
+package com.lheidosms.service;
 
 import android.app.PendingIntent;
 import android.app.Service;
@@ -12,9 +12,13 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.IBinder;
 import android.telephony.PhoneNumberUtils;
-import android.util.Log;
 import android.widget.Toast;
 
+import com.lheidosms.app.Global;
+import com.lheidosms.utils.LheidoContact;
+import com.lheidosms.utils.LheidoUtils;
+import com.lheidosms.app.MainLheidoSMS;
+import com.lheidosms.receiver.SmsReceiver;
 
 
 public class LheidoSMSService extends Service {
@@ -25,6 +29,7 @@ public class LheidoSMSService extends Service {
 
     @Override
     public void onCreate(){
+        super.onCreate();
 //        Log.v(SERVICE_TAG, "=====> Service start! <=====");
         context = getApplicationContext();
         // load conversations
@@ -122,7 +127,7 @@ public class LheidoSMSService extends Service {
         filter2.addAction(LheidoUtils.ACTION_CANCEL_VIBRATOR);
         filter2.setPriority(2000);
         getApplication().registerReceiver(mBroadcast, filter2);
-        super.onCreate();
+        Toast.makeText(context, "LheidoSMS Service started", Toast.LENGTH_SHORT).show();
     }
 
     private static void moveConversationOnTop(String phone, boolean mark) {

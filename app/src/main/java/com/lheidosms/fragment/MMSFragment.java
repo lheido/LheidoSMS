@@ -1,4 +1,4 @@
-package com.lheidosms.app;
+package com.lheidosms.fragment;
 
 import android.content.Context;
 import android.content.IntentFilter;
@@ -9,16 +9,20 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.telephony.PhoneNumberUtils;
 import android.text.format.Time;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.lheidosms.adapter.MMSAdapter;
+import com.lheidosms.app.R;
+import com.lheidosms.receiver.SmsReceiver;
+import com.lheidosms.utils.LheidoContact;
+import com.lheidosms.utils.LheidoUtils;
+import com.lheidosms.utils.Message;
 import com.squareup.picasso.Picasso;
 import com.twotoasters.jazzylistview.JazzyListView;
 
@@ -45,6 +49,7 @@ public class MMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
     private JazzyListView liste;
     private ImageButton zoom;
     private IntentFilter filter;
+    private boolean mOnPause;
 
     public static MMSFragment newInstance(int position, LheidoContact contact) {
         MMSFragment fragment = new MMSFragment();
@@ -124,12 +129,12 @@ public class MMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
 
             @Override
             public void customReceivedMMS() {
-                if(PhoneNumberUtils.compare(phoneContact, phone)){
-                    updateFragment();
+                if(PhoneNumberUtils.compare(phoneContact, phone) && !mOnPause){
+//                    updateFragment();
                     //on est dans la bonne conversation !
 //                    Time t = new Time();
 //                    t.set(date);
-//                    add_sms(-1L, body, phoneContact, 0, t, 0);
+//                    add_(-1L, body, phoneContact, 0, t, 0);
 //                    conversation_nb_sms += 1;
 //                    liste.smoothScrollToPosition(liste.getBottom());
 //                    LheidoUtils.Send.newMessageRead(context, list_conversationId, phoneContact);
@@ -169,6 +174,7 @@ public class MMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
     @Override
     public void onPause(){
         super.onPause();
+        mOnPause = true;
         try {
             context.unregisterReceiver(mBroadCast);
         }catch (Exception e){}
@@ -177,10 +183,11 @@ public class MMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
     @Override
     public void onResume(){
         super.onResume();
+        mOnPause = false;
         try {
             context.registerReceiver(mBroadCast, filter);
-            updateFragment();
         }catch (Exception e){}
+        updateFragment();
     }
 
     public void updateFragment(){

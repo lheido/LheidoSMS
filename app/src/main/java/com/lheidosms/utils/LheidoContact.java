@@ -1,4 +1,4 @@
-package com.lheidosms.app;
+package com.lheidosms.utils;
 
 import android.content.ContentUris;
 import android.content.Context;

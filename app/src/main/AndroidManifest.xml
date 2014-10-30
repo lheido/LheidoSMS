@@ -22,37 +22,38 @@
             android:name="com.lheidosms.app.MainLheidoSMS"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:windowSoftInputMode="adjustResize"
+            android:launchMode="singleTask"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".LheidoSMSService"
+        <service android:name="com.lheidosms.service.LheidoSMSService"
             android:icon="@drawable/lheido_sms_icon"
             android:label="@string/app_service_name">
         </service>
-        <service android:name=".DeleteOldSMSService"
+        <service android:name="com.lheidosms.service.DeleteOldSMSService"
             android:icon="@drawable/lheido_sms_icon"
             android:label="@string/delete_service_name">
         </service>
-        <service android:name=".RemoveConversastionService"
+        <service android:name="com.lheidosms.service.RemoveConversastionService"
             android:icon="@drawable/lheido_sms_icon"
             android:label="@string/remove_conversation_service">
         </service>
-        <activity android:name=".LheidoSMSPreference"
+        <activity android:name="com.lheidosms.preference.LheidoSMSPreference"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:windowSoftInputMode="adjustResize"
             android:label="@string/pref_app_name">
         </activity>
 
-        <activity android:name=".LheidoSMSPreferenceOldApi"
+        <activity android:name="com.lheidosms.preference.LheidoSMSPreferenceOldApi"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:windowSoftInputMode="adjustResize"
             android:label="@string/pref_app_name">
         </activity>
 
-        <receiver android:name="com.lheidosms.app.BootReceiver" android:exported="true">
+        <receiver android:name="com.lheidosms.receiver.BootReceiver" android:exported="true">
             <intent-filter android:priority="1000">
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>

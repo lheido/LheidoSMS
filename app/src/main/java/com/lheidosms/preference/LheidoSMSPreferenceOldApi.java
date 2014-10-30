@@ -1,4 +1,4 @@
-package com.lheidosms.app;
+package com.lheidosms.preference;
 
 
 import android.content.Context;
@@ -16,6 +16,7 @@ import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
 import com.github.machinarius.preferencefragment.PreferenceFragment;
+import com.lheidosms.app.R;
 
 import java.util.ArrayList;
 

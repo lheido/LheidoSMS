@@ -1,4 +1,4 @@
-package com.lheidosms.app;
+package com.lheidosms.receiver;
 
 import android.app.Activity;
 import android.app.NotificationManager;
@@ -18,8 +18,11 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.SmsMessage;
-import android.util.Log;
 import android.widget.Toast;
+
+import com.lheidosms.utils.LheidoContact;
+import com.lheidosms.utils.LheidoUtils;
+import com.lheidosms.app.R;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,8 +46,9 @@ public abstract class SmsReceiver extends BroadcastReceiver {
             .setTicker(body)
             .setContentTitle("" + name)
             .setContentText(body)
+            .setPriority(2)
             // Add an Action Button below Notification
-//            .addAction(R.drawable.lheido_sms_icon, "Ouvrir", openConversationIntent)
+            .addAction(R.drawable.send_sms, "Ouvrir", openConversationIntent)
             // Set PendingIntent into Notification
             .setContentIntent(pIntent)
             // Dismiss Notification
@@ -174,28 +178,28 @@ public abstract class SmsReceiver extends BroadcastReceiver {
             String phone = intent.getStringExtra("phone");
             customNewMessageRead(position, phone);
         } else if(iAction.equals(LheidoUtils.ACTION_RECEIVE_MMS)){
-            try {
-                Bundle bundle = intent.getExtras();
-                if (bundle != null) {
-                    Object[] pdus = (Object[]) bundle.get("pdus");
-                    final SmsMessage[] messages = new SmsMessage[pdus.length];
-                    for (int i = 0; i < pdus.length; i++) {
-                        messages[i] = SmsMessage.createFromPdu((byte[]) pdus[i]);
-                    }
-                    if (messages.length > -1) {
-                        body = "";
-                        for (SmsMessage x : messages) {
-                            body += x.getMessageBody();
-                        }
-                        date = messages[0].getTimestampMillis();
-                        phone = messages[0].getDisplayOriginatingAddress();
-                        new_name = LheidoContact.getContactName(context, phone);
-                        if (!notificationsId.containsKey(phone))
-                            notificationsId.put(phone, notificationsId.size());
-                        customReceivedMMS();
-                    }
-                }
-            }catch (Exception e){e.printStackTrace();}
+//            try {
+//                Bundle bundle = intent.getExtras();
+//                if (bundle != null) {
+//                    Object[] pdus = (Object[]) bundle.get("pdus");
+//                    final SmsMessage[] messages = new SmsMessage[pdus.length];
+//                    for (int i = 0; i < pdus.length; i++) {
+//                        messages[i] = SmsMessage.createFromPdu((byte[]) pdus[i]);
+//                    }
+//                    if (messages.length > -1) {
+//                        body = "";
+//                        for (SmsMessage x : messages) {
+//                            body += x.getMessageBody();
+//                        }
+//                        date = messages[0].getTimestampMillis();
+//                        phone = messages[0].getDisplayOriginatingAddress();
+//                        new_name = LheidoContact.getContactName(context, phone);
+//                        if (!notificationsId.containsKey(phone))
+//                            notificationsId.put(phone, notificationsId.size());
+//                        customReceivedMMS();
+//                    }
+//                }
+//            }catch (Exception e){e.printStackTrace();}
         }
     }
 

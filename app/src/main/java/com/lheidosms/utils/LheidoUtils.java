@@ -1,7 +1,6 @@
-package com.lheidosms.app;
+package com.lheidosms.utils;
 
 import android.app.Dialog;
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -16,10 +15,12 @@ import android.support.v4.app.FragmentActivity;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.TelephonyManager;
 import android.text.format.Time;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
+import com.lheidosms.app.MainLheidoSMS;
+import com.lheidosms.app.R;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -110,7 +111,8 @@ public class LheidoUtils {
         public boolean drawer = false;
         public int conversation_effect = 14;
         public int listConversation_effect = 14;
-        UserPref(){}
+
+        public UserPref(){}
         public void setUserPref(SharedPreferences pref){
             String pref_nb_conv = pref.getString(conversation_onload_key, "10");
             String pref_nb_sms = pref.getString(sms_onload_key, "42");
@@ -243,72 +245,72 @@ public class LheidoUtils {
         return res;
     }
 
-    public static abstract class ConversationListTask extends AsyncTask<Void, LheidoContact, Boolean> {
-
-        protected WeakReference<FragmentActivity> act = null;
-        private Context context = null;
-        private UserPref userPref = null;
-
-        public ConversationListTask(FragmentActivity activity){
-            link(activity);
-        }
-
-        @Override
-        protected void onPreExecute () {
-            if(act.get() != null){
-                context = act.get().getApplicationContext();
-                userPref = new UserPref();
-                userPref.setUserPref(PreferenceManager.getDefaultSharedPreferences(context));
-            }
-        }
-
-        @Override
-        protected void onPostExecute (Boolean result) {
-            if (act.get() != null) {
-                if(!result)
-                    Toast.makeText(context, "Problème génération liste conversations", Toast.LENGTH_LONG).show();
-            }
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            if(act.get() != null){
-                final String[] projection = new String[] {"_id", "date", "message_count", "recipient_ids", "read", "type"};
-                Uri uri = Uri.parse("content://mms-sms/conversations?simple=true");
-                Cursor query = context.getContentResolver().query(uri, projection, null, null, "date DESC");
-                if(query != null) {
-                    if (query.moveToFirst()) {
-                        int i = 0;
-                        do {
-                            publishProgress(getLConversationInfo(context, query));
-                            i = i + 1;
-                        } while (i < userPref.max_conversation && query.moveToNext());
-                    } else {
-                        //mConversationListe.add("Pas de conversations !");
-                    }
-                    query.close();
-                }
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        abstract protected void onProgressUpdate (LheidoContact... prog);
-
-        public void link (FragmentActivity pActivity) {
-            act = new WeakReference<FragmentActivity>(pActivity);
-        }
-
-        public void execConversationListTask(){
-            if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
-                executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            } else {
-                execute();
-            }
-        }
-
-    }
+//    public static abstract class ConversationListTask extends AsyncTask<Void, LheidoContact, Boolean> {
+//
+//        protected WeakReference<FragmentActivity> act = null;
+//        private Context context = null;
+//        private UserPref userPref = null;
+//
+//        public ConversationListTask(FragmentActivity activity){
+//            link(activity);
+//        }
+//
+//        @Override
+//        protected void onPreExecute () {
+//            if(act.get() != null){
+//                context = act.get().getApplicationContext();
+//                userPref = new UserPref();
+//                userPref.setUserPref(PreferenceManager.getDefaultSharedPreferences(context));
+//            }
+//        }
+//
+//        @Override
+//        protected void onPostExecute (Boolean result) {
+//            if (act.get() != null) {
+//                if(!result)
+//                    Toast.makeText(context, "Problème génération liste conversations", Toast.LENGTH_LONG).show();
+//            }
+//        }
+//
+//        @Override
+//        protected Boolean doInBackground(Void... params) {
+//            if(act.get() != null){
+//                final String[] projection = new String[] {"_id", "date", "message_count", "recipient_ids", "read", "type"};
+//                Uri uri = Uri.parse("content://mms-sms/conversations?simple=true");
+//                Cursor query = context.getContentResolver().query(uri, projection, null, null, "date DESC");
+//                if(query != null) {
+//                    if (query.moveToFirst()) {
+//                        int i = 0;
+//                        do {
+//                            publishProgress(getLConversationInfo(context, query));
+//                            i = i + 1;
+//                        } while (i < userPref.max_conversation && query.moveToNext());
+//                    } else {
+//                        //mConversationListe.add("Pas de conversations !");
+//                    }
+//                    query.close();
+//                }
+//                return true;
+//            }
+//            return false;
+//        }
+//
+//        @Override
+//        abstract protected void onProgressUpdate (LheidoContact... prog);
+//
+//        public void link (FragmentActivity pActivity) {
+//            act = new WeakReference<FragmentActivity>(pActivity);
+//        }
+//
+//        public void execConversationListTask(){
+//            if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
+//                executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+//            } else {
+//                execute();
+//            }
+//        }
+//
+//    }
 
 
     public static abstract class ConversationTask extends AsyncTask<Void, Message, Boolean> {
@@ -320,7 +322,7 @@ public class LheidoUtils {
         private int conversationId;
         private final String sms_uri = "content://sms";
         private final String[] projection = {"*"};
-        private String selection = "thread_id = ? AND body != ?";
+        private String selection = "thread_id = ?";
         private ArrayList<String> selectionArgs = new ArrayList<String>();
 
 
@@ -328,16 +330,14 @@ public class LheidoUtils {
             link(activity);
             conversationId = id;
             selectionArgs.add("" + conversationId);
-            selectionArgs.add("LHEIDO_SMS_CONVERSATION_CLEAR");
         }
 
         public ConversationTask(FragmentActivity activity, int id, long last_id_sms){
             link(activity);
             conversationId = id;
             last_sms = last_id_sms;
-            selection = "thread_id = ? AND body != ? AND _id < ?";
+            selection = "thread_id = ? AND _id < ?";
             selectionArgs.add("" + conversationId);
-            selectionArgs.add("LHEIDO_SMS_CONVERSATION_CLEAR");
             selectionArgs.add("" + last_sms);
         }
 
@@ -492,7 +492,7 @@ public class LheidoUtils {
                         t.set(date);
                         mms.setDate(t);
                         publishProgress(mms);
-                        //add_sms(_id, string, type, read, t, 1, liste);
+                        //add_(_id, string, type, read, t, 1, liste);
                         count += 1;
                     }
                     allMms.close();

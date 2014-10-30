@@ -1,4 +1,4 @@
-package com.lheidosms.app;
+package com.lheidosms.service;
 
 import android.app.Service;
 import android.content.Context;
@@ -7,7 +7,11 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
-import android.util.Log;
+
+import com.lheidosms.app.Global;
+import com.lheidosms.utils.LheidoContact;
+import com.lheidosms.utils.LheidoUtils;
+import com.lheidosms.utils.Message;
 
 public class DeleteOldSMSService extends Service {
     private static final String SERVICE_TAG = "DELETE SERVICE LOG";

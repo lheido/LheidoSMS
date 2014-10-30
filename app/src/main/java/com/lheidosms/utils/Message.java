@@ -1,4 +1,4 @@
-package com.lheidosms.app;
+package com.lheidosms.utils;
 
 import android.net.Uri;
 import android.text.format.Time;

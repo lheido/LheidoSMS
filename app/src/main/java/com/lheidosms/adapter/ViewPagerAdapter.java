@@ -1,4 +1,4 @@
-package com.lheidosms.app;
+package com.lheidosms.adapter;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

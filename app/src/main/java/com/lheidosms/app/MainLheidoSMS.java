@@ -1,11 +1,9 @@
 package com.lheidosms.app;
 
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -23,20 +21,31 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.text.format.Time;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import com.lheidosms.adapter.ContactsListAdapter;
+import com.lheidosms.adapter.ViewPagerAdapter;
+import com.lheidosms.fragment.MMSFragment;
+import com.lheidosms.fragment.NavigationDrawerFragment;
+import com.lheidosms.fragment.SMSFragment;
+import com.lheidosms.preference.LheidoSMSPreference;
+import com.lheidosms.preference.LheidoSMSPreferenceOldApi;
+import com.lheidosms.service.DeleteOldSMSService;
+import com.lheidosms.service.LheidoSMSService;
+import com.lheidosms.service.RemoveConversastionService;
+import com.lheidosms.utils.LheidoContact;
+import com.lheidosms.utils.LheidoUtils;
+import com.lheidosms.utils.Message;
 
 import java.util.ArrayList;
 
@@ -63,12 +72,12 @@ public class MainLheidoSMS extends ActionBarActivity
     private int currentConversation;
     private int currentPage;
     private static final int PAGE_SMS = 0;
-    private static final int PAGE_MMS = 1;
+//    private static final int PAGE_MMS = 1;
     private ImageButton send_button;
     private int PICK_IMAGE = 1;
     protected String mmsImgPath = null;
     private ArrayList<LheidoContact> contactsList;
-    private BroadcastReceiver mBroadcast;
+//    private BroadcastReceiver mBroadcast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,6 +137,15 @@ public class MainLheidoSMS extends ActionBarActivity
         init_sms_body();
         init_send_button();
     }
+
+//    @Override
+//    protected void onNewIntent(Intent intent) {
+//        try{
+//            Log.v("onNewIntent", intent.getStringExtra("name"));
+//            Toast.makeText(this, intent.getStringExtra("name"), Toast.LENGTH_SHORT).show();
+//        }catch (Exception e){e.printStackTrace();}
+//        super.onNewIntent(intent);
+//    }
 
     @Override
     protected void onDestroy(){
@@ -214,12 +232,17 @@ public class MainLheidoSMS extends ActionBarActivity
                         if (bodyPart.size() > 1) {
                             ArrayList<PendingIntent> piSent = new ArrayList<PendingIntent>();
                             ArrayList<PendingIntent> piDelivered = new ArrayList<PendingIntent>();
-                            for (String aBodyPart : bodyPart) {
-                                Intent ideli = new Intent(LheidoUtils.ACTION_DELIVERED_SMS);
-                                ideli.putExtra(LheidoUtils.ARG_SMS_DELIVERED, new_id);
-                                piSent.add(PendingIntent.getBroadcast(getApplicationContext(), 0, new Intent(LheidoUtils.ACTION_SENT_SMS), 0));
-                                piDelivered.add(PendingIntent.getBroadcast(getApplicationContext(), 0, ideli, PendingIntent.FLAG_UPDATE_CURRENT));
-                            }
+                            // same as bodyPart == 1 (i want only one intent per message)
+                            Intent ideli = new Intent(LheidoUtils.ACTION_DELIVERED_SMS);
+                            ideli.putExtra(LheidoUtils.ARG_SMS_DELIVERED, new_id);
+                            piSent.add(PendingIntent.getBroadcast(getApplicationContext(), 0, new Intent(LheidoUtils.ACTION_SENT_SMS), 0));
+                            piDelivered.add(PendingIntent.getBroadcast(getApplicationContext(), 0, ideli, PendingIntent.FLAG_UPDATE_CURRENT));
+//                            for (String aBodyPart : bodyPart) {
+//                                Intent ideli = new Intent(LheidoUtils.ACTION_DELIVERED_SMS);
+//                                ideli.putExtra(LheidoUtils.ARG_SMS_DELIVERED, new_id);
+//                                piSent.add(PendingIntent.getBroadcast(getApplicationContext(), 0, new Intent(LheidoUtils.ACTION_SENT_SMS), 0));
+//                                piDelivered.add(PendingIntent.getBroadcast(getApplicationContext(), 0, ideli, PendingIntent.FLAG_UPDATE_CURRENT));
+//                            }
                             manager.sendMultipartTextMessage(phoneContact, null, bodyPart, piSent, piDelivered);
                         } else {
                             Intent ideli = new Intent(LheidoUtils.ACTION_DELIVERED_SMS);
@@ -323,7 +346,7 @@ public class MainLheidoSMS extends ActionBarActivity
         if(id == R.id.action_call){
             Intent call = new Intent(Intent.ACTION_CALL);
             SMSFragment frag = (SMSFragment)pages.get(PAGE_SMS);
-            call.setData(Uri.parse("tel:" + frag.phoneContact));
+            call.setData(Uri.parse("tel:" + frag.getPhoneContact()));
             startActivity(call);
             return true;
         } else if(id == R.id.action_voir_contact) {

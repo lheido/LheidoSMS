@@ -1,4 +1,4 @@
-package com.lheidosms.app;
+package com.lheidosms.preference;
 
 import android.annotation.TargetApi;
 import android.app.ActionBar;
@@ -11,6 +11,8 @@ import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.widget.ArrayAdapter;
 import android.widget.SpinnerAdapter;
+
+import com.lheidosms.app.R;
 
 
 /**

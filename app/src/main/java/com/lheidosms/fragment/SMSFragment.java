@@ -1,4 +1,4 @@
-package com.lheidosms.app;
+package com.lheidosms.fragment;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -13,7 +13,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.telephony.PhoneNumberUtils;
 import android.text.format.Time;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +22,13 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import com.lheidosms.adapter.ConversationAdapter;
+import com.lheidosms.app.MainLheidoSMS;
+import com.lheidosms.app.R;
+import com.lheidosms.receiver.SmsReceiver;
+import com.lheidosms.utils.LheidoContact;
+import com.lheidosms.utils.LheidoUtils;
+import com.lheidosms.utils.Message;
 import com.twotoasters.jazzylistview.JazzyListView;
 
 /**
@@ -39,10 +45,10 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
     public static final String ARG_CONVERSATION_NUMBER = "conversation_number";
     public static final String ARG_CONTACT_NAME = "contact_name";
     private static final String ARG_SECTION_NUMBER = "section_number";
-    private FragmentActivity context;
+    private Context context;
     private LheidoUtils.UserPref userPref;
     private String name;
-    protected String phoneContact;
+    private String phoneContact;
     private int conversationId; // id for database
     private long conversation_nb_sms;
     private JazzyListView liste;
@@ -176,23 +182,22 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
         mBroadCast = new SmsReceiver(){
             @Override
             public void customReceivedSMS() {
-                if(PhoneNumberUtils.compare(phoneContact, phone)){
+                if(PhoneNumberUtils.compare(phoneContact, phone) && !mOnPause){
                     //on est dans la bonne conversation !
                     Time t = new Time();
                     t.set(date);
                     add_sms(phone, -1L, body, "", 0, t, 0);
                     conversation_nb_sms += 1;
                     liste.smoothScrollToPosition(liste.getBottom());
-                    if(!mOnPause)
-                        LheidoUtils.Send.newMessageRead(context, list_conversationId, phoneContact);
+                    LheidoUtils.Send.newMessageRead(context, list_conversationId, phoneContact);
                 }
             }
 
             @Override
             public void customReceivedMMS() {
-                if(PhoneNumberUtils.compare(phoneContact, phone)){
-
-                }
+//                if(PhoneNumberUtils.compare(phoneContact, phone) && !mOnPause){
+//
+//                }
             }
 
             @Override
@@ -200,15 +205,17 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
 
             @Override
             public void customDelivered(long _id){
-                int k = 0;
-                boolean find = false;
-                while(!find && k < Message_list.size()){
-                    if(_id == Message_list.get(k).getId()){
-                        find = true;
-                        Message_list.get(k).setRead(true);
-                        conversationAdapter.notifyDataSetChanged();
+                if(!mOnPause) {
+                    int k = 0;
+                    boolean find = false;
+                    while (!find && k < Message_list.size()) {
+                        if (_id == Message_list.get(k).getId()) {
+                            find = true;
+                            Message_list.get(k).setRead(true);
+                            conversationAdapter.notifyDataSetChanged();
+                        }
+                        k++;
                     }
-                    k++;
                 }
             }
         };
@@ -234,10 +241,12 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
     @Override
     public void onPause(){
         super.onPause();
+        mOnPause = true;
         try {
             context.unregisterReceiver(mBroadCast);
-        }catch (Exception e){}
-        mOnPause = true;
+        }catch (Exception e){
+            Toast.makeText(context, "Error SMSFragment.onPause unregisterReceiver", Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -246,8 +255,10 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
         mOnPause = false;
         try {
             context.registerReceiver(mBroadCast, filter);
-            updateFragment();
-        }catch (Exception e){}
+        }catch (Exception e){
+            Toast.makeText(context, "Error SMSFragment.onResume registerReceiver", Toast.LENGTH_LONG).show();
+        }
+        updateFragment();
     }
 
     public void updateFragment(){
@@ -298,6 +309,8 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
                 }
             };
             more.execConversationTask();
-        }catch (Exception e){}
+        }catch (Exception e){
+            Toast.makeText(context, "Error onRefresh", Toast.LENGTH_LONG).show();
+        }
     }
 }

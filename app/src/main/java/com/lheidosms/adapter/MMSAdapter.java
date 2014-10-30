@@ -1,11 +1,9 @@
-package com.lheidosms.app;
+package com.lheidosms.adapter;
 
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
 import android.telephony.PhoneNumberUtils;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +13,9 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.lheidosms.utils.LheidoUtils;
+import com.lheidosms.utils.Message;
+import com.lheidosms.app.R;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
