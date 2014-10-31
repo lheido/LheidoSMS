@@ -9,7 +9,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.telephony.PhoneNumberUtils;
 import android.text.format.Time;
@@ -175,7 +174,7 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
                 }
             }
         };
-        gen_list.execConversationTask();
+        gen_list.execTask();
     }
 
     public void init_broadcast(){
@@ -308,7 +307,7 @@ public class SMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
                     }
                 }
             };
-            more.execConversationTask();
+            more.execTask();
         }catch (Exception e){
             Toast.makeText(context, "Error onRefresh", Toast.LENGTH_LONG).show();
         }

@@ -52,23 +52,7 @@ public abstract class SmsBaseFragment extends Fragment implements SwipeRefreshLa
     protected boolean mOnPause = false;
     protected IntentFilter filter;
 
-    /**
-     * SMS/MMS fragment builder.
-     */
-    public static class BuildFragment {
-        public static SmsFragment SMS(LheidoContact contact, int position){
-            SmsFragment fragment = new SmsFragment();
-            setArgs(fragment, contact, position);
-            return fragment;
-        }
-        public static MmsFragment MMS(LheidoContact contact, int position){
-            MmsFragment fragment = new MmsFragment();
-            setArgs(fragment, contact, position);
-            return fragment;
-        }
-    }
-
-    private static void setArgs(SmsBaseFragment fragment, LheidoContact contact, int position){
+    public static void setArgs(SmsBaseFragment fragment, LheidoContact contact, int position){
         Bundle args = new Bundle();
         args.putInt(ARG_CONVERSATION_NUMBER, position);
         args.putString(ARG_CONTACT_NAME, contact.getName());
@@ -103,13 +87,13 @@ public abstract class SmsBaseFragment extends Fragment implements SwipeRefreshLa
                 return true;
             }
         });
-        liste.setOnItemClickListener(new ListView.OnItemClickListener(){
+        liste.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 initListOnItemClick(adapterView, view, position, id);
             }
         });
-        initConversationAdapter(context, phoneContact, Message_list);
+        initConversationAdapter();
         liste.setAdapter(conversationAdapter);
         swipeLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_container);
         swipeLayout.setOnRefreshListener(this);
@@ -119,6 +103,10 @@ public abstract class SmsBaseFragment extends Fragment implements SwipeRefreshLa
         initBroadcastReceiver();
         context.registerReceiver(mBroadCast, filter);
         return rootView;
+    }
+
+    public String getPhoneContact() {
+        return phoneContact;
     }
 
     public void add_(String phone, long _id, String body, String sender, int deli, Time t, int position){
@@ -221,11 +209,8 @@ public abstract class SmsBaseFragment extends Fragment implements SwipeRefreshLa
 
     /**
      * init adapter with appropriate adapter (ConversationSmsAdapter/ConversationMmsAdapter).
-     * @param context
-     * @param phoneContact
-     * @param message_list : reference to messages list.
      */
-    protected abstract void initConversationAdapter(Context context, String phoneContact, ArrayList<Message> message_list);
+    protected abstract void initConversationAdapter();
 
     /**
      * init onItemClick.
@@ -257,6 +242,6 @@ public abstract class SmsBaseFragment extends Fragment implements SwipeRefreshLa
      * @param top
      * @param start_count
      */
-    protected abstract void load_more_conversation(long last_id, int index, int top, int start_count);
+    protected abstract void load_more_conversation(final long last_id, final int index, final int top, final int start_count);
 
 }

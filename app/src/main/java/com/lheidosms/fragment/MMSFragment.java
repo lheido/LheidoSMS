@@ -106,7 +106,7 @@ public class MMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
                 }
             }
         };
-        gen_list.execConversationTask();
+        gen_list.execTask();
     }
 
     public void add_sms(long _id, String body, String sender, int deli,Time t, int position){
@@ -237,7 +237,7 @@ public class MMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
                     }
                 }
             };
-            more.execConversationTask();
+            more.execTask();
         }catch (Exception e){}
     }
 

@@ -411,7 +411,7 @@ public class LheidoUtils {
             act = new WeakReference<FragmentActivity>(pActivity);
         }
 
-        public void execConversationTask(){
+        public void execTask(){
             if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
                 executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             } else {
@@ -613,7 +613,7 @@ public class LheidoUtils {
             act = new WeakReference<FragmentActivity>(pActivity);
         }
 
-        public void execConversationTask(){
+        public void execTask(){
             if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
                 executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             } else {
