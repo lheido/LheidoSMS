@@ -20,7 +20,9 @@ import com.lheidosms.utils.LheidoUtils;
 import com.lheidosms.app.MainLheidoSMS;
 import com.lheidosms.receiver.SmsReceiver;
 
-
+/**
+ * Manage conversation list, notifications and sms/mms receiver.
+ */
 public class LheidoSMSService extends Service {
     private static final String SERVICE_TAG = "LHEIDOSMS SERVICE LOG";
     SmsReceiver smsReceiver;
@@ -94,7 +96,7 @@ public class LheidoSMSService extends Service {
                     try {
                         long[] pattern = {
                                 0, // Start immediately
-                                100, 100, 100, 100, 100, 100, 100
+                                100, 100, 100, 100, 100, 100, 100, 100
                         };
                         v.vibrate(pattern, -1);
                     }catch (Exception e){

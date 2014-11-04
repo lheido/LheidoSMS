@@ -5,8 +5,8 @@
         <!-- ActionBar -->
         <item name="android:actionBarStyle" tools:ignore="NewApi">@style/MyAB</item>
         <item name="actionBarStyle">@style/MyAB</item>
-        <item name="android:windowActionBarOverlay" tools:ignore="NewApi">true</item>
-        <item name="windowActionBarOverlay">true</item>
+        <item name="android:windowActionBarOverlay" tools:ignore="NewApi">false</item>
+        <item name="windowActionBarOverlay">false</item>
         <!--<item name="android:actionBarTabStyle" tools:ignore="NewApi">@style/ActionBarTabStyle</item>
         <item name="actionBarTabStyle">@style/ActionBarTabStyle</item>
         <item name="android:popupMenuStyle" tools:ignore="NewApi">@style/PopupMenu</item>
@@ -41,7 +41,6 @@
     <style name="MyListView" parent="@android:style/Widget.ListView">
         <item name="android:background" tools:ignore="NewApi">@color/grey_mid</item>
         <item name="background">@color/grey_mid</item>
-        <item name="android:paddingTop" tools:ignore="NewApi">?attr/actionBarSize</item>
         <item name="android:listSelector">@drawable/bg_conversation_list</item>
     </style>
     <style name="ab_titleText" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">

@@ -151,7 +151,7 @@ public class NavigationDrawerFragment extends Fragment {
                 selectItem(position);
             }
         });
-        lConversationsAdapter = new ListeConversationsAdapter(getActivity(), R.layout.conversations_list, Global.conversationsList);
+        lConversationsAdapter = new ListeConversationsAdapter(getActivity(), Global.conversationsList);
         mDrawerListView.setAdapter(lConversationsAdapter);
         mDrawerListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -274,7 +274,7 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
-    private void selectItem(int position) {
+    public void selectItem(int position) {
 //        Log.v(DRAWER_LOG, "SelectItem "+position);
         mCurrentSelectedPosition = position;
         if (mDrawerListView != null) {

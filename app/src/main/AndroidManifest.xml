@@ -29,7 +29,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name="com.lheidosms.service.LheidoSMSService"
+        <service android:name="com.lheidosms.service.MainService"
             android:icon="@drawable/lheido_sms_icon"
             android:label="@string/app_service_name">
         </service>

@@ -98,7 +98,7 @@ public class MMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
     }
 
     public void gen_conversation(){
-        LheidoUtils.MMSTask gen_list = new LheidoUtils.MMSTask(getActivity(), conversationId) {
+        LheidoUtils.MmsTask gen_list = new LheidoUtils.MmsTask(getActivity(), conversationId) {
             @Override
             protected void onProgressUpdate(Message... prog) {
                 if (this.act.get() != null) {
@@ -212,7 +212,7 @@ public class MMSFragment extends Fragment implements SwipeRefreshLayout.OnRefres
             View v = liste.getChildAt(Message_list.size() - 1);
             final int top = (v == null) ? 0 : v.getTop();
             final int start_count = liste.getCount();
-            LheidoUtils.MMSTask more = new LheidoUtils.MMSTask(getActivity(), conversationId, last_id) {
+            LheidoUtils.MmsTask more = new LheidoUtils.MmsTask(getActivity(), conversationId, last_id) {
                 @Override
                 protected void onProgressUpdate(Message... prog) {
                     if (this.act.get() != null) {

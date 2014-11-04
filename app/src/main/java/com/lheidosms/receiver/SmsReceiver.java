@@ -52,7 +52,7 @@ public abstract class SmsReceiver extends BroadcastReceiver {
             // Set PendingIntent into Notification
             .setContentIntent(pIntent)
             // Dismiss Notification
-//            .setAutoCancel(true)
+            .setAutoCancel(true)
         ;
 
         // Create Notification Manager

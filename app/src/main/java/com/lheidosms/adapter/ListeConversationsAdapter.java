@@ -27,10 +27,9 @@ public class ListeConversationsAdapter extends BaseAdapter {
     private ArrayList<LheidoContact> mListConv;
     private Context mContext;
 
-    public ListeConversationsAdapter(Context context, int ressource, ArrayList<LheidoContact> list_conversation){
+    public ListeConversationsAdapter(Context context, ArrayList<LheidoContact> list_conversation){
         mContext = context;
         mListConv = list_conversation;
-        //mInflater = LayoutInflater.from(mContext);
     }
 
     public LheidoContact getItem(int position) {
@@ -67,9 +66,9 @@ public class ListeConversationsAdapter extends BaseAdapter {
         holder.mName.setText(contact.getName());
         holder.mCount.setText(""+contact.getNb_sms());
         if(contact.hasNewMessage())
-            holder.mCount.setTextColor(mContext.getResources().getColor(R.color.new_message));
+            holder.mName.setBackgroundResource(R.drawable.bg_conversation_name_new_message);
         else
-            holder.mCount.setTextColor(mContext.getResources().getColor(R.color.default_message));
+            holder.mName.setBackgroundResource(R.drawable.bg_conversation_name);
         Picasso.with(mContext).load(contact.getPic()).fit().centerCrop().into(holder.mContactPicture);
 
         return convertView;

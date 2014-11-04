@@ -51,10 +51,6 @@ public class Message {
         return this.date_.normalize(false);
     }
 
-    public long getLongDate(){
-        return 0;
-    }
-
     public void setBody(String string) {
         this.body_ = string != null ? string : "";
     }

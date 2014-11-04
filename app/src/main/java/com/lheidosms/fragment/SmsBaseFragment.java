@@ -16,7 +16,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.lheidosms.adapter.ConversationAdapter;
+import com.lheidosms.adapter.SmsBaseAdapter;
 import com.lheidosms.app.MainLheidoSMS;
 import com.lheidosms.app.R;
 import com.lheidosms.utils.LheidoContact;
@@ -46,7 +46,7 @@ public abstract class SmsBaseFragment extends Fragment implements SwipeRefreshLa
     protected JazzyListView liste;
     protected int list_conversationId; // id for global conversations list
     protected ArrayList<Message> Message_list = new ArrayList<Message>();
-    protected ConversationAdapter conversationAdapter;
+    protected SmsBaseAdapter mAdapter;
     protected BroadcastReceiver mBroadCast;
     protected SwipeRefreshLayout swipeLayout;
     protected boolean mOnPause = false;
@@ -94,12 +94,10 @@ public abstract class SmsBaseFragment extends Fragment implements SwipeRefreshLa
             }
         });
         initConversationAdapter();
-        liste.setAdapter(conversationAdapter);
+        liste.setAdapter(mAdapter);
         swipeLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_container);
         swipeLayout.setOnRefreshListener(this);
         // init broadcast receiver to receive SMS or MMS and delivered
-        filter = new IntentFilter();
-        filter.setPriority(2000);
         initBroadcastReceiver();
         context.registerReceiver(mBroadCast, filter);
         return rootView;
@@ -121,7 +119,7 @@ public abstract class SmsBaseFragment extends Fragment implements SwipeRefreshLa
         } else{
             Message_list.add(0, sms);
         }
-        conversationAdapter.notifyDataSetChanged();
+        mAdapter.notifyDataSetChanged();
     }
 
     public void userAddSms(long new_id, String body, String s, int i, Time now, int i1){
@@ -169,7 +167,7 @@ public abstract class SmsBaseFragment extends Fragment implements SwipeRefreshLa
             liste.setTransitionEffect(userPref.conversation_effect);
         }
 //        Log.v("onResume", "id = "+list_conversationId);
-        LheidoUtils.Send.newMessageRead(context, list_conversationId, phoneContact);
+//        LheidoUtils.Send.newMessageRead(context, list_conversationId, phoneContact);
     }
 
     @Override

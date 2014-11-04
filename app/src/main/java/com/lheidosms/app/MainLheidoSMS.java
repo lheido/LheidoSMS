@@ -10,7 +10,6 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -21,6 +20,7 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.text.format.Time;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
@@ -35,13 +35,15 @@ import android.widget.Toast;
 
 import com.lheidosms.adapter.ContactsListAdapter;
 import com.lheidosms.adapter.ViewPagerAdapter;
-import com.lheidosms.fragment.MMSFragment;
+import com.lheidosms.fragment.MmsFragment;
 import com.lheidosms.fragment.NavigationDrawerFragment;
+import com.lheidosms.fragment.SmsBaseFragment;
 import com.lheidosms.fragment.SmsFragment;
 import com.lheidosms.preference.LheidoSMSPreference;
 import com.lheidosms.preference.LheidoSMSPreferenceOldApi;
 import com.lheidosms.service.DeleteOldSMSService;
 import com.lheidosms.service.LheidoSMSService;
+import com.lheidosms.service.MainService;
 import com.lheidosms.service.RemoveConversastionService;
 import com.lheidosms.utils.BuildFragment;
 import com.lheidosms.utils.LheidoContact;
@@ -64,7 +66,7 @@ public class MainLheidoSMS extends ActionBarActivity
      */
     private String mTitle;
 
-    private ArrayList<Fragment> pages;
+    private ArrayList<SmsBaseFragment> pages;
     private ViewPagerAdapter mViewPagerAdapter;
     private ViewPager mViewPager;
     private EditText sms_body;
@@ -85,13 +87,13 @@ public class MainLheidoSMS extends ActionBarActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_lheido_sms);
 
-        startService(new Intent(getApplicationContext(), LheidoSMSService.class));
+        startService(new Intent(getApplicationContext(), MainService.class));
         userPref = new LheidoUtils.UserPref();
         userPref.setUserPref(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()));
 
         mmsImgPath = null;
         contactsList = new ArrayList<LheidoContact>();
-        LheidoUtils.GetContacts task = new LheidoUtils.GetContacts(this) {
+        LheidoUtils.GetContactsTask task = new LheidoUtils.GetContactsTask(this) {
             @Override
             protected void onProgressUpdate(LheidoContact... prog) {
                 contactsList.add(prog[0]);
@@ -99,7 +101,7 @@ public class MainLheidoSMS extends ActionBarActivity
         };
         task.execTask();
 
-        pages = new ArrayList<Fragment>();
+        pages = new ArrayList<SmsBaseFragment>();
 //        Log.v("LheidoSMS LOG", "onCreate() pages = "+pages);
         mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), pages);
         mViewPager = (ViewPager) findViewById(R.id.container);
@@ -139,14 +141,27 @@ public class MainLheidoSMS extends ActionBarActivity
         init_send_button();
     }
 
-//    @Override
-//    protected void onNewIntent(Intent intent) {
-//        try{
-//            Log.v("onNewIntent", intent.getStringExtra("name"));
-//            Toast.makeText(this, intent.getStringExtra("name"), Toast.LENGTH_SHORT).show();
-//        }catch (Exception e){e.printStackTrace();}
-//        super.onNewIntent(intent);
-//    }
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        Log.v("onNewIntent", "Receive new intent");
+        try{
+            String name = intent.getStringExtra("name");
+            if(name != null && !Global.conversationsList.get(currentConversation).getName().equals(name)){
+                int i = 0;
+                boolean find = false;
+                while(i < Global.conversationsList.size() && !find){
+                    if(Global.conversationsList.get(i).getName().equals(name)){
+                        find = true;
+                    }
+                    i++;
+                }
+                if(find){
+                    mNavigationDrawerFragment.selectItem(i-1);
+                }
+            }
+        }catch (Exception e){e.printStackTrace();}
+    }
 
     @Override
     protected void onDestroy(){
@@ -155,7 +170,7 @@ public class MainLheidoSMS extends ActionBarActivity
     }
 
     public void setCurrentConversation(){
-        String phone = ((SmsFragment)pages.get(PAGE_SMS)).getPhoneContact();
+        String phone = pages.get(PAGE_SMS).getPhoneContact();
         int i = 0;
         int size = Global.conversationsList.size();
         while(i < size && !PhoneNumberUtils.compare(Global.conversationsList.get(i).getPhone(), phone)) {i++;}
@@ -168,7 +183,7 @@ public class MainLheidoSMS extends ActionBarActivity
     public void onNavigationDrawerItemSelected(int position, LheidoContact contact) {
         currentConversation = position;
         currentPage = 0;
-        MMSFragment mmsFrag = MMSFragment.newInstance(position, contact);
+        MmsFragment mmsFrag = BuildFragment.MMS(contact, position);
         SmsFragment smsFrag = BuildFragment.SMS(contact, position);
         pages.clear();
         pages.add(smsFrag);
@@ -253,7 +268,8 @@ public class MainLheidoSMS extends ActionBarActivity
                             manager.sendTextMessage(phoneContact, null, body, piSent, piDelivered);
                         }
                         sms_body.clearFocus();
-                        LheidoUtils.Send.userNewMessage(getApplicationContext(),phoneContact);
+                        LheidoUtils.Send.userNewMessage(getApplicationContext(), phoneContact);
+                        LheidoUtils.Send.newMessageRead(getApplicationContext(), currentConversation, phoneContact);
                     } else {
                         Toast.makeText(getApplicationContext(), R.string.empty_message, Toast.LENGTH_LONG).show();
                     }

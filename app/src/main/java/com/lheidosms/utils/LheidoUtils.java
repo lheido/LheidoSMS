@@ -46,6 +46,10 @@ public class LheidoUtils {
     public static final String ACTION_NOTIFY_DATA_CHANGED = "com.lheido.app.notify_data_changed";
     public static final String ACTION_USER_NEW_MESSAGE = "com.lheido.app.user_new_message";
     public static final String ACTION_CANCEL_VIBRATOR = "com.lheido.app.cancel_vibrator";
+    public static final String ACTION_NOTIFY_RECEIVE_SMS = "com.lheido.app.notify_receive_sms";
+    public static final String ACTION_NOTIFY_DELIVERED_SMS = "com.lheido.app.notify_delivered_sms";
+    public static final String ACTION_NOTIFY_RECEIVE_MMS = "com.lheido.app.notify_receive_mms";
+    public static final String ACTION_NOTIFY_DELIVERED_MMS = "com.lheido.app.notify_delivered_mms";
 
     public static final String drawer_start_opened_key = "drawer_start_opened";
     public static final String hide_keyboard_key = "hide_keyboard";
@@ -65,6 +69,13 @@ public class LheidoUtils {
 
 
     public static class Send {
+        public static final String SMS_ATTR_BODY = "body";
+        public static final String SMS_ATTR_SENDER = "sender";
+        public static final String SMS_ATTR_ID = "id";
+        public static final String SMS_ATTR_DATE = "date";
+        public static final String SMS_ATTR_READ = "read";
+        public static final String DELIVERED_ID = "delivered_id";
+
         public static void receiveNewMessage(Context context){
             Intent i = new Intent(ACTION_NEW_MESSAGE);
             context.sendBroadcast(i);
@@ -94,6 +105,27 @@ public class LheidoUtils {
 
         public static void cancelVibrator(Context context){
             Intent i = new Intent(ACTION_CANCEL_VIBRATOR);
+            context.sendBroadcast(i);
+        }
+
+        public static void notifyReceiveSms(Context context, Message sms){
+            Intent i = new Intent(ACTION_NOTIFY_RECEIVE_SMS);
+            i.putExtra(SMS_ATTR_BODY, sms.getBody());
+            i.putExtra(SMS_ATTR_SENDER, sms.getSender());
+            i.putExtra(SMS_ATTR_ID, sms.getId());
+            i.putExtra(SMS_ATTR_DATE, sms.getDateNormalize()); //date type: long.
+            i.putExtra(SMS_ATTR_READ, sms.isRead());
+            context.sendBroadcast(i);
+        }
+
+        public static void notifyDeliveredSms(Context context, long id){
+            Intent i = new Intent(ACTION_NOTIFY_DELIVERED_SMS);
+            i.putExtra(DELIVERED_ID, id);
+            context.sendBroadcast(i);
+        }
+
+        public static void notifyReceiveMms(Context context, Message mms){
+            Intent i = new Intent(ACTION_NOTIFY_RECEIVE_MMS);
             context.sendBroadcast(i);
         }
     }
@@ -245,75 +277,9 @@ public class LheidoUtils {
         return res;
     }
 
-//    public static abstract class ConversationListTask extends AsyncTask<Void, LheidoContact, Boolean> {
-//
-//        protected WeakReference<FragmentActivity> act = null;
-//        private Context context = null;
-//        private UserPref userPref = null;
-//
-//        public ConversationListTask(FragmentActivity activity){
-//            link(activity);
-//        }
-//
-//        @Override
-//        protected void onPreExecute () {
-//            if(act.get() != null){
-//                context = act.get().getApplicationContext();
-//                userPref = new UserPref();
-//                userPref.setUserPref(PreferenceManager.getDefaultSharedPreferences(context));
-//            }
-//        }
-//
-//        @Override
-//        protected void onPostExecute (Boolean result) {
-//            if (act.get() != null) {
-//                if(!result)
-//                    Toast.makeText(context, "Problème génération liste conversations", Toast.LENGTH_LONG).show();
-//            }
-//        }
-//
-//        @Override
-//        protected Boolean doInBackground(Void... params) {
-//            if(act.get() != null){
-//                final String[] projection = new String[] {"_id", "date", "message_count", "recipient_ids", "read", "type"};
-//                Uri uri = Uri.parse("content://mms-sms/conversations?simple=true");
-//                Cursor query = context.getContentResolver().query(uri, projection, null, null, "date DESC");
-//                if(query != null) {
-//                    if (query.moveToFirst()) {
-//                        int i = 0;
-//                        do {
-//                            publishProgress(getLConversationInfo(context, query));
-//                            i = i + 1;
-//                        } while (i < userPref.max_conversation && query.moveToNext());
-//                    } else {
-//                        //mConversationListe.add("Pas de conversations !");
-//                    }
-//                    query.close();
-//                }
-//                return true;
-//            }
-//            return false;
-//        }
-//
-//        @Override
-//        abstract protected void onProgressUpdate (LheidoContact... prog);
-//
-//        public void link (FragmentActivity pActivity) {
-//            act = new WeakReference<FragmentActivity>(pActivity);
-//        }
-//
-//        public void execConversationListTask(){
-//            if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
-//                executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-//            } else {
-//                execute();
-//            }
-//        }
-//
-//    }
 
 
-    public static abstract class ConversationTask extends AsyncTask<Void, Message, Boolean> {
+    public static abstract class SmsTask extends AsyncTask<Void, Message, Boolean> {
 
         private long last_sms = -1;
         protected WeakReference<FragmentActivity> act = null;
@@ -326,13 +292,13 @@ public class LheidoUtils {
         private ArrayList<String> selectionArgs = new ArrayList<String>();
 
 
-        public ConversationTask(FragmentActivity activity, int id){
+        public SmsTask(FragmentActivity activity, int id){
             link(activity);
             conversationId = id;
             selectionArgs.add("" + conversationId);
         }
 
-        public ConversationTask(FragmentActivity activity, int id, long last_id_sms){
+        public SmsTask(FragmentActivity activity, int id, long last_id_sms){
             link(activity);
             conversationId = id;
             last_sms = last_id_sms;
@@ -420,7 +386,7 @@ public class LheidoUtils {
         }
     }
 
-    public static abstract class MMSTask extends AsyncTask<Void, Message, Boolean>{
+    public static abstract class MmsTask extends AsyncTask<Void, Message, Boolean>{
 
         private final String mms_uri = "content://mms";
         private final String[] projection = {"*"};
@@ -433,13 +399,13 @@ public class LheidoUtils {
         private Context context;
         protected WeakReference<FragmentActivity> act;
 
-        public MMSTask(FragmentActivity activity, int conversationId){
+        public MmsTask(FragmentActivity activity, int conversationId){
             link(activity);
             this.conversationId = conversationId;
             selectionArgs.add(""+conversationId);
         }
 
-        public MMSTask(FragmentActivity activity, int conversationId, long last_id) {
+        public MmsTask(FragmentActivity activity, int conversationId, long last_id) {
             link(activity);
             this.conversationId = conversationId;
             last_sms = last_id;
@@ -642,11 +608,6 @@ public class LheidoUtils {
         return -1;
     }
 
-    public static boolean isRight(Context context, String sender){
-        TelephonyManager telemamanger = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
-        return PhoneNumberUtils.compare(telemamanger.getLine1Number(), sender);
-    }
-
     public static String getUserPhone(Context context){
         TelephonyManager telemamanger = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
         return telemamanger.getLine1Number();
@@ -769,12 +730,12 @@ public class LheidoUtils {
         return null;
     }
 
-    public static abstract class GetContacts extends AsyncTask<Void, LheidoContact, Boolean>{
+    public static abstract class GetContactsTask extends AsyncTask<Void, LheidoContact, Boolean>{
 
         private WeakReference<MainLheidoSMS> act;
         private Context context;
 
-        public GetContacts(MainLheidoSMS activity){
+        public GetContactsTask(MainLheidoSMS activity){
             link(activity);
         }
 
@@ -839,7 +800,7 @@ public class LheidoUtils {
         protected void onPostExecute (Boolean result) {
             if (act.get() != null) {
                 if(!result)
-                    Toast.makeText(context, "Problème GetContacts", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "Problème GetContactsTask", Toast.LENGTH_LONG).show();
             }
         }
 

@@ -1,18 +1,23 @@
 package com.lheidosms.fragment;
 
+import android.app.Activity;
 import android.content.ClipData;
+import android.content.ContentValues;
 import android.content.Context;
+import android.net.Uri;
 import android.os.Build;
 import android.telephony.PhoneNumberUtils;
 import android.text.format.Time;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
-import com.lheidosms.adapter.ConversationAdapter;
+import com.lheidosms.adapter.SmsAdapter;
 import com.lheidosms.app.R;
+import com.lheidosms.receiver.SmsFragmentReceiver;
 import com.lheidosms.receiver.SmsReceiver;
 import com.lheidosms.utils.LheidoUtils;
 import com.lheidosms.utils.Message;
@@ -36,50 +41,41 @@ public class SmsFragment extends SmsBaseFragment {
 
     @Override
     protected void initBroadcastReceiver() {
-        mBroadCast = new SmsReceiver(){
+        mBroadCast = new SmsFragmentReceiver() {
             @Override
-            public void customReceivedSMS() {
-                if(PhoneNumberUtils.compare(phoneContact, phone) && !mOnPause){
-                    //on est dans la bonne conversation !
-                    Time t = new Time();
-                    t.set(date);
-                    add_(phone, -1L, body, "", 0, t, 0);
-                    conversation_nb_sms += 1;
-                    liste.smoothScrollToPosition(liste.getBottom());
-                    LheidoUtils.Send.newMessageRead(context, list_conversationId, phoneContact);
-                }
-            }
-
-            @Override
-            public void customReceivedMMS() {}
-
-            @Override
-            public void customNewMessageRead(int position, String phone) {}
-
-            @Override
-            public void customDelivered(long _id){
-                if(!mOnPause) {
+            protected void customNotifyDelivered(long id) {
+                if(!mOnPause && id != -1){
                     int k = 0;
                     boolean find = false;
                     while (!find && k < Message_list.size()) {
-                        if (_id == Message_list.get(k).getId()) {
+                        if (id == Message_list.get(k).getId()) {
                             find = true;
                             Message_list.get(k).setRead(true);
-                            conversationAdapter.notifyDataSetChanged();
+                            mAdapter.notifyDataSetChanged();
                         }
                         k++;
                     }
                 }
             }
+
+            @Override
+            protected void customNotifyReceive(long id, String sender, String body, long date, boolean isRead) {
+                if(PhoneNumberUtils.compare(phoneContact, sender) && !mOnPause){
+                    //on est dans la bonne conversation !
+                    Time t = new Time();
+                    t.set(date);
+                    add_(sender, id, body, "", 0, t, 0);
+                    conversation_nb_sms += 1;
+                    liste.smoothScrollToPosition(liste.getBottom());
+                }
+            }
         };
-        filter.addAction(LheidoUtils.ACTION_RECEIVE_SMS);
-        filter.addAction(LheidoUtils.ACTION_SENT_SMS);
-        filter.addAction(LheidoUtils.ACTION_DELIVERED_SMS);
+        filter = ((SmsFragmentReceiver) mBroadCast).getIntentFilter(3000);
     }
 
     @Override
     protected void initConversationAdapter() {
-        conversationAdapter = new ConversationAdapter(context, phoneContact, Message_list);
+        mAdapter = new SmsAdapter(context, phoneContact, Message_list);
     }
 
     @Override
@@ -103,7 +99,7 @@ public class SmsFragment extends SmsBaseFragment {
 
     @Override
     protected void load_conversation() {
-        LheidoUtils.ConversationTask loadTask = new LheidoUtils.ConversationTask(getActivity(), conversationId) {
+        LheidoUtils.SmsTask loadTask = new LheidoUtils.SmsTask(getActivity(), conversationId) {
             @Override
             protected void onProgressUpdate(Message... prog) {
                 if (this.act.get() != null) {
@@ -129,7 +125,7 @@ public class SmsFragment extends SmsBaseFragment {
 
     @Override
     protected void load_more_conversation(final long last_id, final int index, final int top, final int start_count) {
-        LheidoUtils.ConversationTask more = new LheidoUtils.ConversationTask(getActivity(), conversationId, last_id) {
+        LheidoUtils.SmsTask more = new LheidoUtils.SmsTask(getActivity(), conversationId, last_id) {
             @Override
             protected void onProgressUpdate(Message... prog) {
                 if (this.act.get() != null) {
@@ -149,7 +145,7 @@ public class SmsFragment extends SmsBaseFragment {
                         Toast.makeText(context, "Problème génération conversation", Toast.LENGTH_LONG).show();
                     else {
                         swipeLayout.setRefreshing(false);
-                        conversationAdapter.notifyDataSetChanged();
+                        mAdapter.notifyDataSetChanged();
                         int finalposition = index + liste.getCount() - start_count;
                         liste.setSelectionFromTop(finalposition, top);
                     }
