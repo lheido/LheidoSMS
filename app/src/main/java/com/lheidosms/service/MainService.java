@@ -67,7 +67,7 @@ public class MainService extends Service {
                     if(!notificationsId.containsKey(phone))
                         notificationsId.put(phone, notificationsId.size());
                     Intent notificationIntent = new Intent(mContext, MainLheidoSMS.class);
-                    notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     PendingIntent pIntent = PendingIntent.getActivity(mContext, 0, notificationIntent, 0);
                     Intent openAction = new Intent(mContext, MainLheidoSMS.class);
                     openAction.putExtra("name", new_name);

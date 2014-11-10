@@ -2,8 +2,8 @@ package com.lheidosms.adapter;
 
 import android.content.Context;
 import android.preference.PreferenceManager;
+import android.support.v4.view.GravityCompat;
 import android.telephony.PhoneNumberUtils;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,7 +53,7 @@ public class MmsAdapter extends SmsBaseAdapter {
         }
         //RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) holder.mLayout.getLayoutParams();
         if(!PhoneNumberUtils.compare(mPhoneContact, message.getSender())) {
-            holder.mLayout.setGravity(Gravity.RIGHT);
+            holder.mLayout.setGravity(GravityCompat.END);
             holder.mLayout.setPadding(42, 0, 0, 0);
             holder.mBody.setBackgroundColor(mContext.getResources().getColor(R.color.grey_mid_high));
             if(message.isRead())
@@ -63,7 +63,7 @@ public class MmsAdapter extends SmsBaseAdapter {
             }
         }
         else {
-            holder.mLayout.setGravity(Gravity.LEFT);
+            holder.mLayout.setGravity(GravityCompat.START);
             holder.mLayout.setPadding(0, 0, 42, 0);
             holder.mBody.setBackgroundColor(mContext.getResources().getColor(R.color.grey_low));
             holder.mIsRead.setBackgroundColor(mContext.getResources().getColor(android.R.color.transparent));

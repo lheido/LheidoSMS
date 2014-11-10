@@ -12,6 +12,7 @@
         android:layout_alignBottom="@+id/list_conversation_contact_name"
         android:contentDescription="@string/ContactPicture"
         android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         />
     <TextView
         android:id="@+id/list_conversation_contact_name"
@@ -33,9 +34,11 @@
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
         android:paddingLeft="20dp"
+        android:paddingStart="20dp"
         android:textColor="@color/default_message"
         android:textSize="12sp"
         android:layout_alignLeft="@id/list_conversation_contact_name"
+        android:layout_alignStart="@id/list_conversation_contact_name"
         android:layout_alignBottom="@id/list_conversation_contact_name"
         />
     <View
@@ -43,7 +46,9 @@
         android:layout_width="wrap_content"
         android:layout_height="2dp"
         android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_below="@id/list_conversation_contact_name"
         android:background="#777777" />
 
