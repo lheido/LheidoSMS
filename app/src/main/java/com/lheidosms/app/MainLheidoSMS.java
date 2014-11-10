@@ -326,8 +326,12 @@ public class MainLheidoSMS extends ActionBarActivity
     }
 
     public void onSectionAttached(String name) {
-        mTitle = name;
-        setActionBarTitle(mTitle);
+        try {
+            mTitle = name;
+            setActionBarTitle(mTitle);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void restoreActionBar() {
@@ -338,7 +342,12 @@ public class MainLheidoSMS extends ActionBarActivity
     }
 
     public void setActionBarTitle(String name){
-        getSupportActionBar().setTitle(name);
+        try {
+            getSupportActionBar().setTitle(name);
+        }catch (Exception e){
+            Log.v("setActionBarTitle", "ERREUR setTitle, name = "+name);
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -497,11 +506,7 @@ public class MainLheidoSMS extends ActionBarActivity
             return true;
         } else if (id == R.id.action_settings) {
             Intent intent;
-            if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
-                intent = new Intent(this, LheidoSMSPreference.class);
-            } else {
-                intent = new Intent(this, LheidoSMSPreferenceOldApi.class);
-            }
+            intent = new Intent(this, LheidoSMSPreference.class);
             if (intent.resolveActivity(getPackageManager()) != null) {
                 startActivity(intent);
             }

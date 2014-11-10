@@ -9,6 +9,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/support-v4-preferencefragment-1.0.0" />
           </set>
         </option>
       </GradleProjectSettings>

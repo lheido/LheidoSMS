@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.format.Time;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -131,7 +132,12 @@ public abstract class SmsBaseFragment extends Fragment implements SwipeRefreshLa
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        ((MainLheidoSMS) activity).onSectionAttached(getArguments().getString(ARG_CONTACT_NAME));
+        try {
+            ((MainLheidoSMS) activity).onSectionAttached(getArguments().getString(ARG_CONTACT_NAME));
+        }catch (Exception e){
+            Log.v("onAttach", "ERREUR SmsBaseFragment onAttach");
+            e.printStackTrace();
+        }
     }
 
     @Override

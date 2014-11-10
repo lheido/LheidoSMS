@@ -11,7 +11,7 @@
         android:id="@+id/sub"
         android:orderInCategory="150"
         app:showAsAction="ifRoom"
-        android:icon="@drawable/abc_ic_menu_moreoverflow_normal_holo_dark"
+        android:icon="@drawable/abc_ic_menu_moreoverflow_mtrl_alpha"
         android:title="@string/action_settings">
         <menu>
             <item

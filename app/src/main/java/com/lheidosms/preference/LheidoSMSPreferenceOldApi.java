@@ -1,24 +1,16 @@
 package com.lheidosms.preference;
 
-
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.preference.PreferenceFragment;
 import android.support.v7.app.ActionBar;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.SpinnerAdapter;
-import android.widget.TextView;
 
-import com.github.machinarius.preferencefragment.PreferenceFragment;
 import com.lheidosms.app.R;
 
-import java.util.ArrayList;
 
 /**
  * Created by lheido on 06/06/14.

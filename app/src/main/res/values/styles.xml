@@ -5,8 +5,6 @@
         <!-- ActionBar -->
         <item name="android:actionBarStyle" tools:ignore="NewApi">@style/MyAB</item>
         <item name="actionBarStyle">@style/MyAB</item>
-        <item name="android:windowActionBarOverlay" tools:ignore="NewApi">false</item>
-        <item name="windowActionBarOverlay">false</item>
         <!--<item name="android:actionBarTabStyle" tools:ignore="NewApi">@style/ActionBarTabStyle</item>
         <item name="actionBarTabStyle">@style/ActionBarTabStyle</item>
         <item name="android:popupMenuStyle" tools:ignore="NewApi">@style/PopupMenu</item>
@@ -30,11 +28,9 @@
         <!-- ######################### -->
 
     </style>
-    <style name="MyAB" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
-        <item name="android:background" tools:ignore="NewApi">@drawable/action_bar_bg</item>
-        <item name="background">@drawable/action_bar_bg</item>
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="android:paddingBottom">2dp</item>
+    <style name="MyAB" parent="@style/Widget.AppCompat.ActionBar">
+        <item name="android:background" tools:ignore="NewApi">@color/grey_low</item>
+        <item name="background">@color/grey_low</item>
         <item name="android:titleTextStyle" tools:ignore="NewApi">@style/ab_titleText</item>
         <item name="titleTextStyle">@style/ab_titleText</item>
     </style>

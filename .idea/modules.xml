@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/LheidoSMS.iml" filepath="$PROJECT_DIR$/LheidoSMS.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/support-v4-preferencefragment-1.0.0/support-v4-preferencefragment-1.0.0.iml" filepath="$PROJECT_DIR$/support-v4-preferencefragment-1.0.0/support-v4-preferencefragment-1.0.0.iml" />
     </modules>
   </component>
 </project>

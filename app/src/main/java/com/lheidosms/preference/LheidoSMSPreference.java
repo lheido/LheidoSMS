@@ -1,14 +1,14 @@
 package com.lheidosms.preference;
 
 import android.annotation.TargetApi;
-import android.app.ActionBar;
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
+import android.support.v7.app.ActionBar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v13.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBarActivity;
 import android.widget.ArrayAdapter;
 import android.widget.SpinnerAdapter;
 
@@ -18,7 +18,7 @@ import com.lheidosms.app.R;
 /**
  * Created by lheido on 05/06/14.
  */
-public class LheidoSMSPreference extends Activity {
+public class LheidoSMSPreference extends ActionBarActivity {
     ViewPager mViewPager;
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -27,14 +27,14 @@ public class LheidoSMSPreference extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.lheidosms_pref);
         mViewPager = (ViewPager) findViewById(R.id.pager);
-        PrefPagerAdapter prefPagerAdapter = new PrefPagerAdapter(getFragmentManager());
+        PrefPagerAdapter prefPagerAdapter = new PrefPagerAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(prefPagerAdapter);
         mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
                     @Override
                     public void onPageSelected(int position) {
                         // When swiping between pages, select the
                         // corresponding tab.
-                        ActionBar actionBar = getActionBar();
+                        ActionBar actionBar = getSupportActionBar();
                         if (actionBar != null) {
                             actionBar.setSelectedNavigationItem(position);
                         }
@@ -64,7 +64,7 @@ public class LheidoSMSPreference extends Activity {
                 return true;
             }
         };
-        ActionBar actionBar = getActionBar();
+        ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
             actionBar.setListNavigationCallbacks(mSpinnerAdapter, mOnNavigationListener);
