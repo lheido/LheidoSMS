@@ -209,7 +209,6 @@ public class MainLheidoSMS extends ActionBarActivity
         if(!userPref.first_upper)
             sms_body.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_FLAG_AUTO_CORRECT);
         sms_body.setSingleLine(false);
-        sms_body.setFocusable(false);
     }
 
     public void init_send_button(){
