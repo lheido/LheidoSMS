@@ -37,7 +37,7 @@
             android:icon="@drawable/lheido_sms_icon"
             android:label="@string/delete_service_name">
         </service>
-        <service android:name="com.lheidosms.service.RemoveConversastionService"
+        <service android:name="com.lheidosms.service.RemoveConversationService"
             android:icon="@drawable/lheido_sms_icon"
             android:label="@string/remove_conversation_service">
         </service>

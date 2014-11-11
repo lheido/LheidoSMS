@@ -13,7 +13,7 @@ import com.lheidosms.utils.LheidoContact;
 import com.lheidosms.utils.LheidoUtils;
 import com.lheidosms.utils.Message;
 
-public class RemoveConversastionService extends Service {
+public class RemoveConversationService extends Service {
     private static final String SERVICE_TAG = "REMOVE CONVERSATION LOG";
     private Context context;
 

@@ -69,5 +69,10 @@
     <string name="message_copy">Message copié</string>
     <string name="action_remove_conversation">Remove conversation</string>
     <string name="remove_conversation_service">Remove conversation service</string>
+    <string name="double_back_toast">Appuyer de nouveau pour quitter</string>
+    <string name="alert_dialog_remove_conversation_title">Suppression</string>
+    <string name="alert_dialog_remove_conversation_msg">Voulez vous vraiment supprimer cette conversation ?!</string>
+    <string name="alert_dialog_remove_conversation_yes">Oui</string>
+    <string name="alert_dialog_remove_conversation_no">Non</string>
 
 </resources>

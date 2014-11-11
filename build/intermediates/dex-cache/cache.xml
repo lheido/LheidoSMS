@@ -14,12 +14,6 @@
         revision="21.0.2"
         sha1="57b2e2d8ba828b125939f621aa74f7edabe7aa71"/>
     <item
-        dex="/home/ubuntu/projetsAndroid/LheidoSMS/app/build/intermediates/pre-dexed/debug/internal_impl-21.0.0-b74e3d781613ad599dfbf59853eecc38e8d41e91.jar"
-        jar="/home/ubuntu/projetsAndroid/LheidoSMS/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.0/libs/internal_impl-21.0.0.jar"
-        jumboMode="false"
-        revision="21.0.2"
-        sha1="1609e6d42d0480b0f4188e2c29f75388fa12a8f0"/>
-    <item
         dex="/home/ubuntu/projetsAndroid/LheidoSMS/app/build/intermediates/pre-dexed/debug/picasso-2.3.1-cffde4bbf241096ed46576c3f84edaca79c32618.jar"
         jar="/home/ubuntu/.gradle/caches/modules-2/files-2.1/com.squareup.picasso/picasso/2.3.1/7ed01353649330c692473b85d5c64db4218338db/picasso-2.3.1.jar"
         jumboMode="false"
@@ -32,18 +26,6 @@
         revision="21.0.2"
         sha1="1a578b9607b36266c63d43a4fa0ab5664dbe911e"/>
     <item
-        dex="/home/ubuntu/projetsAndroid/LheidoSMS/app/build/intermediates/pre-dexed/debug/classes-35bf58e0c1e3ece757e854d5b3dddea2142990f7.jar"
-        jar="/home/ubuntu/projetsAndroid/LheidoSMS/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.0/classes.jar"
-        jumboMode="false"
-        revision="21.0.2"
-        sha1="686344a780033e4ba22b926cd225f8d4941247e6"/>
-    <item
-        dex="/home/ubuntu/projetsAndroid/LheidoSMS/app/build/intermediates/pre-dexed/debug/library-2.4.0-346eeedcb345faf5d272eecbeebb7ca636e978d5.jar"
-        jar="/home/ubuntu/.gradle/caches/modules-2/files-2.1/com.nineoldandroids/library/2.4.0/e9b63380f3a242dbdbf103a2355ad7e43bad17cb/library-2.4.0.jar"
-        jumboMode="false"
-        revision="21.0.2"
-        sha1="e9b63380f3a242dbdbf103a2355ad7e43bad17cb"/>
-    <item
         dex="/home/ubuntu/projetsAndroid/LheidoSMS/app/build/intermediates/pre-dexed/debug/classes-bae9760b122401564aa8cced5f47a28eabfe10f2.jar"
         jar="/home/ubuntu/projetsAndroid/LheidoSMS/app/build/intermediates/exploded-aar/LheidoSMS/support-v4-preferencefragment-1.0.0/unspecified/classes.jar"
         jumboMode="false"
@@ -55,5 +37,23 @@
         jumboMode="false"
         revision="21.0.2"
         sha1="95fd37732ec852e99f07eeb516a3650172f1d136"/>
+    <item
+        dex="/home/ubuntu/projetsAndroid/LheidoSMS/app/build/intermediates/pre-dexed/debug/internal_impl-21.0.0-b74e3d781613ad599dfbf59853eecc38e8d41e91.jar"
+        jar="/home/ubuntu/projetsAndroid/LheidoSMS/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.0/libs/internal_impl-21.0.0.jar"
+        jumboMode="false"
+        revision="21.0.2"
+        sha1="1609e6d42d0480b0f4188e2c29f75388fa12a8f0"/>
+    <item
+        dex="/home/ubuntu/projetsAndroid/LheidoSMS/app/build/intermediates/pre-dexed/debug/classes-35bf58e0c1e3ece757e854d5b3dddea2142990f7.jar"
+        jar="/home/ubuntu/projetsAndroid/LheidoSMS/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.0/classes.jar"
+        jumboMode="false"
+        revision="21.0.2"
+        sha1="686344a780033e4ba22b926cd225f8d4941247e6"/>
+    <item
+        dex="/home/ubuntu/projetsAndroid/LheidoSMS/app/build/intermediates/pre-dexed/debug/library-2.4.0-346eeedcb345faf5d272eecbeebb7ca636e978d5.jar"
+        jar="/home/ubuntu/.gradle/caches/modules-2/files-2.1/com.nineoldandroids/library/2.4.0/e9b63380f3a242dbdbf103a2355ad7e43bad17cb/library-2.4.0.jar"
+        jumboMode="false"
+        revision="21.0.2"
+        sha1="e9b63380f3a242dbdbf103a2355ad7e43bad17cb"/>
 
 </pre-dex-items>

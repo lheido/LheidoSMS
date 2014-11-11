@@ -28,6 +28,7 @@
                 android:title="@string/action_voir_contact"/>
             <item
                 android:id="@+id/action_remove_conversation"
+                android:icon="@drawable/ic_action_content_discard"
                 android:orderInCategory="50"
                 app:showAsAction="ifRoom"
                 android:title="@string/action_remove_conversation" />

@@ -1,12 +1,13 @@
 package com.lheidosms.app;
 
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
@@ -40,11 +41,9 @@ import com.lheidosms.fragment.NavigationDrawerFragment;
 import com.lheidosms.fragment.SmsBaseFragment;
 import com.lheidosms.fragment.SmsFragment;
 import com.lheidosms.preference.LheidoSMSPreference;
-import com.lheidosms.preference.LheidoSMSPreferenceOldApi;
 import com.lheidosms.service.DeleteOldSMSService;
-import com.lheidosms.service.LheidoSMSService;
 import com.lheidosms.service.MainService;
-import com.lheidosms.service.RemoveConversastionService;
+import com.lheidosms.service.RemoveConversationService;
 import com.lheidosms.utils.BuildFragment;
 import com.lheidosms.utils.LheidoContact;
 import com.lheidosms.utils.LheidoUtils;
@@ -80,6 +79,7 @@ public class MainLheidoSMS extends ActionBarActivity
     private int PICK_IMAGE = 1;
     protected String mmsImgPath = null;
     private ArrayList<LheidoContact> contactsList;
+    private static long back_pressed;
 //    private BroadcastReceiver mBroadcast;
 
     @Override
@@ -209,6 +209,7 @@ public class MainLheidoSMS extends ActionBarActivity
         if(!userPref.first_upper)
             sms_body.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_FLAG_AUTO_CORRECT);
         sms_body.setSingleLine(false);
+        sms_body.setFocusable(false);
     }
 
     public void init_send_button(){
@@ -390,11 +391,31 @@ public class MainLheidoSMS extends ActionBarActivity
             }
             return true;
         } else if(id == R.id.action_remove_conversation){
-            try {
-                Intent i = new Intent(getApplicationContext(), RemoveConversastionService.class);
-                i.putExtra("conversationId", Global.conversationsList.get(currentConversation).getConversationId());
-                startService(i);
-            }catch (Exception e){e.printStackTrace();}
+            AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+            alert.setTitle(R.string.alert_dialog_remove_conversation_title);
+            alert.setMessage(R.string.alert_dialog_remove_conversation_msg);
+
+            alert.setPositiveButton(R.string.alert_dialog_remove_conversation_yes, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    try {
+                        Intent i = new Intent(getApplicationContext(), RemoveConversationService.class);
+                        i.putExtra("conversationId", Global.conversationsList.get(currentConversation).getConversationId());
+                        startService(i);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+
+            alert.setNegativeButton(R.string.alert_dialog_remove_conversation_no, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    // Canceled.
+                }
+            });
+
+            alert.show();
+
         } else if(id == R.id.action_new_conversation){
             final Context context = this;
             LheidoUtils.LheidoDialog dialog = new LheidoUtils.LheidoDialog(
@@ -553,6 +574,13 @@ public class MainLheidoSMS extends ActionBarActivity
                 mem_body = sms_body.getText().toString();
             else mem_body = "";
         }
+    }
+
+    @Override
+    public void onBackPressed(){
+        if (back_pressed + 2000 > System.currentTimeMillis()) super.onBackPressed();
+        else Toast.makeText(getBaseContext(), R.string.double_back_toast, Toast.LENGTH_SHORT).show();
+        back_pressed = System.currentTimeMillis();
     }
 
 }

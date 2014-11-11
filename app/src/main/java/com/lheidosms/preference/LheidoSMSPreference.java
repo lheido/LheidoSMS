@@ -21,7 +21,6 @@ import com.lheidosms.app.R;
 public class LheidoSMSPreference extends ActionBarActivity {
     ViewPager mViewPager;
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,46 +28,6 @@ public class LheidoSMSPreference extends ActionBarActivity {
         mViewPager = (ViewPager) findViewById(R.id.pager);
         PrefPagerAdapter prefPagerAdapter = new PrefPagerAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(prefPagerAdapter);
-        mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-                    @Override
-                    public void onPageSelected(int position) {
-                        // When swiping between pages, select the
-                        // corresponding tab.
-                        ActionBar actionBar = getSupportActionBar();
-                        if (actionBar != null) {
-                            actionBar.setSelectedNavigationItem(position);
-                        }
-                    }
-                });
-
-        SpinnerAdapter mSpinnerAdapter = ArrayAdapter.createFromResource(this,
-                R.array.settings_list, android.R.layout.simple_spinner_dropdown_item);
-        ActionBar.OnNavigationListener mOnNavigationListener = new ActionBar.OnNavigationListener() {
-            // Get the same strings provided for the drop-down's ArrayAdapter
-            String[] strings = getResources().getStringArray(R.array.settings_list);
-
-            @Override
-            public boolean onNavigationItemSelected(int position, long itemId) {
-                /*// Create new fragment from our own Fragment class
-                ListContentFragment newFragment = new ListContentFragment();
-                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-
-                // Replace whatever is in the fragment container with this fragment
-                // and give the fragment a tag name equal to the string at the position
-                // selected
-                ft.replace(R.id.fragment_container, newFragment, strings[position]);
-
-                // Apply changes
-                ft.commit();*/
-                mViewPager.setCurrentItem(position);
-                return true;
-            }
-        };
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-            actionBar.setListNavigationCallbacks(mSpinnerAdapter, mOnNavigationListener);
-        }
     }
 
     private class PrefPagerAdapter extends FragmentPagerAdapter {
