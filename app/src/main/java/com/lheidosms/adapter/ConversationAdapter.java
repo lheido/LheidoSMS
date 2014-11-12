@@ -70,7 +70,7 @@ public class ConversationAdapter extends BaseAdapter {
 
         holder.mBody.setText(message.getBody());
         holder.mBody.setTextSize(userPref.text_size);
-        holder.mdate.setText(message.getDate());
+        holder.mdate.setText(message.getDate(mContext));
 
         //RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) holder.mLayout.getLayoutParams();
         if(!PhoneNumberUtils.compare(mPhoneContact, message.getSender())) {

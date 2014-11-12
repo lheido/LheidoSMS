@@ -74,7 +74,7 @@ public class MMSAdapter extends BaseAdapter {
 
         holder.mBody.setText(message.getBody());
         holder.mBody.setTextSize(userPref.text_size);
-        holder.mdate.setText(message.getDate());
+        holder.mdate.setText(message.getDate(mContext));
         if(message.getUriPicture() != null) {
             Picasso.with(mContext).load(message.getUriPicture()).fit().centerCrop().into(holder.mPict);
         }

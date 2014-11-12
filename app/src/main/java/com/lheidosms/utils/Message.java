@@ -1,14 +1,16 @@
 package com.lheidosms.utils;
 
+import android.content.Context;
 import android.net.Uri;
 import android.text.format.Time;
+
+import com.lheidosms.app.R;
 
 public class Message {
     private String sender = null;
     private String body_ = null;
     private Uri img_ = null;
     private Time date_ = null;
-    private boolean right = false;
     private boolean read_ = false;
     private long _id = -1;
 
@@ -24,7 +26,7 @@ public class Message {
         else this.read_ = false;
     }
 
-    public static String formatDate(Time date){
+    public static String formatDate(Context context, Time date){
         int time_dd = date.monthDay;
         int time_MM = date.month;
         Time now = new Time();
@@ -33,18 +35,18 @@ public class Message {
         int c_MM = now.month;
         if(time_MM == c_MM){
             if(time_dd == c_dd)
-                return date.format("%H:%M");
+                return date.format(context.getResources().getString(R.string.date_format_today));
             else
-                return date.format("%d/%m/%Y %H:%M");
+                return date.format(context.getResources().getString(R.string.date_format_current_month));
         }
-        return date.format("%d/%m/%Y");
+        return date.format(context.getResources().getString(R.string.date_format));
     }
 
     public void setDate(Time date){
         this.date_ = date;
     }
-    public String getDate(){
-        return formatDate(this.date_);
+    public String getDate(Context context){
+        return formatDate(context, this.date_);
     }
 
     public long getDateNormalize(){
