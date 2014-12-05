@@ -1,7 +1,7 @@
 LheidoSMS
 =========
 
-SMS/MMS app for android.
+SMS/MMS app for android. See Lessaging project, the same application but with better approach.
 
 How to use
 ----------
